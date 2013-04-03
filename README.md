@@ -1,6 +1,6 @@
 # Getting started
 
-Check out the codebase and build the project using Apache Maven2:
+Build the project using Apache Maven2:
 ```
 mvn clean package
 ```
@@ -10,7 +10,7 @@ Change the working directory to `server` and start the embedded Jetty web server
 mvn jetty:run
 ```
 
-Congratulations! You now have a local openscoring web service running at: http://localhost:8080/openscoring/
+Congratulations! You now have an openscoring web service running at [localhost:8080] (http://localhost:8080/openscoring/)
 
 # REST API
 
