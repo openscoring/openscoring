@@ -28,7 +28,7 @@ Send the contents of the file JSON file `helloworld.json` for evaluation to the 
 curl -X POST --data-binary @helloworld.json -H "Content-type: application/json" http://localhost:8080/openscoring/model/helloworld
 ```
 
-The request body is the JSON serialized form of an `org.openscoring.server.ModelRequest` object:
+The request body is the JSON serialized form of an `org.openscoring.common.ModelRequest` object:
 ```
 {
 	"parameters" :
@@ -38,7 +38,7 @@ The request body is the JSON serialized form of an `org.openscoring.server.Model
 }
 ```
 
-The response body is the JSON serialized form of an `org.openscoring.server.ModelResponse` object:
+The response body is the JSON serialized form of an `org.openscoring.common.ModelResponse` object:
 ```
 {
 	"result" : "Hello World!"

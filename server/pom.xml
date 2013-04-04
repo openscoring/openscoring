@@ -13,6 +13,11 @@
 
 	<dependencies>
 		<dependency>
+			<groupId>org.openscoring</groupId>
+			<artifactId>common</artifactId>
+		</dependency>
+
+		<dependency>
 			<groupId>org.jpmml</groupId>
 			<artifactId>pmml-model</artifactId>
 			<version>1.0.0</version>

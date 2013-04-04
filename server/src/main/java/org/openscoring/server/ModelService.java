@@ -10,6 +10,8 @@ import javax.servlet.http.*;
 import javax.ws.rs.*;
 import javax.ws.rs.core.*;
 
+import org.openscoring.common.*;
+
 import org.jpmml.evaluator.*;
 import org.jpmml.manager.*;
 

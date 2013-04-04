@@ -1,7 +1,7 @@
 /*
  * Copyright (c) 2013 University of Tartu
  */
-package org.openscoring.server;
+package org.openscoring.common;
 
 import java.util.*;
 
