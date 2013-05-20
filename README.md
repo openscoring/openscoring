@@ -41,7 +41,10 @@ The request body is the JSON serialized form of an `org.openscoring.common.Model
 The response body is the JSON serialized form of an `org.openscoring.common.ModelResponse` object:
 ```
 {
-	"result" : "Hello World!"
+	"result" :
+		{
+			"key" : "value"
+		}
 }
 ```
 

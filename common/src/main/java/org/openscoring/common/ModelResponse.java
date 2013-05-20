@@ -3,16 +3,18 @@
  */
 package org.openscoring.common;
 
+import java.util.*;
+
 public class ModelResponse {
 
-	private Object result = null;
+	private Map<String, Object> result = null;
 
 
-	public Object getResult(){
+	public Map<String, Object> getResult(){
 		return this.result;
 	}
 
-	public void setResult(Object result){
+	public void setResult(Map<String, Object> result){
 		this.result = result;
 	}
 }

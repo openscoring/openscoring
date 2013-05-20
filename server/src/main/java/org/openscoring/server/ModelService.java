@@ -54,7 +54,7 @@ public class ModelService {
 			throw new NotFoundException();
 		}
 
-		Object result;
+		ModelResponse response = new ModelResponse();
 
 		try {
 			PMMLManager manager = new PMMLManager(pmml);
@@ -63,25 +63,20 @@ public class ModelService {
 
 			Map<FieldName, Object> parameters = new LinkedHashMap<FieldName, Object>();
 
-			List<FieldName> names = evaluator.getActiveFields();
-			for(FieldName name : names){
-				DataField field = evaluator.getDataField(name);
+			List<FieldName> activeFields = evaluator.getActiveFields();
+			for(FieldName activeField : activeFields){
+				String input = request.getParameter(activeField.getValue());
 
-				String value = request.getParameter((field.getName()).getValue());
-				if(value == null){
-					continue;
-				}
-
-				parameters.put(name, ParameterUtil.parse(field, value));
+				parameters.put(activeField, evaluator.prepare(activeField, input));
 			}
 
-			result = evaluator.evaluate(parameters);
+			Map<FieldName, ?> result = evaluator.evaluate(parameters);
+
+			// XXX
+			response.setResult((Map)EvaluatorUtil.decode(result));
 		} catch(Exception e){
 			throw new WebApplicationException(e, Response.Status.INTERNAL_SERVER_ERROR);
 		}
-
-		ModelResponse response = new ModelResponse();
-		response.setResult(result);
 
 		return response;
 	}
