@@ -25,7 +25,7 @@ For a list of sample PMML files please take a look at [JPMML R/Rattle support mo
 
 ### GET - Obtain model summary information
 
-Query the model `DecisionTreeIris`
+Obtain the field definitions of the model `DecisionTreeIris`:
 ```
 curl -X GET http://localhost:8080/openscoring/model/DecisionTreeIris
 ```
@@ -38,7 +38,7 @@ The response body is the JSON serialized form of an `org.openscoring.common.Summ
 }
 ```
 
-Field definitions are read from the [Mining Schema element] (http://www.dmg.org/v4-1/MiningSchema.html) of the PMML document. The execution fails with HTTP status code "500 Internal Server Error" if the PMML document contains an unsupported model type.
+Field definitions are retrieved from the [Mining Schema element] (http://www.dmg.org/v4-1/MiningSchema.html) of the PMML document. The execution fails with HTTP status code "500 Internal Server Error" if the PMML document contains an unsupported model type.
 
 ### POST - Perform model evaluation
 
