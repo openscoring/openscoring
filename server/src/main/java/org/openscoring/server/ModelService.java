@@ -45,6 +45,30 @@ public class ModelService {
 		return "Model " + id + " deployed successfully";
 	}
 
+	@GET
+	@Produces(MediaType.APPLICATION_JSON)
+	public SummaryResponse summary(@PathParam("id") String id){
+		PMML pmml = ModelService.cache.get(id);
+		if(pmml == null){
+			throw new NotFoundException();
+		}
+
+		SummaryResponse response = new SummaryResponse();
+
+		try {
+			PMMLManager pmmlManager = new PMMLManager(pmml);
+
+			Evaluator evaluator = (Evaluator)pmmlManager.getModelManager(null, ModelEvaluatorFactory.getInstance());
+
+			response.setActiveFields(toValueList(evaluator.getActiveFields()));
+			response.setPredictedFields(toValueList(evaluator.getPredictedFields()));
+		} catch(Exception e){
+			throw new WebApplicationException(e, Response.Status.INTERNAL_SERVER_ERROR);
+		}
+
+		return response;
+	}
+
 	@POST
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
@@ -57,9 +81,9 @@ public class ModelService {
 		EvaluationResponse response = new EvaluationResponse();
 
 		try {
-			PMMLManager manager = new PMMLManager(pmml);
+			PMMLManager pmmlManager = new PMMLManager(pmml);
 
-			Evaluator evaluator = (Evaluator)manager.getModelManager(null, ModelEvaluatorFactory.getInstance());
+			Evaluator evaluator = (Evaluator)pmmlManager.getModelManager(null, ModelEvaluatorFactory.getInstance());
 
 			Map<FieldName, Object> parameters = new LinkedHashMap<FieldName, Object>();
 
@@ -90,6 +114,17 @@ public class ModelService {
 		}
 
 		return "Model " + id + " undeployed successfully";
+	}
+
+	static
+	private List<String> toValueList(List<FieldName> names){
+		List<String> result = new ArrayList<String>(names.size());
+
+		for(FieldName name : names){
+			result.add(name.getValue());
+		}
+
+		return result;
 	}
 
 	private static final Map<String, PMML> cache = new HashMap<String, PMML>();

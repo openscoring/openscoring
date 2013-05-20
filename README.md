@@ -23,7 +23,24 @@ curl -X PUT --data-binary @DecisionTreeIris.pmml -H "Content-type: text/xml" htt
 
 For a list of sample PMML files please take a look at [JPMML R/Rattle support module] (https://github.com/jpmml/jpmml/tree/master/pmml-rattle/src/test/resources/pmml) or [JPMML KNIME support module] (https://github.com/jpmml/jpmml/tree/master/pmml-knime/src/test/resources/pmml).
 
-### POST - Perform the evaluation
+### GET - Obtain model summary information
+
+Query the model `DecisionTreeIris`
+```
+curl -X GET http://localhost:8080/openscoring/model/DecisionTreeIris
+```
+
+The response body is the JSON serialized form of an `org.openscoring.common.SummaryResponse` object:
+```
+{
+	"activeFields" : ["Sepal.Length", "Sepal.Width", "Petal.Length", "Petal.Width"],
+	"predictedFields" : ["Species"]
+}
+```
+
+Field definitions are read from the [Mining Schema element] (http://www.dmg.org/v4-1/MiningSchema.html) of the PMML document. The execution fails with HTTP status code "500 Internal Server Error" if the PMML document contains an unsupported model type.
+
+### POST - Perform model evaluation
 
 Send the contents of the file JSON file `EvaluationRequest.json` for evaluation to the model `DecisionTreeIris`:
 ```
