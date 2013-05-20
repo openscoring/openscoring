@@ -56,10 +56,10 @@ public class ModelClient {
 
 		WebResource resource = client.resource(this.model);
 
-		ModelRequest request = new ModelRequest();
+		EvaluationRequest request = new EvaluationRequest();
 		request.setParameters(this.parameters);
 
-		ModelResponse response = resource.accept(MediaType.APPLICATION_JSON).entity(request, MediaType.APPLICATION_JSON).post(ModelResponse.class);
+		EvaluationResponse response = resource.accept(MediaType.APPLICATION_JSON).entity(request, MediaType.APPLICATION_JSON).post(EvaluationResponse.class);
 
 		System.out.println(response.getResult());
 	}

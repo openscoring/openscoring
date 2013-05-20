@@ -5,7 +5,7 @@ package org.openscoring.common;
 
 import java.util.*;
 
-public class ModelRequest {
+public class EvaluationRequest {
 
 	private Map<String, String> parameters = null;
 

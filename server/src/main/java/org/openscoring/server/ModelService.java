@@ -48,13 +48,13 @@ public class ModelService {
 	@POST
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
-	public ModelResponse evaluate(@PathParam("id") String id, ModelRequest request){
+	public EvaluationResponse evaluate(@PathParam("id") String id, EvaluationRequest request){
 		PMML pmml = ModelService.cache.get(id);
 		if(pmml == null){
 			throw new NotFoundException();
 		}
 
-		ModelResponse response = new ModelResponse();
+		EvaluationResponse response = new EvaluationResponse();
 
 		try {
 			PMMLManager manager = new PMMLManager(pmml);

@@ -5,7 +5,7 @@ package org.openscoring.common;
 
 import java.util.*;
 
-public class ModelResponse {
+public class EvaluationResponse {
 
 	private Map<String, Object> result = null;
 
