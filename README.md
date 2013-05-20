@@ -1,8 +1,8 @@
 # Getting started
 
-Build the project using Apache Maven2:
+Build the project using [Apache Maven] (http://maven.apache.org/):
 ```
-mvn clean package
+mvn clean install
 ```
 
 Change the working directory to `server` and start the embedded Jetty web server:
