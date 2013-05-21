@@ -51,10 +51,10 @@ The request body is the JSON serialized form of an `org.openscoring.common.Evalu
 ```
 {
 	"parameters" : {
-		"Sepal.Length" : "5.1",
-		"Sepal.Width" : "3.5",
-		"Petal.Length" : "1.4",
-		"Petal.Width" : "0.2"
+		"Sepal.Length" : 5.1,
+		"Sepal.Width" : 3.5,
+		"Petal.Length" : 1.4,
+		"Petal.Width" : 0.2
 	}
 }
 ```

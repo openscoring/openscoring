@@ -89,9 +89,9 @@ public class ModelService {
 
 			List<FieldName> activeFields = evaluator.getActiveFields();
 			for(FieldName activeField : activeFields){
-				String input = request.getParameter(activeField.getValue());
+				Object value = request.getParameter(activeField.getValue());
 
-				parameters.put(activeField, evaluator.prepare(activeField, input));
+				parameters.put(activeField, evaluator.prepare(activeField, value));
 			}
 
 			Map<FieldName, ?> result = evaluator.evaluate(parameters);
