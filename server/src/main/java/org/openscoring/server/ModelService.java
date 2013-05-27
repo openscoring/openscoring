@@ -62,6 +62,7 @@ public class ModelService {
 
 			response.setActiveFields(toValueList(evaluator.getActiveFields()));
 			response.setPredictedFields(toValueList(evaluator.getPredictedFields()));
+			response.setOutputFields(toValueList(evaluator.getOutputFields()));
 		} catch(Exception e){
 			throw new WebApplicationException(e, Response.Status.INTERNAL_SERVER_ERROR);
 		}

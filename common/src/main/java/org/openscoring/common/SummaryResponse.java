@@ -11,6 +11,8 @@ public class SummaryResponse {
 
 	private List<String> predictedFields = null;
 
+	private List<String> outputFields = null;
+
 
 	public List<String> getActiveFields(){
 		return this.activeFields;
@@ -26,5 +28,13 @@ public class SummaryResponse {
 
 	public void setPredictedFields(List<String> predictedFields){
 		this.predictedFields = predictedFields;
+	}
+
+	public List<String> getOutputFields(){
+		return this.outputFields;
+	}
+
+	public void setOutputFields(List<String> outputFields){
+		this.outputFields = outputFields;
 	}
 }

@@ -34,7 +34,8 @@ The response body is the JSON serialized form of an `org.openscoring.common.Summ
 ```
 {
 	"activeFields" : ["Sepal.Length", "Sepal.Width", "Petal.Length", "Petal.Width"],
-	"predictedFields" : ["Species"]
+	"predictedFields" : ["Species"],
+	"outputFields" : ["Predicted_Species", "Probability_setosa", "Probability_versicolor", "Probability_virginica"]
 }
 ```
 
@@ -64,7 +65,11 @@ The response body is the JSON serialized form of an `org.openscoring.common.Eval
 {
 	"result" :
 		{
-			"Species" : "setosa"
+			"Species" : "setosa",
+			"Predicted_Species" : "setosa",
+			"Probability_setosa" : 1.0,
+			"Probability_versicolor" : 0.0,
+			"Probability_virginica" : 0.0
 		}
 }
 ```
