@@ -19,10 +19,11 @@ import org.dmg.pmml.*;
 
 import com.sun.jersey.api.*;
 
-@Path("/model/{id}")
+@Path("model")
 public class ModelService {
 
 	@PUT
+	@Path("{id}")
 	@Consumes({MediaType.APPLICATION_XML, MediaType.TEXT_XML})
 	@Produces(MediaType.TEXT_PLAIN)
 	public String putModel(@PathParam("id") String id, @Context HttpServletRequest request){
@@ -46,6 +47,7 @@ public class ModelService {
 	}
 
 	@GET
+	@Path("{id}")
 	@Produces(MediaType.APPLICATION_JSON)
 	public SummaryResponse summary(@PathParam("id") String id){
 		PMML pmml = ModelService.cache.get(id);
@@ -71,6 +73,7 @@ public class ModelService {
 	}
 
 	@POST
+	@Path("{id}")
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
 	public EvaluationResponse evaluate(@PathParam("id") String id, EvaluationRequest request){
@@ -107,6 +110,7 @@ public class ModelService {
 	}
 
 	@DELETE
+	@Path("{id}")
 	@Produces(MediaType.TEXT_PLAIN)
 	public String deleteModel(@PathParam("id") String id){
 		PMML pmml = ModelService.cache.remove(id);
