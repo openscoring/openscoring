@@ -43,7 +43,11 @@ Field definitions are retrieved from the [Mining Schema element] (http://www.dmg
 
 ### POST - Perform model evaluation
 
-Send the contents of the file JSON file `EvaluationRequest.json` for evaluation to the model `DecisionTreeIris`:
+The evaluation can be performed either in single prediction mode or in batch prediction mode (see below). On average, the batch prediction mode is expected to provide better throughput.
+
+##### Single prediction mode
+
+Send the contents of the JSON file `EvaluationRequest.json` for evaluation to the model `DecisionTreeIris`:
 ```
 curl -X POST --data-binary @EvaluationRequest.json -H "Content-type: application/json" http://localhost:8080/openscoring/model/DecisionTreeIris
 ```
@@ -73,6 +77,17 @@ The response body is the JSON serialized form of an `org.openscoring.common.Eval
 		}
 }
 ```
+
+##### Batch prediction mode
+
+Send the contents of the JSON file `BatchEvaluationRequest.json` for evaluation to the model `DecisionTreeIris` (please note `/batch` at the end of the URL):
+```
+curl -X POST --data-binary @BatchEvaluationRequest.json -H "Content-type: application/json" http://localhost:8080/openscoring/model/DecisionTreeIris/batch
+```
+
+The request body is the JSON serialized form of **a list** of `org.openscoring.common.EvaluationRequest` objects. The number of list elements is not restricted.
+
+The response body is the JSON serialized form of **a list** of `org.openscoring.common.EvaluationResponse` objects.
 
 ### DELETE - Undeploy a model
 

@@ -77,36 +77,36 @@ public class ModelService {
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
 	public EvaluationResponse evaluate(@PathParam("id") String id, EvaluationRequest request){
+		return (evaluateBatch(id, Collections.singletonList(request))).get(0);
+	}
+
+	@POST
+	@Path("{id}/batch")
+	@Consumes(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.APPLICATION_JSON)
+	public List<EvaluationResponse> evaluateBatch(@PathParam("id") String id, List<EvaluationRequest> requests){
 		PMML pmml = ModelService.cache.get(id);
 		if(pmml == null){
 			throw new NotFoundException();
 		}
 
-		EvaluationResponse response = new EvaluationResponse();
+		List<EvaluationResponse> responses = new ArrayList<EvaluationResponse>();
 
 		try {
 			PMMLManager pmmlManager = new PMMLManager(pmml);
 
 			Evaluator evaluator = (Evaluator)pmmlManager.getModelManager(null, ModelEvaluatorFactory.getInstance());
 
-			Map<FieldName, Object> parameters = new LinkedHashMap<FieldName, Object>();
+			for(EvaluationRequest request : requests){
+				EvaluationResponse response = evaluate(evaluator, request);
 
-			List<FieldName> activeFields = evaluator.getActiveFields();
-			for(FieldName activeField : activeFields){
-				Object value = request.getParameter(activeField.getValue());
-
-				parameters.put(activeField, evaluator.prepare(activeField, value));
+				responses.add(response);
 			}
-
-			Map<FieldName, ?> result = evaluator.evaluate(parameters);
-
-			// XXX
-			response.setResult((Map)EvaluatorUtil.decode(result));
 		} catch(Exception e){
 			throw new WebApplicationException(e, Response.Status.INTERNAL_SERVER_ERROR);
 		}
 
-		return response;
+		return responses;
 	}
 
 	@DELETE
@@ -119,6 +119,27 @@ public class ModelService {
 		}
 
 		return "Model " + id + " undeployed successfully";
+	}
+
+	static
+	private EvaluationResponse evaluate(Evaluator evaluator, EvaluationRequest request){
+		EvaluationResponse response = new EvaluationResponse();
+
+		Map<FieldName, Object> parameters = new LinkedHashMap<FieldName, Object>();
+
+		List<FieldName> activeFields = evaluator.getActiveFields();
+		for(FieldName activeField : activeFields){
+			Object value = request.getParameter(activeField.getValue());
+
+			parameters.put(activeField, evaluator.prepare(activeField, value));
+		}
+
+		Map<FieldName, ?> result = evaluator.evaluate(parameters);
+
+		// XXX
+		response.setResult((Map)EvaluatorUtil.decode(result));
+
+		return response;
 	}
 
 	static
