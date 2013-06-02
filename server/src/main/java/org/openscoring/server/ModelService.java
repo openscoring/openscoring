@@ -26,7 +26,7 @@ public class ModelService {
 	@Path("{id}")
 	@Consumes({MediaType.APPLICATION_XML, MediaType.TEXT_XML})
 	@Produces(MediaType.TEXT_PLAIN)
-	public String putModel(@PathParam("id") String id, @Context HttpServletRequest request){
+	public String deploy(@PathParam("id") String id, @Context HttpServletRequest request){
 		PMML pmml;
 
 		try {
@@ -48,7 +48,7 @@ public class ModelService {
 
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
-	public List<String> list(){
+	public List<String> getDeployedIds(){
 		List<String> result = new ArrayList<String>(ModelService.cache.keySet());
 
 		return result;
@@ -57,7 +57,7 @@ public class ModelService {
 	@GET
 	@Path("{id}")
 	@Produces(MediaType.APPLICATION_JSON)
-	public SummaryResponse summary(@PathParam("id") String id){
+	public SummaryResponse getSummary(@PathParam("id") String id){
 		PMML pmml = ModelService.cache.get(id);
 		if(pmml == null){
 			throw new NotFoundException();
@@ -120,7 +120,7 @@ public class ModelService {
 	@DELETE
 	@Path("{id}")
 	@Produces(MediaType.TEXT_PLAIN)
-	public String deleteModel(@PathParam("id") String id){
+	public String undeploy(@PathParam("id") String id){
 		PMML pmml = ModelService.cache.remove(id);
 		if(pmml == null){
 			throw new NotFoundException();
