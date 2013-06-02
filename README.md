@@ -23,9 +23,25 @@ curl -X PUT --data-binary @DecisionTreeIris.pmml -H "Content-type: text/xml" htt
 
 For a list of sample PMML files please take a look at [JPMML R/Rattle support module] (https://github.com/jpmml/jpmml/tree/master/pmml-rattle/src/test/resources/pmml) or [JPMML KNIME support module] (https://github.com/jpmml/jpmml/tree/master/pmml-knime/src/test/resources/pmml).
 
-### GET - Obtain model summary information
+### GET - Obtain model information
 
-Obtain the field definitions of the model `DecisionTreeIris`:
+##### Get the list of deployed models
+
+Obtain the list of deployed models:
+```
+curl -X GET http://localhost:8080/openscoring/model
+```
+
+The response body is the JSON serialized form of a list of model identifiers:
+```
+[
+	"DecisionTreeIris"
+]
+```
+
+##### Get the description of a deployed model
+
+Obtain the description of the public interface of the model `DecisionTreeIris`:
 ```
 curl -X GET http://localhost:8080/openscoring/model/DecisionTreeIris
 ```
@@ -85,9 +101,9 @@ Send the contents of the JSON file `BatchEvaluationRequest.json` for evaluation 
 curl -X POST --data-binary @BatchEvaluationRequest.json -H "Content-type: application/json" http://localhost:8080/openscoring/model/DecisionTreeIris/batch
 ```
 
-The request body is the JSON serialized form of **a list** of `org.openscoring.common.EvaluationRequest` objects. The number of list elements is not restricted.
+The request body is the JSON serialized form of a list of `org.openscoring.common.EvaluationRequest` objects. The number of list elements is not restricted.
 
-The response body is the JSON serialized form of **a list** of `org.openscoring.common.EvaluationResponse` objects.
+The response body is the JSON serialized form of a list of `org.openscoring.common.EvaluationResponse` objects.
 
 ### DELETE - Undeploy a model
 

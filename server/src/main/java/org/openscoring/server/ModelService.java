@@ -47,6 +47,14 @@ public class ModelService {
 	}
 
 	@GET
+	@Produces(MediaType.APPLICATION_JSON)
+	public List<String> list(){
+		List<String> result = new ArrayList<String>(ModelService.cache.keySet());
+
+		return result;
+	}
+
+	@GET
 	@Path("{id}")
 	@Produces(MediaType.APPLICATION_JSON)
 	public SummaryResponse summary(@PathParam("id") String id){
