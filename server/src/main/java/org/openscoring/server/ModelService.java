@@ -19,6 +19,8 @@ import org.dmg.pmml.*;
 
 import com.sun.jersey.api.*;
 
+import org.supercsv.prefs.*;
+
 @Path("model")
 public class ModelService {
 
@@ -115,6 +117,44 @@ public class ModelService {
 		}
 
 		return responses;
+	}
+
+	@POST
+	@Path("{id}/csv")
+	@Consumes(MediaType.TEXT_PLAIN)
+	@Produces(MediaType.TEXT_PLAIN)
+	public void evaluateCsv(@PathParam("id") String id, @Context HttpServletRequest request, @Context HttpServletResponse response){
+		CsvPreference format;
+
+		List<EvaluationRequest> requests;
+
+		try {
+			BufferedReader reader = new BufferedReader(new InputStreamReader(request.getInputStream(), "UTF-8")); // XXX
+
+			try {
+				format = CsvUtil.getFormat(reader);
+
+				requests = CsvUtil.readTable(reader, format);
+			} finally {
+				reader.close();
+			}
+		} catch(Exception e){
+			throw new WebApplicationException(e, Response.Status.BAD_REQUEST);
+		}
+
+		List<EvaluationResponse> responses = evaluateBatch(id, requests);
+
+		try {
+			BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(response.getOutputStream(), "UTF-8")); // XXX
+
+			try {
+				CsvUtil.writeTable(writer, format, responses);
+			} finally {
+				writer.close();
+			}
+		} catch(Exception e){
+			throw new WebApplicationException(e, Response.Status.INTERNAL_SERVER_ERROR);
+		}
 	}
 
 	@DELETE

@@ -122,6 +122,29 @@ The request body is the JSON serialized form of a list of `org.openscoring.commo
 
 The response body is the JSON serialized form of a list of `org.openscoring.common.EvaluationResponse` objects.
 
+##### CSV prediction mode
+
+Send the contents of the CSV file `input.csv` for evaluation to model `DecisionTreeIris` (please note `/csv` at the end of the URL):
+```
+curl -X POST --data-binary @input.csv -H "Context-type: text/plain" http://localhost:8080/openscoring/model/DecisionTreeIris/csv
+```
+
+The request body is a CSV document containing active fields:
+```
+Sepal.Length,Sepal.Width,Petal.Length,Petal.Width
+5.1,3.5,1.4,0.2
+7,3.2,4.7,1.4
+6.3,3.3,6,2.5
+```
+
+The response body is a CSV document containing predicted and output fields:
+```
+Species,Predicted_Species,Probability_setosa,Probability_versicolor,Probability_virginica
+setosa,setosa,1.0,0.0,0.0
+versicolor,versicolor,0.0,0.9074074074074074,0.09259259259259259
+virginica,virginica,0.0,0.021739130434782608,0.9782608695652174
+```
+
 ### DELETE - Undeploy a model
 
 Undeploy the model `DecisionTreeIris`:
