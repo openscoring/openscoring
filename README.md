@@ -1,33 +1,33 @@
 # Getting started
 
-##### Build and installation
+### Development (Maven mode)
 
-Get the source code from the project page. Enter the root directory and build using [Apache Maven] (http://maven.apache.org/):
+Enter the project root directory and build using [Apache Maven] (http://maven.apache.org/):
 ```
 mvn clean install
 ```
 
-##### Running in Maven mode (test)
-
-Change the working directory to `server` and start the embedded Jetty web server:
+Change the working directory to `server` and run the embedded Jetty web server:
 ```
 mvn jetty:run
 ```
 
 This will start the openscoring web service at [localhost:8080] (http://localhost:8080/openscoring/)
 
-##### Running in standalone mode (production)
+### Production (standalone mode)
 
-The deployable WAR file `server-1.0-SNAPSHOT.war` is located in build directory `server/target`. Among other deployment options, this file can be directly executed using Jetty Runner.
+Download the latest version of Jetty Runner from the [Maven Central Repository] (http://repo1.maven.org/maven2/org/eclipse/jetty/jetty-runner/). Currently, this is version `9.0.3.v20130506`.
 
-Download the latest version of Jetty Runner from the [Maven Central Repository] (http://repo1.maven.org/maven2/org/eclipse/jetty/jetty-runner/). Currently, this is the version `9.0.3.v20130506`. Execute the Jetty Runner JAR file by first specifying the web application context path `/openscoring` and second the name of the WAR file:
+Download the latest version of the openscoring server WAR file from the [Maven Central Repository] (http://central.maven.org/maven2/org/openscoring/server/). Currently, this is version `1.0.0`.
+
+Execute the Jetty Runner JAR file by first specifying the web application context path `/openscoring` and second the path of the openscoring server WAR file:
 ```
-java -jar jetty-runner-9.0.3.v20130506.jar --path /openscoring server-1.0-SNAPSHOT.war
+java -jar jetty-runner-9.0.3.v20130506.jar --path /openscoring server-1.0.0.war
 ```
 
 Again, this will start the openscoring web service at [localhost:8080] (http://localhost:8080/openscoring).
 
-Please see the [Jetty Runner documentation] (http://www.eclipse.org/jetty/documentation/current/jetty-runner.html) for more configuration options such as using the secure HTTPS connector.
+Please see the [Jetty Runner documentation] (http://www.eclipse.org/jetty/documentation/current/jetty-runner.html) for more specific configuration options.
 
 # REST API
 
