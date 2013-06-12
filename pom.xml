@@ -6,6 +6,18 @@
 	<version>1.0-SNAPSHOT</version>
 	<packaging>pom</packaging>
 
+	<organization>
+		<name>University of Tartu</name>
+		<url>http://www.ut.ee/en</url>
+	</organization>
+	<licenses>
+		<license>
+			<name>New BSD License</name>
+			<url>http://www.opensource.org/licenses/bsd-license.php</url>
+			<distribution>repo</distribution>
+		</license>
+	</licenses>
+
 	<modules>
 		<module>client</module>
 		<module>common</module>
