@@ -10,7 +10,7 @@
 
 	<groupId>org.openscoring</groupId>
 	<artifactId>openscoring</artifactId>
-	<version>1.0-SNAPSHOT</version>
+	<version>1.0.0</version>
 	<packaging>pom</packaging>
 
 	<name>OpenScoring</name>
@@ -46,7 +46,7 @@
 		<connection>scm:git:git@github.com:jpmml/openscoring.git</connection>
 		<developerConnection>scm:git:git@github.com:jpmml/openscoring.git</developerConnection>
 		<url>git://github.com/jpmml/openscoring.git</url>
-	  <tag>HEAD</tag>
+	  <tag>1.0.0</tag>
   </scm>
 	<issueManagement>
 		<system>GitHub</system>
@@ -58,17 +58,17 @@
 			<dependency>
 				<groupId>org.openscoring</groupId>
 				<artifactId>client</artifactId>
-				<version>1.0-SNAPSHOT</version>
+				<version>1.0.0</version>
 			</dependency>
 			<dependency>
 				<groupId>org.openscoring</groupId>
 				<artifactId>common</artifactId>
-				<version>1.0-SNAPSHOT</version>
+				<version>1.0.0</version>
 			</dependency>
 			<dependency>
 				<groupId>org.openscoring</groupId>
 				<artifactId>server</artifactId>
-				<version>1.0-SNAPSHOT</version>
+				<version>1.0.0</version>
 			</dependency>
 		</dependencies>
 	</dependencyManagement>
