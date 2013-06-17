@@ -1,4 +1,4 @@
-# Getting started #
+# Usage #
 
 ## Development (embedded mode) ##
 
@@ -151,3 +151,7 @@ Undeploy the model `DecisionTreeIris`:
 ```
 curl -X DELETE http://localhost:8080/openscoring/model/DecisionTreeIris
 ```
+
+# Contact and Support #
+
+Please use the e-mail displayed at [GitHub profile page] (https://github.com/jpmml)
