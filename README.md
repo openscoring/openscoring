@@ -68,7 +68,7 @@ The response body is the JSON serialized form of an `org.openscoring.common.Summ
 {
 	"activeFields" : ["Sepal.Length", "Sepal.Width", "Petal.Length", "Petal.Width"],
 	"predictedFields" : ["Species"],
-	"outputFields" : ["Predicted_Species", "Probability_setosa", "Probability_versicolor", "Probability_virginica"]
+	"outputFields" : ["Predicted_Species", "Probability_setosa", "Probability_versicolor", "Probability_virginica", "Node_Id"]
 }
 ```
 
@@ -106,7 +106,8 @@ The response body is the JSON serialized form of an `org.openscoring.common.Eval
 			"Predicted_Species" : "setosa",
 			"Probability_setosa" : 1.0,
 			"Probability_versicolor" : 0.0,
-			"Probability_virginica" : 0.0
+			"Probability_virginica" : 0.0,
+			"Node_Id" : "2"
 		}
 }
 ```
@@ -139,10 +140,10 @@ Sepal.Length,Sepal.Width,Petal.Length,Petal.Width
 
 The response body is a CSV document containing predicted and output fields:
 ```
-Species,Predicted_Species,Probability_setosa,Probability_versicolor,Probability_virginica
-setosa,setosa,1.0,0.0,0.0
-versicolor,versicolor,0.0,0.9074074074074074,0.09259259259259259
-virginica,virginica,0.0,0.021739130434782608,0.9782608695652174
+Species,Predicted_Species,Probability_setosa,Probability_versicolor,Probability_virginica,Node_Id
+setosa,setosa,1.0,0.0,0.0,2
+versicolor,versicolor,0.0,0.9074074074074074,0.09259259259259259,6
+virginica,virginica,0.0,0.021739130434782608,0.9782608695652174,7
 ```
 
 ### DELETE - Undeploy a model
