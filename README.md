@@ -126,7 +126,7 @@ The response body is the JSON serialized form of a list of `org.openscoring.comm
 
 Send the contents of the CSV file `input.csv` for evaluation to model `DecisionTreeIris` (please note `/csv` at the end of the URL):
 ```
-curl -X POST --data-binary @input.csv -H "Context-type: text/plain" http://localhost:8080/openscoring/model/DecisionTreeIris/csv
+curl -X POST --data-binary @input.csv -H "Content-type: text/plain" http://localhost:8080/openscoring/model/DecisionTreeIris/csv
 ```
 
 The request body is a CSV document containing active fields:
