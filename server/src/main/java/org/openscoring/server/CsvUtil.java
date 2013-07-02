@@ -71,13 +71,13 @@ public class CsvUtil {
 		String[] header = parser.getHeader(true);
 
 		while(true){
-			Map<String, String> parameters = parser.read(header);
-			if(parameters == null){
+			Map<String, String> arguments = parser.read(header);
+			if(arguments == null){
 				break;
 			}
 
 			EvaluationRequest request = new EvaluationRequest();
-			request.setParameters(parameters);
+			request.setArguments(arguments);
 
 			requests.add(request);
 		}

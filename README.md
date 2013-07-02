@@ -88,7 +88,7 @@ curl -X POST --data-binary @EvaluationRequest.json -H "Content-type: application
 The request body is the JSON serialized form of an `org.openscoring.common.EvaluationRequest` object:
 ```
 {
-	"parameters" : {
+	"arguments" : {
 		"Sepal.Length" : 5.1,
 		"Sepal.Width" : 3.5,
 		"Petal.Length" : 1.4,

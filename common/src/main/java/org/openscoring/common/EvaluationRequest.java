@@ -7,18 +7,18 @@ import java.util.*;
 
 public class EvaluationRequest {
 
-	private Map<String, ?> parameters = null;
+	private Map<String, ?> arguments = null;
 
 
-	public Object getParameter(String key){
-		return this.parameters.get(key);
+	public Object getArgument(String key){
+		return this.arguments.get(key);
 	}
 
-	public Map<String, ?> getParameters(){
-		return this.parameters;
+	public Map<String, ?> getArguments(){
+		return this.arguments;
 	}
 
-	public void setParameters(Map<String, ?> parameters){
-		this.parameters = parameters;
+	public void setArguments(Map<String, ?> arguments){
+		this.arguments = arguments;
 	}
 }

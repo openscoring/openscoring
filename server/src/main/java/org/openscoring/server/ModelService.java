@@ -173,16 +173,16 @@ public class ModelService {
 	private EvaluationResponse evaluate(Evaluator evaluator, EvaluationRequest request){
 		EvaluationResponse response = new EvaluationResponse();
 
-		Map<FieldName, Object> parameters = new LinkedHashMap<FieldName, Object>();
+		Map<FieldName, Object> arguments = new LinkedHashMap<FieldName, Object>();
 
 		List<FieldName> activeFields = evaluator.getActiveFields();
 		for(FieldName activeField : activeFields){
-			Object value = request.getParameter(activeField.getValue());
+			Object value = request.getArgument(activeField.getValue());
 
-			parameters.put(activeField, evaluator.prepare(activeField, value));
+			arguments.put(activeField, evaluator.prepare(activeField, value));
 		}
 
-		Map<FieldName, ?> result = evaluator.evaluate(parameters);
+		Map<FieldName, ?> result = evaluator.evaluate(arguments);
 
 		// XXX
 		response.setResult((Map)EvaluatorUtil.decode(result));

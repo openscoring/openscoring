@@ -25,9 +25,9 @@ public class ModelClient {
 
 	@DynamicParameter (
 		names = {"-P"},
-		description = "Model parameters. For example, -Pkey=value"
+		description = "Model arguments. For example, -Pkey=value"
 	)
-	private Map<String, String> parameters = new LinkedHashMap<String, String>();
+	private Map<String, String> arguments = new LinkedHashMap<String, String>();
 
 
 	static
@@ -57,7 +57,7 @@ public class ModelClient {
 		WebResource resource = client.resource(this.model);
 
 		EvaluationRequest request = new EvaluationRequest();
-		request.setParameters(this.parameters);
+		request.setArguments(this.arguments);
 
 		EvaluationResponse response = resource.accept(MediaType.APPLICATION_JSON).entity(request, MediaType.APPLICATION_JSON).post(EvaluationResponse.class);
 
