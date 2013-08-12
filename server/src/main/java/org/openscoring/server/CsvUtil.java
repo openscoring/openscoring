@@ -96,7 +96,7 @@ public class CsvUtil {
 		String[] header = null;
 
 		for(EvaluationResponse response : responses){
-			Map<String, Object> result = response.getResult();
+			Map<String, ?> result = response.getResult();
 
 			if(header == null){
 				Set<String> keys = result.keySet();

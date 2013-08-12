@@ -185,8 +185,7 @@ public class ModelService {
 
 		Map<FieldName, ?> result = evaluator.evaluate(arguments);
 
-		// XXX
-		response.setResult((Map)EvaluatorUtil.decode(result));
+		response.setResult(EvaluatorUtil.decode(result));
 
 		return response;
 	}

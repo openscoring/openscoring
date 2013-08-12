@@ -7,14 +7,14 @@ import java.util.*;
 
 public class EvaluationResponse {
 
-	private Map<String, Object> result = null;
+	private Map<String, ?> result = null;
 
 
-	public Map<String, Object> getResult(){
+	public Map<String, ?> getResult(){
 		return this.result;
 	}
 
-	public void setResult(Map<String, Object> result){
+	public void setResult(Map<String, ?> result){
 		this.result = result;
 	}
 }
