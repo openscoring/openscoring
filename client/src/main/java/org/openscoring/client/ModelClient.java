@@ -10,6 +10,7 @@ import javax.ws.rs.core.*;
 import org.openscoring.common.*;
 
 import com.beust.jcommander.*;
+import com.google.common.collect.*;
 import com.sun.jersey.api.client.*;
 import com.sun.jersey.api.client.config.*;
 
@@ -27,7 +28,7 @@ public class ModelClient {
 		names = {"-P"},
 		description = "Model arguments. For example, -Pkey=value"
 	)
-	private Map<String, String> arguments = new LinkedHashMap<String, String>();
+	private Map<String, String> arguments = Maps.newLinkedHashMap();
 
 
 	static

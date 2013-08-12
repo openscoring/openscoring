@@ -17,6 +17,7 @@ import org.jpmml.manager.*;
 
 import org.dmg.pmml.*;
 
+import com.google.common.collect.*;
 import com.sun.jersey.api.*;
 
 import org.supercsv.prefs.*;
@@ -173,7 +174,7 @@ public class ModelService {
 	private EvaluationResponse evaluate(Evaluator evaluator, EvaluationRequest request){
 		EvaluationResponse response = new EvaluationResponse();
 
-		Map<FieldName, Object> arguments = new LinkedHashMap<FieldName, Object>();
+		Map<FieldName, Object> arguments = Maps.newLinkedHashMap();
 
 		List<FieldName> activeFields = evaluator.getActiveFields();
 		for(FieldName activeField : activeFields){
@@ -192,7 +193,7 @@ public class ModelService {
 
 	static
 	private List<String> toValueList(List<FieldName> names){
-		List<String> result = new ArrayList<String>(names.size());
+		List<String> result = Lists.newArrayListWithCapacity(names.size());
 
 		for(FieldName name : names){
 			result.add(name.getValue());
@@ -201,5 +202,5 @@ public class ModelService {
 		return result;
 	}
 
-	private static final Map<String, PMML> cache = new HashMap<String, PMML>();
+	private static final Map<String, PMML> cache = Maps.newLinkedHashMap();
 }

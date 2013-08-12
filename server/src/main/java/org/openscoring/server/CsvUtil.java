@@ -8,6 +8,8 @@ import java.util.*;
 
 import org.openscoring.common.*;
 
+import com.google.common.collect.*;
+
 import org.supercsv.io.*;
 import org.supercsv.prefs.*;
 
@@ -64,7 +66,7 @@ public class CsvUtil {
 
 	static
 	public List<EvaluationRequest> readTable(BufferedReader reader, CsvPreference format) throws IOException {
-		List<EvaluationRequest> requests = new ArrayList<EvaluationRequest>();
+		List<EvaluationRequest> requests = Lists.newArrayList();
 
 		CsvMapReader parser = new CsvMapReader(reader, format);
 
