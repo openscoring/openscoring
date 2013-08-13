@@ -74,6 +74,7 @@ public class ModelService {
 			Evaluator evaluator = (Evaluator)pmmlManager.getModelManager(null, ModelEvaluatorFactory.getInstance());
 
 			response.setActiveFields(toValueList(evaluator.getActiveFields()));
+			response.setGroupFields(toValueList(evaluator.getGroupFields()));
 			response.setPredictedFields(toValueList(evaluator.getPredictedFields()));
 			response.setOutputFields(toValueList(evaluator.getOutputFields()));
 		} catch(Exception e){
@@ -88,7 +89,11 @@ public class ModelService {
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
 	public EvaluationResponse evaluate(@PathParam("id") String id, EvaluationRequest request){
-		return (evaluateBatch(id, Collections.singletonList(request))).get(0);
+		List<EvaluationRequest> requests = Collections.singletonList(request);
+
+		List<EvaluationResponse> responses = evaluateBatch(id, requests);
+
+		return responses.get(0);
 	}
 
 	@POST
@@ -107,6 +112,17 @@ public class ModelService {
 			PMMLManager pmmlManager = new PMMLManager(pmml);
 
 			Evaluator evaluator = (Evaluator)pmmlManager.getModelManager(null, ModelEvaluatorFactory.getInstance());
+
+			List<FieldName> groupFields = evaluator.getGroupFields();
+			if(groupFields.size() == 1){
+				FieldName groupField = groupFields.get(0);
+
+				requests = aggregateRequests(groupField.getValue(), requests);
+			} else
+
+			if(groupFields.size() > 1){
+				throw new EvaluationException();
+			}
 
 			for(EvaluationRequest request : requests){
 				EvaluationResponse response = evaluate(evaluator, request);
@@ -180,10 +196,34 @@ public class ModelService {
 		for(FieldName activeField : activeFields){
 			Object value = request.getArgument(activeField.getValue());
 
-			arguments.put(activeField, evaluator.prepare(activeField, value));
+			Object preparedValue;
+
+			if(value instanceof Collection){
+				List<Object> preparedValues = Lists.newArrayList();
+
+				Collection<?> rawValues = (Collection<?>)value;
+				for(Object rawValue : rawValues){
+					preparedValues.add(evaluator.prepare(activeField, rawValue));
+				}
+
+				preparedValue = preparedValues;
+			} else
+
+			{
+				preparedValue = evaluator.prepare(activeField, value);
+			}
+
+			arguments.put(activeField, preparedValue);
 		}
 
 		Map<FieldName, ?> result = evaluator.evaluate(arguments);
+
+		Set<FieldName> resultFields = Sets.newLinkedHashSet();
+		resultFields.addAll(evaluator.getPredictedFields());
+		resultFields.addAll(evaluator.getOutputFields());
+
+		// Deliver promised fields only
+		(result.keySet()).retainAll(resultFields);
 
 		response.setResult(EvaluatorUtil.decode(result));
 
@@ -199,6 +239,52 @@ public class ModelService {
 		}
 
 		return result;
+	}
+
+	static
+	private List<EvaluationRequest> aggregateRequests(String groupKey, List<EvaluationRequest> requests){
+		Map<Object, ListMultimap<String, Object>> groupedArguments = Maps.newLinkedHashMap();
+
+		for(EvaluationRequest request : requests){
+			Map<String, ?> arguments = request.getArguments();
+
+			Object groupValue = arguments.get(groupKey);
+
+			ListMultimap<String, Object> groupedArgumentMap = groupedArguments.get(groupValue);
+			if(groupedArgumentMap == null){
+				groupedArgumentMap = ArrayListMultimap.create();
+
+				groupedArguments.put(groupValue, groupedArgumentMap);
+			}
+
+			Collection<? extends Map.Entry<String, ?>> entries = arguments.entrySet();
+			for(Map.Entry<String, ?> entry : entries){
+				groupedArgumentMap.put(entry.getKey(), entry.getValue());
+			}
+		}
+
+		// Only continue with request modification when there is a clear need for it
+		if(groupedArguments.size() == requests.size()){
+			return requests;
+		}
+
+		List<EvaluationRequest> resultRequests = Lists.newArrayList();
+
+		Collection<Map.Entry<Object, ListMultimap<String, Object>>> entries = groupedArguments.entrySet();
+		for(Map.Entry<Object, ListMultimap<String, Object>> entry : entries){
+			Map<String, Object> arguments = Maps.newLinkedHashMap();
+			arguments.putAll((entry.getValue()).asMap());
+
+			// The value of the "group by" column is a single Object, not a Collection (ie. java.util.List) of Objects
+			arguments.put(groupKey, entry.getKey());
+
+			EvaluationRequest resultRequest = new EvaluationRequest();
+			resultRequest.setArguments(arguments);
+
+			resultRequests.add(resultRequest);
+		}
+
+		return resultRequests;
 	}
 
 	private static final Map<String, PMML> cache = Maps.newLinkedHashMap();
