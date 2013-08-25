@@ -13,6 +13,7 @@ import javax.ws.rs.core.*;
 import org.openscoring.common.*;
 
 import org.jpmml.evaluator.*;
+import org.jpmml.evaluator.FieldValue;
 import org.jpmml.manager.*;
 
 import org.dmg.pmml.*;
@@ -196,21 +197,39 @@ public class ModelService {
 		for(FieldName activeField : activeFields){
 			Object value = request.getArgument(activeField.getValue());
 
-			Object preparedValue;
+			FieldValue preparedValue;
 
 			if(value instanceof Collection){
-				List<Object> preparedValues = Lists.newArrayList();
+				List<Object> values = Lists.newArrayList();
+
+				DataType dataType = null;
+
+				OpType opType = null;
 
 				Collection<?> rawValues = (Collection<?>)value;
 				for(Object rawValue : rawValues){
-					preparedValues.add(evaluator.prepare(activeField, rawValue));
+					FieldValue result = evaluator.prepare(activeField, rawValue);
+					if(result != null){
+
+						if(dataType == null){
+							dataType = result.getDataType();
+						} // End if
+
+						if(opType == null){
+							opType = result.getOpType();
+						}
+					}
+
+					values.add(FieldValueUtil.getValue(result));
 				}
 
-				preparedValue = preparedValues;
+				preparedValue = FieldValueUtil.create(dataType, opType, values);
 			} else
 
 			{
-				preparedValue = evaluator.prepare(activeField, value);
+				FieldValue result = evaluator.prepare(activeField, value);
+
+				preparedValue = result;
 			}
 
 			arguments.put(activeField, preparedValue);
