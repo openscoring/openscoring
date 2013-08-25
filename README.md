@@ -16,13 +16,13 @@ This will start the openscoring web service at [localhost:8080] (http://localhos
 
 ## Production (standalone mode) ##
 
-Download the latest version of Jetty Runner (currently `9.0.4.v20130625`) from the [Maven Central Repository] (http://repo1.maven.org/maven2/org/eclipse/jetty/jetty-runner/).
+Download the latest version of Jetty Runner (currently `9.0.5.v20130815`) from the [Maven Central Repository] (http://repo1.maven.org/maven2/org/eclipse/jetty/jetty-runner/).
 
 Additionally, download the latest version of the openscoring server WAR file (currently `1.0.2`) from the [Maven Central Repository] (http://central.maven.org/maven2/org/openscoring/server/).
 
 Execute the Jetty Runner JAR file:
 ```
-java -jar jetty-runner-9.0.4.v20130625.jar --path /openscoring server-1.0.2.war
+java -jar jetty-runner-9.0.5.v20130815.jar --path /openscoring server-1.0.2.war
 ```
 
 Again, this will start the openscoring web service at [localhost:8080] (http://localhost:8080/openscoring).
