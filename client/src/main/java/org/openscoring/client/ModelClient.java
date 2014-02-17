@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013 University of Tartu
+ * Copyright (c) 2013 Villu Ruusmann
  */
 package org.openscoring.client;
 
