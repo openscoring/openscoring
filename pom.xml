@@ -10,7 +10,7 @@
 
 	<groupId>org.openscoring</groupId>
 	<artifactId>openscoring</artifactId>
-	<version>1.0-SNAPSHOT</version>
+	<version>1.1-SNAPSHOT</version>
 	<packaging>pom</packaging>
 
 	<name>OpenScoring</name>
@@ -58,17 +58,17 @@
 			<dependency>
 				<groupId>org.openscoring</groupId>
 				<artifactId>client</artifactId>
-				<version>1.0-SNAPSHOT</version>
+				<version>1.1-SNAPSHOT</version>
 			</dependency>
 			<dependency>
 				<groupId>org.openscoring</groupId>
 				<artifactId>common</artifactId>
-				<version>1.0-SNAPSHOT</version>
+				<version>1.1-SNAPSHOT</version>
 			</dependency>
 			<dependency>
 				<groupId>org.openscoring</groupId>
 				<artifactId>server</artifactId>
-				<version>1.0-SNAPSHOT</version>
+				<version>1.1-SNAPSHOT</version>
 			</dependency>
 
 			<dependency>
