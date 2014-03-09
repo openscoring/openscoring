@@ -1,5 +1,20 @@
 /*
  * Copyright (c) 2013 Villu Ruusmann
+ *
+ * This file is part of Openscoring
+ *
+ * Openscoring is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * Openscoring is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with Openscoring.  If not, see <http://www.gnu.org/licenses/>.
  */
 package org.openscoring.server;
 
@@ -9,12 +24,13 @@ import java.util.*;
 import javax.servlet.http.*;
 import javax.ws.rs.*;
 import javax.ws.rs.core.*;
+import javax.xml.transform.*;
 
 import org.openscoring.common.*;
 
 import org.jpmml.evaluator.*;
-import org.jpmml.evaluator.FieldValue;
 import org.jpmml.manager.*;
+import org.jpmml.model.*;
 
 import org.dmg.pmml.*;
 
@@ -22,6 +38,8 @@ import com.google.common.collect.*;
 import com.sun.jersey.api.*;
 
 import org.supercsv.prefs.*;
+
+import org.xml.sax.*;
 
 @Path("model")
 public class ModelService {
@@ -37,7 +55,9 @@ public class ModelService {
 			InputStream is = request.getInputStream();
 
 			try {
-				pmml = IOUtil.unmarshal(is);
+				Source source = ImportFilter.apply(new InputSource(is));
+
+				pmml = JAXBUtil.unmarshalPMML(source);
 			} finally {
 				is.close();
 			}
@@ -76,7 +96,7 @@ public class ModelService {
 
 			response.setActiveFields(toValueList(evaluator.getActiveFields()));
 			response.setGroupFields(toValueList(evaluator.getGroupFields()));
-			response.setPredictedFields(toValueList(evaluator.getPredictedFields()));
+			response.setTargetFields(toValueList(evaluator.getTargetFields()));
 			response.setOutputFields(toValueList(evaluator.getOutputFields()));
 		} catch(Exception e){
 			throw new WebApplicationException(e, Response.Status.INTERNAL_SERVER_ERROR);
@@ -240,7 +260,7 @@ public class ModelService {
 			}
 		}
 
-		// Only continue with request modification when there is a clear need for it
+		// Only continue with request modification if there is a clear need to do so
 		if(groupedArguments.size() == requests.size()){
 			return requests;
 		}

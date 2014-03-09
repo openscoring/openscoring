@@ -68,7 +68,7 @@ The response body is the JSON serialized form of an `org.openscoring.common.Summ
 {
 	"activeFields" : ["Sepal.Length", "Sepal.Width", "Petal.Length", "Petal.Width"],
 	"groupFields" : []
-	"predictedFields" : ["Species"],
+	"targetFields" : ["Species"],
 	"outputFields" : ["Predicted_Species", "Probability_setosa", "Probability_versicolor", "Probability_virginica", "Node_Id"]
 }
 ```
@@ -139,7 +139,7 @@ Sepal.Length,Sepal.Width,Petal.Length,Petal.Width
 6.3,3.3,6,2.5
 ```
 
-The response body is a CSV document containing predicted and output fields:
+The response body is a CSV document containing target and output fields:
 ```
 Species,Predicted_Species,Probability_setosa,Probability_versicolor,Probability_virginica,Node_Id
 setosa,setosa,1.0,0.0,0.0,2
@@ -154,6 +154,10 @@ Undeploy the model `DecisionTreeIris`:
 curl -X DELETE http://localhost:8080/openscoring/model/DecisionTreeIris
 ```
 
-# Contact and Support #
+# License #
 
-Please use the e-mail displayed at [GitHub profile page] (https://github.com/jpmml)
+Openscoring is dual-licensed under the [GNU Affero General Public License (AGPL) version 3.0] (http://www.gnu.org/licenses/agpl-3.0.html) and a commercial license.
+
+# Additional information #
+
+Please contact [info@openscoring.io] (mailto:info@openscoring.io)

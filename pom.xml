@@ -17,14 +17,10 @@
 	<description>REST web service for scoring PMML models</description>
 	<url>http://www.openscoring.org</url>
 
-	<organization>
-		<name>OpenScoring</name>
-		<url>http://www.openscoring.org</url>
-	</organization>
 	<licenses>
 		<license>
-			<name>New BSD License</name>
-			<url>http://www.opensource.org/licenses/bsd-license.php</url>
+			<name>GNU Affero General Public License (AGPL) version 3.0</name>
+			<url>http://www.gnu.org/licenses/agpl-3.0.html</url>
 			<distribution>repo</distribution>
 		</license>
 	</licenses>
@@ -69,6 +65,12 @@
 				<groupId>org.openscoring</groupId>
 				<artifactId>server</artifactId>
 				<version>1.1-SNAPSHOT</version>
+			</dependency>
+
+			<dependency>
+				<groupId>com.beust</groupId>
+				<artifactId>jcommander</artifactId>
+				<version>1.35</version>
 			</dependency>
 
 			<dependency>
