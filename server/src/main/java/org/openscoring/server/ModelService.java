@@ -32,10 +32,11 @@ import org.jpmml.evaluator.*;
 import org.jpmml.manager.*;
 import org.jpmml.model.*;
 
-import org.dmg.pmml.*;
-
 import com.google.common.collect.*;
+
 import com.sun.jersey.api.*;
+
+import org.dmg.pmml.*;
 
 import org.supercsv.prefs.*;
 
