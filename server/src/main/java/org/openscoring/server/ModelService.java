@@ -33,6 +33,7 @@ import org.jpmml.manager.*;
 import org.jpmml.model.*;
 
 import com.google.common.collect.*;
+import com.google.inject.*;
 
 import com.sun.jersey.api.*;
 
@@ -44,6 +45,14 @@ import org.xml.sax.*;
 
 @Path("model")
 public class ModelService {
+
+	private ModelRegistry registry = null;
+
+
+	@Inject
+	public ModelService(ModelRegistry registry){
+		this.registry = registry;
+	}
 
 	@PUT
 	@Path("{id}")
@@ -66,7 +75,7 @@ public class ModelService {
 			throw new WebApplicationException(e, Response.Status.BAD_REQUEST);
 		}
 
-		ModelService.registry.put(id, pmml);
+		this.registry.put(id, pmml);
 
 		return "Model " + id + " deployed successfully";
 	}
@@ -74,7 +83,7 @@ public class ModelService {
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
 	public List<String> getDeployedIds(){
-		List<String> result = new ArrayList<String>(ModelService.registry.idSet());
+		List<String> result = new ArrayList<String>(this.registry.idSet());
 
 		return result;
 	}
@@ -83,7 +92,7 @@ public class ModelService {
 	@Path("{id}")
 	@Produces(MediaType.APPLICATION_JSON)
 	public SummaryResponse getSummary(@PathParam("id") String id){
-		PMML pmml = ModelService.registry.get(id);
+		PMML pmml = this.registry.get(id);
 		if(pmml == null){
 			throw new NotFoundException();
 		}
@@ -123,7 +132,7 @@ public class ModelService {
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
 	public List<EvaluationResponse> evaluateBatch(@PathParam("id") String id, List<EvaluationRequest> requests){
-		PMML pmml = ModelService.registry.get(id);
+		PMML pmml = this.registry.get(id);
 		if(pmml == null){
 			throw new NotFoundException();
 		}
@@ -200,7 +209,7 @@ public class ModelService {
 	@Path("{id}")
 	@Produces(MediaType.TEXT_PLAIN)
 	public String undeploy(@PathParam("id") String id){
-		PMML pmml = ModelService.registry.remove(id);
+		PMML pmml = this.registry.remove(id);
 		if(pmml == null){
 			throw new NotFoundException();
 		}
@@ -284,6 +293,4 @@ public class ModelService {
 
 		return resultRequests;
 	}
-
-	private static final ModelRegistry registry = new ModelRegistry();
 }
