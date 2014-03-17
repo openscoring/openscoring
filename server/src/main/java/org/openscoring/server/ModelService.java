@@ -65,7 +65,7 @@ public class ModelService {
 			throw new WebApplicationException(e, Response.Status.BAD_REQUEST);
 		}
 
-		ModelService.cache.put(id, pmml);
+		ModelService.registry.put(id, pmml);
 
 		return "Model " + id + " deployed successfully";
 	}
@@ -73,7 +73,7 @@ public class ModelService {
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
 	public List<String> getDeployedIds(){
-		List<String> result = new ArrayList<String>(ModelService.cache.keySet());
+		List<String> result = new ArrayList<String>(ModelService.registry.idSet());
 
 		return result;
 	}
@@ -82,7 +82,7 @@ public class ModelService {
 	@Path("{id}")
 	@Produces(MediaType.APPLICATION_JSON)
 	public SummaryResponse getSummary(@PathParam("id") String id){
-		PMML pmml = ModelService.cache.get(id);
+		PMML pmml = ModelService.registry.get(id);
 		if(pmml == null){
 			throw new NotFoundException();
 		}
@@ -122,7 +122,7 @@ public class ModelService {
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
 	public List<EvaluationResponse> evaluateBatch(@PathParam("id") String id, List<EvaluationRequest> requests){
-		PMML pmml = ModelService.cache.get(id);
+		PMML pmml = ModelService.registry.get(id);
 		if(pmml == null){
 			throw new NotFoundException();
 		}
@@ -199,7 +199,7 @@ public class ModelService {
 	@Path("{id}")
 	@Produces(MediaType.TEXT_PLAIN)
 	public String undeploy(@PathParam("id") String id){
-		PMML pmml = ModelService.cache.remove(id);
+		PMML pmml = ModelService.registry.remove(id);
 		if(pmml == null){
 			throw new NotFoundException();
 		}
@@ -284,5 +284,5 @@ public class ModelService {
 		return resultRequests;
 	}
 
-	private static final Map<String, PMML> cache = Maps.newLinkedHashMap();
+	private static final ModelRegistry registry = new ModelRegistry();
 }
