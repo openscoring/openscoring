@@ -20,6 +20,8 @@ package org.openscoring.server;
 
 import java.util.*;
 
+import org.openscoring.service.*;
+
 import com.google.common.collect.*;
 import com.google.inject.*;
 import com.google.inject.servlet.*;

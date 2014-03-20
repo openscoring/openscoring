@@ -36,6 +36,7 @@
 		<module>client</module>
 		<module>common</module>
 		<module>server</module>
+		<module>service</module>
 	</modules>
 
 	<scm>
@@ -64,6 +65,11 @@
 			<dependency>
 				<groupId>org.openscoring</groupId>
 				<artifactId>server</artifactId>
+				<version>1.1-SNAPSHOT</version>
+			</dependency>
+			<dependency>
+				<groupId>org.openscoring</groupId>
+				<artifactId>service</artifactId>
 				<version>1.1-SNAPSHOT</version>
 			</dependency>
 
@@ -114,6 +120,13 @@
 				<groupId>com.sun.jersey.contribs</groupId>
 				<artifactId>jersey-guice</artifactId>
 				<version>1.18.1</version>
+			</dependency>
+
+			<dependency>
+				<groupId>javax.servlet</groupId>
+				<artifactId>servlet-api</artifactId>
+				<version>2.5</version>
+				<scope>provided</scope>
 			</dependency>
 		</dependencies>
 	</dependencyManagement>

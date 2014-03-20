@@ -9,11 +9,10 @@
 	</parent>
 
 	<groupId>org.openscoring</groupId>
-	<artifactId>server</artifactId>
-	<packaging>war</packaging>
+	<artifactId>service</artifactId>
 
-	<name>OpenScoring Server</name>
-	<description>Web application</description>
+	<name>OpenScoring Service</name>
+	<description>REST web service</description>
 
 	<licenses>
 		<license>
@@ -26,21 +25,37 @@
 	<dependencies>
 		<dependency>
 			<groupId>org.openscoring</groupId>
-			<artifactId>service</artifactId>
+			<artifactId>common</artifactId>
 		</dependency>
 
 		<dependency>
-			<groupId>com.google.inject.extensions</groupId>
-			<artifactId>guice-servlet</artifactId>
+			<groupId>org.jpmml</groupId>
+			<artifactId>pmml-evaluator</artifactId>
+			<version>1.1.1</version>
+		</dependency>
+
+		<dependency>
+			<groupId>com.google.guava</groupId>
+			<artifactId>guava</artifactId>
 		</dependency>
 
 		<dependency>
 			<groupId>com.sun.jersey</groupId>
-			<artifactId>jersey-servlet</artifactId>
+			<artifactId>jersey-json</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>com.sun.jersey</groupId>
+			<artifactId>jersey-server</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>com.sun.jersey.contribs</groupId>
 			<artifactId>jersey-guice</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>net.sf.supercsv</groupId>
+			<artifactId>super-csv</artifactId>
+			<version>2.1.0</version>
 		</dependency>
 
 		<dependency>
@@ -50,17 +65,5 @@
 	</dependencies>
 
 	<build>
-		<plugins>
-			<plugin>
-				<groupId>org.eclipse.jetty</groupId>
-				<artifactId>jetty-maven-plugin</artifactId>
-				<version>9.0.7.v20131107</version>
-				<configuration>
-					<webApp>
-						<contextPath>/openscoring</contextPath>
-					</webApp>
-				</configuration>
-			</plugin>
-		</plugins>
 	</build>
 </project>

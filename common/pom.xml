@@ -13,7 +13,7 @@
 	<packaging>jar</packaging>
 
 	<name>OpenScoring Common</name>
-	<description>Shared functionality between client and server modules</description>
+	<description>Shared functionality between client and service modules</description>
 
 	<licenses>
 		<license>
