@@ -10,10 +10,9 @@
 
 	<groupId>org.openscoring</groupId>
 	<artifactId>server</artifactId>
-	<packaging>war</packaging>
 
 	<name>OpenScoring Server</name>
-	<description>Web application</description>
+	<description>Command-line server application</description>
 
 	<licenses>
 		<license>
@@ -30,17 +29,17 @@
 		</dependency>
 
 		<dependency>
-			<groupId>com.google.inject.extensions</groupId>
-			<artifactId>guice-servlet</artifactId>
+			<groupId>com.beust</groupId>
+			<artifactId>jcommander</artifactId>
 		</dependency>
 
 		<dependency>
-			<groupId>com.sun.jersey</groupId>
-			<artifactId>jersey-servlet</artifactId>
+			<groupId>org.eclipse.jetty</groupId>
+			<artifactId>jetty-server</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>com.sun.jersey.contribs</groupId>
-			<artifactId>jersey-guice</artifactId>
+			<groupId>org.eclipse.jetty</groupId>
+			<artifactId>jetty-servlet</artifactId>
 		</dependency>
 
 		<dependency>
@@ -52,14 +51,38 @@
 	<build>
 		<plugins>
 			<plugin>
-				<groupId>org.eclipse.jetty</groupId>
-				<artifactId>jetty-maven-plugin</artifactId>
-				<version>9.0.7.v20131107</version>
-				<configuration>
-					<webApp>
-						<contextPath>/openscoring</contextPath>
-					</webApp>
-				</configuration>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-shade-plugin</artifactId>
+				<version>1.4</version>
+				<executions>
+					<execution>
+						<phase>package</phase>
+						<goals>
+							<goal>shade</goal>
+						</goals>
+						<configuration>
+							<createDependencyReducedPom>false</createDependencyReducedPom>
+							<filters>
+								<filter>
+									<artifact>*:*</artifact>
+									<excludes>
+										<exclude>META-INF/*.SF</exclude>
+										<exclude>META-INF/*.DSA</exclude>
+										<exclude>META-INF/*.RSA</exclude>
+									</excludes>
+								</filter>
+							</filters>
+							<outputFile>${project.build.directory}/${project.artifactId}-executable-${project.version}.jar</outputFile>
+							<transformers>
+								<transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
+									<mainClass>org.openscoring.server.Main</mainClass>
+								</transformer>
+								<!-- See http://java.net/jira/browse/JERSEY-440 -->
+								<transformer implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer"/>
+							</transformers>
+						</configuration>
+					</execution>
+				</executions>
 			</plugin>
 		</plugins>
 	</build>

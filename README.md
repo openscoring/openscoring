@@ -1,33 +1,21 @@
-# Usage #
+Openscoring
+===========
 
-## Development (embedded mode) ##
+REST web service for scoring PMML models.
+
+# Usage #
 
 Enter the project root directory and build using [Apache Maven] (http://maven.apache.org/):
 ```
 mvn clean install
 ```
 
-Change the working directory to `server` and run the embedded Jetty web server:
+The build produces an executable uber-JAR file `server/target/server-executable-1.1-SNAPSHOT.jar`. The main class of the application `org.openscoring.server.Main` can be automatically loaded and executed by specifying the `-jar` command-line option:
 ```
-mvn jetty:run
-```
-
-This will start the openscoring web service at [localhost:8080] (http://localhost:8080/openscoring/)
-
-## Production (standalone mode) ##
-
-Download the latest version of Jetty Runner (currently `9.0.7.v20131107`) from the [Maven Central Repository] (http://repo1.maven.org/maven2/org/eclipse/jetty/jetty-runner/).
-
-Additionally, download the latest version of the openscoring server WAR file (currently `1.1.0`) from the [Maven Central Repository] (http://central.maven.org/maven2/org/openscoring/server/).
-
-Execute the Jetty Runner JAR file:
-```
-java -jar jetty-runner-9.0.7.v20131107.jar --path /openscoring server-1.1.0.war
+java -jar server-executable-1.1-SNAPSHOT.jar
 ```
 
-Again, this will start the openscoring web service at [localhost:8080] (http://localhost:8080/openscoring).
-
-Please see the [Jetty Runner documentation] (http://www.eclipse.org/jetty/documentation/current/jetty-runner.html) for more specific configuration options such as using the secure HTTPS connector.
+By default, the REST web service is started at [http://localhost:8080/openscoring] (http://localhost:8080/openscoring/). The port number and context path can be configured by specifying the `--port` and `--context-path` command-line options, respectively.
 
 # REST API #
 
