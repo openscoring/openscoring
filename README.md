@@ -142,6 +142,21 @@ Undeploy the model `DecisionTreeIris`:
 curl -X DELETE http://localhost:8080/openscoring/model/DecisionTreeIris
 ```
 
+# Command-line client applications #
+
+Additionally, the build produces an executable uber-JAR file `client/target/client-executable-1.1-SNAPSHOT.jar` which contains a number of command-line client applications.
+
+The following sequence of commands handles the life cycle of a model `DecisionTreeIris`:
+```
+java -cp client-executable-1.1-SNAPSHOT.jar org.openscoring.client.Deployer --model http://localhost:8080/openscoring/model/DecisionTreeIris --file DecisionTreeIris.pmml
+
+java -cp client-executable-1.1-SNAPSHOT.jar org.openscoring.client.Evaluator --model http://localhost:8080/openscoring/model/DecisionTreeIris -XSepal.Length=5.1 -XSepal.Width=3.5 -XPetal.Length=1.4 -XPetal.Width=0.2
+
+java -cp client-executable-1.1-SNAPSHOT.jar org.openscoring.client.CsvEvaluator --model http://localhost:8080/openscoring/model/DecisionTreeIris --input input.csv --output output.csv
+
+java -cp client-executable-1.1-SNAPSHOT.jar org.openscoring.client.Undeployer --model http://localhost:8080/openscoring/model/DecisionTreeIris
+```
+
 # License #
 
 Openscoring is dual-licensed under the [GNU Affero General Public License (AGPL) version 3.0] (http://www.gnu.org/licenses/agpl-3.0.html) and a commercial license.

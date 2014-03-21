@@ -24,49 +24,42 @@ import javax.ws.rs.core.*;
 
 import org.openscoring.common.*;
 
-import com.beust.jcommander.*;
 import com.google.common.collect.*;
+
 import com.sun.jersey.api.client.*;
 import com.sun.jersey.api.client.config.*;
 
+import com.beust.jcommander.*;
+
 import org.codehaus.jackson.jaxrs.*;
 
-public class ModelClient {
+public class Evaluator extends Application {
 
 	@Parameter (
 		names = {"--model"},
-		description = "The URI of the model"
+		description = "The URI of the model",
+		required = true
 	)
 	private String model = null;
 
 	@DynamicParameter (
-		names = {"-P"},
-		description = "Model arguments. For example, -Pkey=value"
+		names = {"-X"},
+		description = "Model arguments. For example, -Xkey=value"
 	)
 	private Map<String, String> arguments = Maps.newLinkedHashMap();
 
 
 	static
 	public void main(String... args) throws Exception {
-		ModelClient client = new ModelClient();
-
-		JCommander commander = new JCommander(client);
-		commander.setProgramName(ModelClient.class.getName());
-
-		try {
-			commander.parse(args);
-		} catch(ParameterException pe){
-			commander.usage();
-
-			System.exit(-1);
-		}
-
-		client.run();
+		run(Evaluator.class, args);
 	}
 
+	@Override
 	public void run(){
 		ClientConfig config = new DefaultClientConfig();
-		(config.getClasses()).add(JacksonJsonProvider.class);
+
+		Set<Class<?>> clazzes = config.getClasses();
+		clazzes.add(JacksonJsonProvider.class);
 
 		Client client = Client.create(config);
 
@@ -78,5 +71,7 @@ public class ModelClient {
 		EvaluationResponse response = resource.accept(MediaType.APPLICATION_JSON).entity(request, MediaType.APPLICATION_JSON).post(EvaluationResponse.class);
 
 		System.out.println(response.getResult());
+
+		client.destroy();
 	}
 }
