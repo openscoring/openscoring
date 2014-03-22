@@ -80,7 +80,7 @@ public class CsvUtil {
 	}
 
 	static
-	public List<EvaluationRequest> readTable(BufferedReader reader, CsvPreference format) throws IOException {
+	public List<EvaluationRequest> readTable(BufferedReader reader, CsvPreference format, String idColumn) throws IOException {
 		List<EvaluationRequest> requests = Lists.newArrayList();
 
 		CsvMapReader parser = new CsvMapReader(reader, format);
@@ -93,7 +93,9 @@ public class CsvUtil {
 				break;
 			}
 
-			EvaluationRequest request = new EvaluationRequest();
+			String id = arguments.remove(idColumn);
+
+			EvaluationRequest request = new EvaluationRequest(id);
 			request.setArguments(arguments);
 
 			requests.add(request);
@@ -105,13 +107,17 @@ public class CsvUtil {
 	}
 
 	static
-	public void writeTable(BufferedWriter writer, CsvPreference format, List<EvaluationResponse> responses) throws IOException {
+	public void writeTable(BufferedWriter writer, CsvPreference format, String idColumn, List<EvaluationResponse> responses) throws IOException {
 		CsvMapWriter formatter = new CsvMapWriter(writer, format);
 
 		String[] header = null;
 
 		for(EvaluationResponse response : responses){
 			Map<String, ?> result = response.getResult();
+
+			if(idColumn != null){
+				result = join(Collections.<String, String>singletonMap(idColumn, response.getId()), result);
+			} // End if
 
 			if(header == null){
 				Set<String> keys = result.keySet();
@@ -126,5 +132,14 @@ public class CsvUtil {
 
 		formatter.flush();
 		formatter.close();
+	}
+
+	static
+	private Map<String, ?> join(Map<String, ?> left, Map<String, ?> right){
+		Map<String, Object> result = Maps.newLinkedHashMap();
+		result.putAll(left);
+		result.putAll(right);
+
+		return result;
 	}
 }

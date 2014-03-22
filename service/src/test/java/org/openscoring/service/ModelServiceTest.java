@@ -168,7 +168,7 @@ public class ModelServiceTest {
 			BufferedReader reader = new BufferedReader(new InputStreamReader(is, "UTF-8"));
 
 			try {
-				return CsvUtil.readTable(reader, CsvPreference.TAB_PREFERENCE);
+				return CsvUtil.readTable(reader, CsvPreference.TAB_PREFERENCE, "Id");
 			} finally {
 				reader.close();
 			}

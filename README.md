@@ -115,25 +115,25 @@ The response body is the JSON serialized form of a list of `org.openscoring.comm
 
 ##### CSV prediction mode
 
-Send the contents of the CSV file `input.csv` for evaluation to model `DecisionTreeIris` (please note `/csv` at the end of the URL):
+Send the contents of the CSV file `input.csv` for evaluation to model `DecisionTreeIris` (please note `/csv` at the end of the path component of the URL):
 ```
-curl -X POST --data-binary @input.csv -H "Content-type: text/plain" http://localhost:8080/openscoring/model/DecisionTreeIris/csv
+curl -X POST --data-binary @input.csv -H "Content-type: text/plain" "http://localhost:8080/openscoring/model/DecisionTreeIris/csv?idColumn=Id"
 ```
 
 The request body is a CSV document containing active fields:
 ```
-Sepal.Length,Sepal.Width,Petal.Length,Petal.Width
-5.1,3.5,1.4,0.2
-7,3.2,4.7,1.4
-6.3,3.3,6,2.5
+Id,Sepal.Length,Sepal.Width,Petal.Length,Petal.Width
+1,5.1,3.5,1.4,0.2
+2,7,3.2,4.7,1.4
+3,6.3,3.3,6,2.5
 ```
 
 The response body is a CSV document containing target and output fields:
 ```
-Species,Predicted_Species,Probability_setosa,Probability_versicolor,Probability_virginica,Node_Id
-setosa,setosa,1.0,0.0,0.0,2
-versicolor,versicolor,0.0,0.9074074074074074,0.09259259259259259,6
-virginica,virginica,0.0,0.021739130434782608,0.9782608695652174,7
+Id,Species,Predicted_Species,Probability_setosa,Probability_versicolor,Probability_virginica,Node_Id
+1,setosa,setosa,1.0,0.0,0.0,2
+2,versicolor,versicolor,0.0,0.9074074074074074,0.09259259259259259,6
+3,virginica,virginica,0.0,0.021739130434782608,0.9782608695652174,7
 ```
 
 ### DELETE - Undeploy a model
@@ -153,7 +153,7 @@ java -cp client-executable-1.1-SNAPSHOT.jar org.openscoring.client.Deployer --mo
 
 java -cp client-executable-1.1-SNAPSHOT.jar org.openscoring.client.Evaluator --model http://localhost:8080/openscoring/model/DecisionTreeIris -XSepal.Length=5.1 -XSepal.Width=3.5 -XPetal.Length=1.4 -XPetal.Width=0.2
 
-java -cp client-executable-1.1-SNAPSHOT.jar org.openscoring.client.CsvEvaluator --model http://localhost:8080/openscoring/model/DecisionTreeIris --input input.csv --output output.csv
+java -cp client-executable-1.1-SNAPSHOT.jar org.openscoring.client.CsvEvaluator --model http://localhost:8080/openscoring/model/DecisionTreeIris --input input.csv --output output.csv --id-column Id
 
 java -cp client-executable-1.1-SNAPSHOT.jar org.openscoring.client.Undeployer --model http://localhost:8080/openscoring/model/DecisionTreeIris
 ```

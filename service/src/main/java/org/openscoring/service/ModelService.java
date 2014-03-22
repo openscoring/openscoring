@@ -171,7 +171,7 @@ public class ModelService {
 	@Path("{id}/csv")
 	@Consumes(MediaType.TEXT_PLAIN)
 	@Produces(MediaType.TEXT_PLAIN)
-	public void evaluateCsv(@PathParam("id") String id, @Context HttpServletRequest request, @Context HttpServletResponse response){
+	public void evaluateCsv(@PathParam("id") String id, @Context HttpServletRequest request, @QueryParam("idColumn") String idColumn, @Context HttpServletResponse response){
 		CsvPreference format;
 
 		List<EvaluationRequest> requests;
@@ -182,7 +182,7 @@ public class ModelService {
 			try {
 				format = CsvUtil.getFormat(reader);
 
-				requests = CsvUtil.readTable(reader, format);
+				requests = CsvUtil.readTable(reader, format, idColumn);
 			} finally {
 				reader.close();
 			}
@@ -196,7 +196,7 @@ public class ModelService {
 			BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(response.getOutputStream(), "UTF-8")); // XXX
 
 			try {
-				CsvUtil.writeTable(writer, format, responses);
+				CsvUtil.writeTable(writer, format, ((requests.size() == responses.size()) ? idColumn : null), responses);
 			} finally {
 				writer.close();
 			}
