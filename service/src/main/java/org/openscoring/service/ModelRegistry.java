@@ -28,7 +28,7 @@ import com.google.inject.*;
 @Singleton
 public class ModelRegistry {
 
-	private Map<String, PMML> models = Maps.newTreeMap(new Comparator<String>(){
+	private Map<String, PMML> models = Maps.<String, String, PMML>newTreeMap(new Comparator<String>(){
 
 		@Override
 		public int compare(String left, String right){
