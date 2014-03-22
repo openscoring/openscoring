@@ -1,4 +1,4 @@
-Openscoring
+Openscoring [![Build Status](https://travis-ci.org/jpmml/openscoring.png?branch=master)](https://travis-ci.org/jpmml/openscoring)
 ===========
 
 REST web service for scoring PMML models.
