@@ -76,7 +76,7 @@ public class CsvUtil {
 			}
 		}
 
-		return (columns > 2);
+		return (columns > 1);
 	}
 
 	static

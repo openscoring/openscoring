@@ -1,0 +1,6 @@
+Recommendation	Exclusive_Recommendation	Rule_Association
+[1, 3]	[1]	[3]
+[1, 2, 3, 4, 5]	[3, 4, 5]	[1, 2]
+[2, 5]	[2, 5]	[]
+[1, 2, 3, 4, 5]	[4, 5]	[1, 2, 3]
+[1, 2, 3, 4, 5]	[3, 4, 5]	[1, 2]

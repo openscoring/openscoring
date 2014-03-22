@@ -218,7 +218,7 @@ public class ModelService {
 	}
 
 	static
-	private EvaluationResponse evaluate(Evaluator evaluator, EvaluationRequest request){
+	protected EvaluationResponse evaluate(Evaluator evaluator, EvaluationRequest request){
 		EvaluationResponse response = new EvaluationResponse();
 
 		Map<FieldName, Object> arguments = Maps.newLinkedHashMap();
@@ -238,18 +238,7 @@ public class ModelService {
 	}
 
 	static
-	private List<String> toValueList(List<FieldName> names){
-		List<String> result = Lists.newArrayListWithCapacity(names.size());
-
-		for(FieldName name : names){
-			result.add(name.getValue());
-		}
-
-		return result;
-	}
-
-	static
-	private List<EvaluationRequest> aggregateRequests(String groupKey, List<EvaluationRequest> requests){
+	protected List<EvaluationRequest> aggregateRequests(String groupKey, List<EvaluationRequest> requests){
 		Map<Object, ListMultimap<String, Object>> groupedArguments = Maps.newLinkedHashMap();
 
 		for(EvaluationRequest request : requests){
@@ -292,5 +281,16 @@ public class ModelService {
 		}
 
 		return resultRequests;
+	}
+
+	static
+	private List<String> toValueList(List<FieldName> names){
+		List<String> result = Lists.newArrayListWithCapacity(names.size());
+
+		for(FieldName name : names){
+			result.add(name.getValue());
+		}
+
+		return result;
 	}
 }
