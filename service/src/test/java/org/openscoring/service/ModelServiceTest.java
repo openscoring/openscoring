@@ -187,7 +187,7 @@ public class ModelServiceTest {
 		List<EvaluationResponse> responses = Lists.newArrayList();
 
 		for(EvaluationRequest request : requests){
-			EvaluationResponse response = new EvaluationResponse();
+			EvaluationResponse response = new EvaluationResponse(request.getId());
 			response.setResult(request.getArguments());
 
 			responses.add(response);

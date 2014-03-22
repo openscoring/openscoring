@@ -22,11 +22,28 @@ import java.util.*;
 
 public class EvaluationRequest {
 
+	private String id = null;
+
 	private Map<String, ?> arguments = null;
 
 
+	public EvaluationRequest(){
+	}
+
+	public EvaluationRequest(String id){
+		setId(id);
+	}
+
 	public Object getArgument(String key){
 		return this.arguments.get(key);
+	}
+
+	public String getId(){
+		return this.id;
+	}
+
+	public void setId(String id){
+		this.id = id;
 	}
 
 	public Map<String, ?> getArguments(){

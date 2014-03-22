@@ -219,7 +219,7 @@ public class ModelService {
 
 	static
 	protected EvaluationResponse evaluate(Evaluator evaluator, EvaluationRequest request){
-		EvaluationResponse response = new EvaluationResponse();
+		EvaluationResponse response = new EvaluationResponse(request.getId());
 
 		Map<FieldName, Object> arguments = Maps.newLinkedHashMap();
 

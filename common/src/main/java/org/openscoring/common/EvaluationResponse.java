@@ -22,8 +22,25 @@ import java.util.*;
 
 public class EvaluationResponse {
 
+	private String id = null;
+
 	private Map<String, ?> result = null;
 
+
+	public EvaluationResponse(){
+	}
+
+	public EvaluationResponse(String id){
+		setId(id);
+	}
+
+	public String getId(){
+		return this.id;
+	}
+
+	public void setId(String id){
+		this.id = id;
+	}
 
 	public Map<String, ?> getResult(){
 		return this.result;

@@ -77,6 +77,7 @@ curl -X POST --data-binary @EvaluationRequest.json -H "Content-type: application
 The request body is the JSON serialized form of an `org.openscoring.common.EvaluationRequest` object:
 ```
 {
+	"id" : "example-001",
 	"arguments" : {
 		"Sepal.Length" : 5.1,
 		"Sepal.Width" : 3.5,
@@ -89,15 +90,15 @@ The request body is the JSON serialized form of an `org.openscoring.common.Evalu
 The response body is the JSON serialized form of an `org.openscoring.common.EvaluationResponse` object:
 ```
 {
-	"result" :
-		{
-			"Species" : "setosa",
-			"Predicted_Species" : "setosa",
-			"Probability_setosa" : 1.0,
-			"Probability_versicolor" : 0.0,
-			"Probability_virginica" : 0.0,
-			"Node_Id" : "2"
-		}
+	"id" : "example-001",
+	"result" : {
+		"Species" : "setosa",
+		"Predicted_Species" : "setosa",
+		"Probability_setosa" : 1.0,
+		"Probability_versicolor" : 0.0,
+		"Probability_virginica" : 0.0,
+		"Node_Id" : "2"
+	}
 }
 ```
 
