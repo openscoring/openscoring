@@ -1,0 +1,29 @@
+[
+	{
+		"id" : "example-001",
+		"arguments" : {
+			"Sepal.Length" : 5.1,
+			"Sepal.Width" : 3.5,
+			"Petal.Length" : 1.4,
+			"Petal.Width" : 0.2
+		}
+	},
+	{
+		"id" : "example-002",
+		"arguments" : {
+			"Sepal.Length" : 7,
+			"Sepal.Width" : 3.2,
+			"Petal.Length" : 4.7,
+			"Petal.Width" : 1.4
+		}
+	},
+	{
+		"id" : "example-003",
+		"arguments" : {
+			"Sepal.Length" : 6.3,
+			"Sepal.Width" : 3.3,
+			"Petal.Length" : 6,
+			"Petal.Width" : 2.5
+		}
+	}
+]

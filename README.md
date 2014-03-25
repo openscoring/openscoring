@@ -26,7 +26,7 @@ Deploy the contents of the PMML file `DecisionTreeIris.pmml` as a model `Decisio
 curl -X PUT --data-binary @DecisionTreeIris.pmml -H "Content-type: text/xml" http://localhost:8080/openscoring/model/DecisionTreeIris
 ```
 
-For a list of sample PMML files please take a look at [JPMML R/Rattle support module] (https://github.com/jpmml/jpmml/tree/master/pmml-rattle/src/test/resources/pmml) or [JPMML KNIME support module] (https://github.com/jpmml/jpmml/tree/master/pmml-knime/src/test/resources/pmml).
+The example PMML file `DecisionTreeIris.pmml` along with example JSON and CSV files is available in the `server/etc` directory.
 
 ### GET - Obtain model information
 
@@ -123,17 +123,17 @@ curl -X POST --data-binary @input.csv -H "Content-type: text/plain" "http://loca
 The request body is a CSV document containing active fields:
 ```
 Id,Sepal.Length,Sepal.Width,Petal.Length,Petal.Width
-1,5.1,3.5,1.4,0.2
-2,7,3.2,4.7,1.4
-3,6.3,3.3,6,2.5
+example-001,5.1,3.5,1.4,0.2
+example-002,7,3.2,4.7,1.4
+example-003,6.3,3.3,6,2.5
 ```
 
 The response body is a CSV document containing target and output fields:
 ```
 Id,Species,Predicted_Species,Probability_setosa,Probability_versicolor,Probability_virginica,Node_Id
-1,setosa,setosa,1.0,0.0,0.0,2
-2,versicolor,versicolor,0.0,0.9074074074074074,0.09259259259259259,6
-3,virginica,virginica,0.0,0.021739130434782608,0.9782608695652174,7
+example-001,setosa,setosa,1.0,0.0,0.0,2
+example-002,versicolor,versicolor,0.0,0.9074074074074074,0.09259259259259259,6
+example-003,virginica,virginica,0.0,0.021739130434782608,0.9782608695652174,7
 ```
 
 ### DELETE - Undeploy a model
