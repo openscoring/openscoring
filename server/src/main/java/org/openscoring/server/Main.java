@@ -28,6 +28,7 @@ import com.google.common.collect.*;
 import com.google.inject.*;
 import com.google.inject.servlet.*;
 
+import com.sun.jersey.api.json.*;
 import com.sun.jersey.guice.*;
 import com.sun.jersey.guice.spi.container.servlet.*;
 
@@ -97,7 +98,7 @@ public class Main {
 				bind(ModelService.class);
 
 				Map<String, String> config = Maps.newLinkedHashMap();
-				config.put("com.sun.jersey.api.json.POJOMappingFeature", "true");
+				config.put(JSONConfiguration.FEATURE_POJO_MAPPING, "true");
 
 				serve("/*").with(GuiceContainer.class, config);
 			}
