@@ -25,6 +25,7 @@ import org.openscoring.common.*;
 
 import com.google.common.collect.*;
 
+import org.supercsv.encoder.*;
 import org.supercsv.io.*;
 import org.supercsv.prefs.*;
 
@@ -37,8 +38,9 @@ public class CsvUtil {
 	public CsvPreference getFormat(BufferedReader reader) throws IOException {
 		reader.mark(10 * 1024);
 
-		CsvPreference[] formats = {CsvPreference.EXCEL_PREFERENCE, CsvPreference.EXCEL_NORTH_EUROPE_PREFERENCE, CsvPreference.TAB_PREFERENCE};
-		for(CsvPreference format : formats){
+		CsvPreference[] templates = {CsvPreference.EXCEL_PREFERENCE, CsvPreference.EXCEL_NORTH_EUROPE_PREFERENCE, CsvPreference.TAB_PREFERENCE};
+		for(CsvPreference template : templates){
+			CsvPreference format = createFormat(template);
 
 			try {
 				if(checkFormat(reader, format)){
@@ -50,6 +52,14 @@ public class CsvUtil {
 		}
 
 		throw new IOException("Unrecognized CSV format");
+	}
+
+	static
+	private CsvPreference createFormat(CsvPreference template){
+		CsvPreference.Builder builder = new CsvPreference.Builder(template);
+		builder.useEncoder(new DefaultCsvEncoder());
+
+		return builder.build();
 	}
 
 	static
