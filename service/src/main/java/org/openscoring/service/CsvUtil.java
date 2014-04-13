@@ -80,9 +80,7 @@ public class CsvUtil {
 			} else
 
 			{
-				columns = -1;
-
-				break;
+				return false;
 			}
 		}
 
