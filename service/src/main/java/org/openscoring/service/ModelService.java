@@ -122,7 +122,7 @@ public class ModelService {
 	public EvaluationResponse evaluate(@PathParam("id") String id, EvaluationRequest request){
 		List<EvaluationRequest> requests = Collections.singletonList(request);
 
-		List<EvaluationResponse> responses = evaluateBatch(id, requests);
+		List<EvaluationResponse> responses = doBatch(id, requests);
 
 		return responses.get(0);
 	}
@@ -132,6 +132,60 @@ public class ModelService {
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
 	public List<EvaluationResponse> evaluateBatch(@PathParam("id") String id, List<EvaluationRequest> requests){
+		return doBatch(id, requests);
+	}
+
+	@POST
+	@Path("{id}/csv")
+	@Consumes(MediaType.TEXT_PLAIN)
+	@Produces(MediaType.TEXT_PLAIN)
+	public void evaluateCsv(@PathParam("id") String id, @Context HttpServletRequest request, @QueryParam("idColumn") String idColumn, @Context HttpServletResponse response){
+		CsvPreference format;
+
+		List<EvaluationRequest> requests;
+
+		try {
+			BufferedReader reader = new BufferedReader(new InputStreamReader(request.getInputStream(), "UTF-8")); // XXX
+
+			try {
+				format = CsvUtil.getFormat(reader);
+
+				requests = CsvUtil.readTable(reader, format, idColumn);
+			} finally {
+				reader.close();
+			}
+		} catch(Exception e){
+			throw new WebApplicationException(e, Response.Status.BAD_REQUEST);
+		}
+
+		List<EvaluationResponse> responses = doBatch(id, requests);
+
+		try {
+			BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(response.getOutputStream(), "UTF-8")); // XXX
+
+			try {
+				CsvUtil.writeTable(writer, format, ((requests.size() == responses.size()) ? idColumn : null), responses);
+			} finally {
+				writer.close();
+			}
+		} catch(Exception e){
+			throw new WebApplicationException(e, Response.Status.INTERNAL_SERVER_ERROR);
+		}
+	}
+
+	@DELETE
+	@Path("{id}")
+	@Produces(MediaType.TEXT_PLAIN)
+	public String undeploy(@PathParam("id") String id){
+		PMML pmml = this.registry.remove(id);
+		if(pmml == null){
+			throw new NotFoundException();
+		}
+
+		return "Model " + id + " undeployed successfully";
+	}
+
+	private List<EvaluationResponse> doBatch(String id, List<EvaluationRequest> requests){
 		PMML pmml = this.registry.get(id);
 		if(pmml == null){
 			throw new NotFoundException();
@@ -165,76 +219,6 @@ public class ModelService {
 		}
 
 		return responses;
-	}
-
-	@POST
-	@Path("{id}/csv")
-	@Consumes(MediaType.TEXT_PLAIN)
-	@Produces(MediaType.TEXT_PLAIN)
-	public void evaluateCsv(@PathParam("id") String id, @Context HttpServletRequest request, @QueryParam("idColumn") String idColumn, @Context HttpServletResponse response){
-		CsvPreference format;
-
-		List<EvaluationRequest> requests;
-
-		try {
-			BufferedReader reader = new BufferedReader(new InputStreamReader(request.getInputStream(), "UTF-8")); // XXX
-
-			try {
-				format = CsvUtil.getFormat(reader);
-
-				requests = CsvUtil.readTable(reader, format, idColumn);
-			} finally {
-				reader.close();
-			}
-		} catch(Exception e){
-			throw new WebApplicationException(e, Response.Status.BAD_REQUEST);
-		}
-
-		List<EvaluationResponse> responses = evaluateBatch(id, requests);
-
-		try {
-			BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(response.getOutputStream(), "UTF-8")); // XXX
-
-			try {
-				CsvUtil.writeTable(writer, format, ((requests.size() == responses.size()) ? idColumn : null), responses);
-			} finally {
-				writer.close();
-			}
-		} catch(Exception e){
-			throw new WebApplicationException(e, Response.Status.INTERNAL_SERVER_ERROR);
-		}
-	}
-
-	@DELETE
-	@Path("{id}")
-	@Produces(MediaType.TEXT_PLAIN)
-	public String undeploy(@PathParam("id") String id){
-		PMML pmml = this.registry.remove(id);
-		if(pmml == null){
-			throw new NotFoundException();
-		}
-
-		return "Model " + id + " undeployed successfully";
-	}
-
-	static
-	protected EvaluationResponse evaluate(Evaluator evaluator, EvaluationRequest request){
-		EvaluationResponse response = new EvaluationResponse(request.getId());
-
-		Map<FieldName, Object> arguments = Maps.newLinkedHashMap();
-
-		List<FieldName> activeFields = evaluator.getActiveFields();
-		for(FieldName activeField : activeFields){
-			Object value = request.getArgument(activeField.getValue());
-
-			arguments.put(activeField, EvaluatorUtil.prepare(evaluator, activeField, value));
-		}
-
-		Map<FieldName, ?> result = evaluator.evaluate(arguments);
-
-		response.setResult(EvaluatorUtil.decode(result));
-
-		return response;
 	}
 
 	static
@@ -281,6 +265,26 @@ public class ModelService {
 		}
 
 		return resultRequests;
+	}
+
+	static
+	protected EvaluationResponse evaluate(Evaluator evaluator, EvaluationRequest request){
+		EvaluationResponse response = new EvaluationResponse(request.getId());
+
+		Map<FieldName, Object> arguments = Maps.newLinkedHashMap();
+
+		List<FieldName> activeFields = evaluator.getActiveFields();
+		for(FieldName activeField : activeFields){
+			Object value = request.getArgument(activeField.getValue());
+
+			arguments.put(activeField, EvaluatorUtil.prepare(evaluator, activeField, value));
+		}
+
+		Map<FieldName, ?> result = evaluator.evaluate(arguments);
+
+		response.setResult(EvaluatorUtil.decode(result));
+
+		return response;
 	}
 
 	static
