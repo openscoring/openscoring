@@ -43,8 +43,8 @@
 		<connection>scm:git:git@github.com:jpmml/openscoring.git</connection>
 		<developerConnection>scm:git:git@github.com:jpmml/openscoring.git</developerConnection>
 		<url>git://github.com/jpmml/openscoring.git</url>
-	  <tag>HEAD</tag>
-  </scm>
+		<tag>HEAD</tag>
+	</scm>
 	<issueManagement>
 		<system>GitHub</system>
 		<url>https://github.com/jpmml/openscoring/issues</url>
