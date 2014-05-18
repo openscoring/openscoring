@@ -18,6 +18,7 @@
  */
 package org.openscoring.server;
 
+import java.net.*;
 import java.util.*;
 
 import javax.servlet.*;
@@ -38,6 +39,12 @@ import org.eclipse.jetty.servlet.*;
 import com.beust.jcommander.*;
 
 public class Main {
+
+	@Parameter (
+		names = {"--host"},
+		description = "Host"
+	)
+	private String host = "localhost";
 
 	@Parameter (
 		names = {"--port"},
@@ -84,7 +91,9 @@ public class Main {
 	}
 
 	private void run() throws Exception {
-		Server server = new Server(this.port);
+		InetSocketAddress address = new InetSocketAddress(this.host, this.port);
+
+		Server server = new Server(address);
 
 		ServletContextHandler contextHandler = new ServletContextHandler();
 		contextHandler.setContextPath(this.contextPath);
