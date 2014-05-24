@@ -86,40 +86,24 @@
 			</dependency>
 
 			<dependency>
-				<groupId>com.google.inject</groupId>
-				<artifactId>guice</artifactId>
-				<version>3.0</version>
+				<groupId>org.glassfish.jersey.containers</groupId>
+				<artifactId>jersey-container-servlet</artifactId>
+				<version>2.9</version>
 			</dependency>
 			<dependency>
-				<groupId>com.google.inject.extensions</groupId>
-				<artifactId>guice-servlet</artifactId>
-				<version>3.0</version>
-			</dependency>
-
-			<dependency>
-				<groupId>com.sun.jersey</groupId>
+				<groupId>org.glassfish.jersey.core</groupId>
 				<artifactId>jersey-client</artifactId>
-				<version>1.18.1</version>
+				<version>2.9</version>
 			</dependency>
 			<dependency>
-				<groupId>com.sun.jersey</groupId>
-				<artifactId>jersey-json</artifactId>
-				<version>1.18.1</version>
-			</dependency>
-			<dependency>
-				<groupId>com.sun.jersey</groupId>
+				<groupId>org.glassfish.jersey.core</groupId>
 				<artifactId>jersey-server</artifactId>
-				<version>1.18.1</version>
+				<version>2.9</version>
 			</dependency>
 			<dependency>
-				<groupId>com.sun.jersey</groupId>
-				<artifactId>jersey-servlet</artifactId>
-				<version>1.18.1</version>
-			</dependency>
-			<dependency>
-				<groupId>com.sun.jersey.contribs</groupId>
-				<artifactId>jersey-guice</artifactId>
-				<version>1.18.1</version>
+				<groupId>org.glassfish.jersey.media</groupId>
+				<artifactId>jersey-media-json-jackson</artifactId>
+				<version>2.9</version>
 			</dependency>
 
 			<dependency>
@@ -131,6 +115,12 @@
 				<groupId>org.eclipse.jetty</groupId>
 				<artifactId>jetty-servlet</artifactId>
 				<version>9.1.4.v20140401</version>
+			</dependency>
+
+			<dependency>
+				<groupId>org.glassfish.hk2</groupId>
+				<artifactId>hk2-locator</artifactId>
+				<version>2.3.0-b05</version>
 			</dependency>
 
 			<dependency>

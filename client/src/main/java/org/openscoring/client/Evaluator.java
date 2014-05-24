@@ -20,18 +20,17 @@ package org.openscoring.client;
 
 import java.util.*;
 
+import javax.ws.rs.client.*;
 import javax.ws.rs.core.*;
 
 import org.openscoring.common.*;
 
 import com.google.common.collect.*;
 
-import com.sun.jersey.api.client.*;
-import com.sun.jersey.api.client.config.*;
-
 import com.beust.jcommander.*;
+import com.fasterxml.jackson.jaxrs.json.*;
 
-import org.codehaus.jackson.jaxrs.*;
+import org.glassfish.jersey.client.*;
 
 public class Evaluator extends Application {
 
@@ -56,22 +55,22 @@ public class Evaluator extends Application {
 
 	@Override
 	public void run(){
-		ClientConfig config = new DefaultClientConfig();
+		ClientConfig config = new ClientConfig();
+		config.register(JacksonJsonProvider.class);
 
-		Set<Class<?>> clazzes = config.getClasses();
-		clazzes.add(JacksonJsonProvider.class);
+		Client client = ClientBuilder.newClient(config);
 
-		Client client = Client.create(config);
-
-		WebResource resource = client.resource(this.model);
+		WebTarget target = client.target(this.model);
 
 		EvaluationRequest request = new EvaluationRequest();
 		request.setArguments(this.arguments);
 
-		EvaluationResponse response = resource.accept(MediaType.APPLICATION_JSON).entity(request, MediaType.APPLICATION_JSON).post(EvaluationResponse.class);
+		Invocation invocation = target.request(MediaType.APPLICATION_JSON_TYPE).buildPost(Entity.json(request));
+
+		EvaluationResponse response = invocation.invoke(EvaluationResponse.class);
 
 		System.out.println(response.getResult());
 
-		client.destroy();
+		client.close();
 	}
 }

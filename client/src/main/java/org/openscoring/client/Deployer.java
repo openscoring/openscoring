@@ -20,9 +20,8 @@ package org.openscoring.client;
 
 import java.io.*;
 
+import javax.ws.rs.client.*;
 import javax.ws.rs.core.*;
-
-import com.sun.jersey.api.client.*;
 
 import com.beust.jcommander.*;
 
@@ -50,20 +49,22 @@ public class Deployer extends Application {
 
 	@Override
 	public void run() throws IOException {
-		Client client = Client.create();
+		Client client = ClientBuilder.newClient();
 
-		WebResource resource = client.resource(this.model);
+		WebTarget target = client.target(this.model);
 
 		InputStream is = new FileInputStream(this.file);
 
 		try {
-			String result = resource.type(MediaType.APPLICATION_XML_TYPE).put(String.class, is);
+			Invocation invocation = target.request(MediaType.TEXT_PLAIN).buildPut(Entity.xml(is));
+
+			String result = invocation.invoke(String.class);
 
 			System.out.println(result);
 		} finally {
 			is.close();
 		}
 
-		client.destroy();
+		client.close();
 	}
 }

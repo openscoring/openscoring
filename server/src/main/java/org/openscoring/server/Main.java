@@ -19,24 +19,18 @@
 package org.openscoring.server;
 
 import java.net.*;
-import java.util.*;
-
-import javax.servlet.*;
 
 import org.openscoring.service.*;
-
-import com.google.common.collect.*;
-import com.google.inject.*;
-import com.google.inject.servlet.*;
-
-import com.sun.jersey.api.json.*;
-import com.sun.jersey.guice.*;
-import com.sun.jersey.guice.spi.container.servlet.*;
 
 import org.eclipse.jetty.server.*;
 import org.eclipse.jetty.servlet.*;
 
 import com.beust.jcommander.*;
+
+import org.glassfish.hk2.utilities.*;
+import org.glassfish.hk2.utilities.binding.*;
+import org.glassfish.jersey.server.*;
+import org.glassfish.jersey.servlet.*;
 
 public class Main {
 
@@ -98,32 +92,21 @@ public class Main {
 		ServletContextHandler contextHandler = new ServletContextHandler();
 		contextHandler.setContextPath(this.contextPath);
 
-		contextHandler.addFilter(GuiceFilter.class, "/*", null);
-
-		Module module = new JerseyServletModule(){
+		Binder binder = new AbstractBinder(){
 
 			@Override
-			public void configureServlets(){
-				bind(ModelService.class);
-
-				Map<String, String> config = Maps.newLinkedHashMap();
-				config.put(JSONConfiguration.FEATURE_POJO_MAPPING, "true");
-
-				serve("/*").with(GuiceContainer.class, config);
+			protected void configure(){
+				bind(new ModelRegistry()).to(ModelRegistry.class);
 			}
 		};
 
-		final
-		Injector injector = Guice.createInjector(module);
+		ResourceConfig config = new ResourceConfig(ModelService.class);
+		config.register(binder);
 
-		ServletContextListener contextListener = new GuiceServletContextListener(){
+		ServletContainer servletContainer = new ServletContainer(config);
 
-			@Override
-			protected Injector getInjector(){
-				return injector;
-			}
-		};
-		contextHandler.addEventListener(contextListener);
+		ServletHolder servletHolder = new ServletHolder(servletContainer);
+		contextHandler.addServlet(servletHolder, "/*");
 
 		contextHandler.addServlet(DefaultServlet.class, "/");
 

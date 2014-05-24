@@ -20,9 +20,8 @@ package org.openscoring.client;
 
 import java.io.*;
 
+import javax.ws.rs.client.*;
 import javax.ws.rs.core.*;
-
-import com.sun.jersey.api.client.*;
 
 import com.beust.jcommander.*;
 
@@ -63,11 +62,11 @@ public class CsvEvaluator extends Application {
 
 	@Override
 	public void run() throws IOException {
-		Client client = Client.create();
+		Client client = ClientBuilder.newClient();
 
-		WebResource resource = client.resource(ensureSuffix(this.model, "/csv"));
+		WebTarget target = client.target(ensureSuffix(this.model, "/csv"));
 		if(this.idColumn != null){
-			resource = resource.queryParam("idColumn", this.idColumn);
+			target = target.queryParam("idColumn", this.idColumn);
 		}
 
 		InputStream is = new FileInputStream(this.input);
@@ -76,7 +75,9 @@ public class CsvEvaluator extends Application {
 			OutputStream os = new FileOutputStream(this.output);
 
 			try {
-				InputStream result = resource.type(MediaType.TEXT_PLAIN).post(InputStream.class, is);
+				Invocation invocation = target.request(MediaType.TEXT_PLAIN).buildPost(Entity.text(is));
+
+				InputStream result = invocation.invoke(InputStream.class);
 
 				try {
 					copy(result, os);
@@ -90,7 +91,7 @@ public class CsvEvaluator extends Application {
 			is.close();
 		}
 
-		client.destroy();
+		client.close();
 	}
 
 	static

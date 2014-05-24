@@ -21,6 +21,7 @@ package org.openscoring.service;
 import java.io.*;
 import java.util.*;
 
+import javax.inject.*;
 import javax.servlet.http.*;
 import javax.ws.rs.*;
 import javax.ws.rs.core.*;
@@ -33,9 +34,6 @@ import org.jpmml.manager.*;
 import org.jpmml.model.*;
 
 import com.google.common.collect.*;
-import com.google.inject.*;
-
-import com.sun.jersey.api.*;
 
 import org.dmg.pmml.*;
 

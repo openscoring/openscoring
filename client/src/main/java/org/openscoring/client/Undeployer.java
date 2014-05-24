@@ -18,7 +18,8 @@
  */
 package org.openscoring.client;
 
-import com.sun.jersey.api.client.*;
+import javax.ws.rs.client.*;
+import javax.ws.rs.core.*;
 
 import com.beust.jcommander.*;
 
@@ -39,14 +40,16 @@ public class Undeployer extends Application {
 
 	@Override
 	public void run(){
-		Client client = Client.create();
+		Client client = ClientBuilder.newClient();
 
-		WebResource resource = client.resource(this.model);
+		WebTarget target = client.target(this.model);
 
-		String result = resource.delete(String.class);
+		Invocation invocation = target.request(MediaType.TEXT_PLAIN_TYPE).buildDelete();
+
+		String result = invocation.invoke(String.class);
 
 		System.out.println(result);
 
-		client.destroy();
+		client.close();
 	}
 }

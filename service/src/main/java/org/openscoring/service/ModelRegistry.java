@@ -20,11 +20,15 @@ package org.openscoring.service;
 
 import java.util.*;
 
-import org.dmg.pmml.*;
+import javax.inject.*;
 
 import com.google.common.collect.*;
-import com.google.inject.*;
 
+import org.dmg.pmml.*;
+
+import org.jvnet.hk2.annotations.*;
+
+@Service
 @Singleton
 public class ModelRegistry {
 

@@ -40,16 +40,12 @@
 		</dependency>
 
 		<dependency>
-			<groupId>com.sun.jersey</groupId>
-			<artifactId>jersey-json</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>com.sun.jersey</groupId>
+			<groupId>org.glassfish.jersey.core</groupId>
 			<artifactId>jersey-server</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>com.sun.jersey.contribs</groupId>
-			<artifactId>jersey-guice</artifactId>
+			<groupId>org.glassfish.jersey.media</groupId>
+			<artifactId>jersey-media-json-jackson</artifactId>
 		</dependency>
 
 		<dependency>
@@ -74,6 +70,18 @@
 			<plugin>
 				<artifactId>maven-surefire-plugin</artifactId>
 				<version>2.14.1</version>
+			</plugin>
+			<plugin>
+				<groupId>org.glassfish.hk2</groupId>
+				<artifactId>hk2-inhabitant-generator</artifactId>
+				<version>2.3.0-b05</version>
+				<executions>
+					<execution>
+						<goals>
+							<goal>generate-inhabitants</goal>
+						</goals>
+					</execution>
+				</executions>
 			</plugin>
 		</plugins>
 	</build>
