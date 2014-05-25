@@ -18,6 +18,7 @@
  */
 package org.openscoring.server;
 
+import java.io.*;
 import java.net.*;
 
 import org.openscoring.service.*;
@@ -52,6 +53,12 @@ public class Main {
 		description = "Context path"
 	)
 	private String contextPath = "/openscoring";
+
+	@Parameter (
+		names = {"--deploy-dir"},
+		description = "Auto-deployment directory"
+	)
+	private File dir = null;
 
 	@Parameter (
 		names = {"--help"},
@@ -93,11 +100,14 @@ public class Main {
 		ServletContextHandler contextHandler = new ServletContextHandler();
 		contextHandler.setContextPath(this.contextPath);
 
+		final
+		ModelRegistry modelRegistry = new ModelRegistry();
+
 		Binder binder = new AbstractBinder(){
 
 			@Override
 			protected void configure(){
-				bind(new ModelRegistry()).to(ModelRegistry.class);
+				bind(modelRegistry).to(ModelRegistry.class);
 			}
 		};
 
@@ -117,7 +127,29 @@ public class Main {
 
 		server.setHandler(contextHandler);
 
+		DirectoryDeployer deployer = null;
+
+		if(this.dir != null){
+
+			if(!this.dir.isDirectory()){
+				throw new IOException(this.dir.getAbsolutePath() + " is not a directory");
+			}
+
+			deployer = new DirectoryDeployer(modelRegistry, this.dir.toPath());
+		}
+
 		server.start();
+
+		if(deployer != null){
+			deployer.start();
+		}
+
 		server.join();
+
+		if(deployer != null){
+			deployer.interrupt();
+
+			deployer.join();
+		}
 	}
 }

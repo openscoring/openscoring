@@ -62,23 +62,18 @@ public class ModelService {
 	@Consumes({MediaType.APPLICATION_XML, MediaType.TEXT_XML})
 	@Produces(MediaType.TEXT_PLAIN)
 	public String deploy(@PathParam("id") String id, @Context HttpServletRequest request){
-		PMML pmml;
 
 		try {
 			InputStream is = request.getInputStream();
 
 			try {
-				Source source = ImportFilter.apply(new InputSource(is));
-
-				pmml = JAXBUtil.unmarshalPMML(source);
+				this.registry.put(id, is);
 			} finally {
 				is.close();
 			}
 		} catch(Exception e){
 			throw new WebApplicationException(e, Response.Status.BAD_REQUEST);
 		}
-
-		this.registry.put(id, pmml);
 
 		return "Model " + id + " deployed successfully";
 	}

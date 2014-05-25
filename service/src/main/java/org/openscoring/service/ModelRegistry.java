@@ -18,15 +18,21 @@
  */
 package org.openscoring.service;
 
+import java.io.*;
 import java.util.*;
 
 import javax.inject.*;
+import javax.xml.bind.*;
+
+import org.jpmml.model.*;
 
 import com.google.common.collect.*;
 
 import org.dmg.pmml.*;
 
 import org.jvnet.hk2.annotations.*;
+
+import org.xml.sax.*;
 
 @Service
 @Singleton
@@ -47,6 +53,14 @@ public class ModelRegistry {
 
 	public PMML get(String id){
 		return this.models.get(id);
+	}
+
+	public PMML put(String id, InputStream is) throws SAXException, JAXBException {
+		InputSource source = new InputSource(is);
+
+		PMML pmml = JAXBUtil.unmarshalPMML(ImportFilter.apply(source));
+
+		return put(id, pmml);
 	}
 
 	public PMML put(String id, PMML pmml){
