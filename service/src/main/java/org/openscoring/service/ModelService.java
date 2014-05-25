@@ -21,6 +21,7 @@ package org.openscoring.service;
 import java.io.*;
 import java.util.*;
 
+import javax.annotation.security.*;
 import javax.inject.*;
 import javax.servlet.http.*;
 import javax.ws.rs.*;
@@ -42,6 +43,7 @@ import org.supercsv.prefs.*;
 import org.xml.sax.*;
 
 @Path("model")
+@PermitAll
 public class ModelService {
 
 	private ModelRegistry registry = null;
@@ -54,6 +56,9 @@ public class ModelService {
 
 	@PUT
 	@Path("{id}")
+	@RolesAllowed (
+		value = {"admin"}
+	)
 	@Consumes({MediaType.APPLICATION_XML, MediaType.TEXT_XML})
 	@Produces(MediaType.TEXT_PLAIN)
 	public String deploy(@PathParam("id") String id, @Context HttpServletRequest request){
@@ -173,6 +178,9 @@ public class ModelService {
 
 	@DELETE
 	@Path("{id}")
+	@RolesAllowed (
+		value = {"admin"}
+	)
 	@Produces(MediaType.TEXT_PLAIN)
 	public String undeploy(@PathParam("id") String id){
 		PMML pmml = this.registry.remove(id);

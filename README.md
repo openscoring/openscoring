@@ -10,14 +10,18 @@ Enter the project root directory and build using [Apache Maven] (http://maven.ap
 mvn clean install
 ```
 
-The build produces an executable uber-JAR file `server/target/server-executable-1.1-SNAPSHOT.jar`. The main class of the application `org.openscoring.server.Main` can be automatically loaded and executed by specifying the `-jar` command-line option:
+The build produces an executable uber-JAR file `server/target/server-executable-1.1-SNAPSHOT.jar`. The main class of the Openscoring application `org.openscoring.server.Main` can be automatically loaded and executed by specifying the `-jar` command-line option:
 ```
 java -jar server-executable-1.1-SNAPSHOT.jar
 ```
 
-By default, the REST web service is started at [http://localhost:8080/openscoring] (http://localhost:8080/openscoring/). The port number and context path can be configured by specifying the `--port` and `--context-path` command-line options, respectively.
+By default, the REST web service is started at [http://localhost:8080/openscoring] (http://localhost:8080/openscoring/). The main class accepts a number of configuration options for URI customization and other purposes. Please specify `--help` for more information.
+
+Additionally, the build produces an executable uber-JAR file `client/target/client-executable-1.1-SNAPSHOT.jar` which contains a number of command-line client applications.
 
 # REST API #
+
+Methods that modify the state of the model registry (i.e. PUT and DELETE) require the "admin" role. By default, the Openscoring application grants this role to all HTTP requests that originate from a local network address.
 
 ### PUT - Deploy a model
 
@@ -145,9 +149,7 @@ curl -X DELETE http://localhost:8080/openscoring/model/DecisionTreeIris
 
 # Command-line client applications #
 
-Additionally, the build produces an executable uber-JAR file `client/target/client-executable-1.1-SNAPSHOT.jar` which contains a number of command-line client applications.
-
-The following sequence of commands handles the life cycle of a model `DecisionTreeIris`:
+The following sequence of commands replays the life cycle of a model `DecisionTreeIris`:
 ```
 java -cp client-executable-1.1-SNAPSHOT.jar org.openscoring.client.Deployer --model http://localhost:8080/openscoring/model/DecisionTreeIris --file DecisionTreeIris.pmml
 

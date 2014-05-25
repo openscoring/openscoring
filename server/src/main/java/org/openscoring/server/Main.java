@@ -30,6 +30,7 @@ import com.beust.jcommander.*;
 import org.glassfish.hk2.utilities.*;
 import org.glassfish.hk2.utilities.binding.*;
 import org.glassfish.jersey.server.*;
+import org.glassfish.jersey.server.filter.*;
 import org.glassfish.jersey.servlet.*;
 
 public class Main {
@@ -102,6 +103,10 @@ public class Main {
 
 		ResourceConfig config = new ResourceConfig(ModelService.class);
 		config.register(binder);
+		config.register(RolesAllowedDynamicFeature.class);
+
+		// Naive implementation that grants the "admin" role to all local network users
+		config.register(NetworkSecurityContextFilter.class);
 
 		ServletContainer servletContainer = new ServletContainer(config);
 
