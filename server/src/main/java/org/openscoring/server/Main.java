@@ -40,7 +40,7 @@ public class Main {
 		names = {"--host"},
 		description = "Host"
 	)
-	private String host = "localhost";
+	private String host = null;
 
 	@Parameter (
 		names = {"--port"},
@@ -93,7 +93,15 @@ public class Main {
 	}
 
 	private void run() throws Exception {
-		InetSocketAddress address = new InetSocketAddress(this.host, this.port);
+		InetSocketAddress address;
+
+		if(this.host != null){
+			address = new InetSocketAddress(this.host, this.port);
+		} else
+
+		{
+			address = new InetSocketAddress(this.port);
+		}
 
 		Server server = new Server(address);
 
