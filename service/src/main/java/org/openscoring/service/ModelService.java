@@ -26,21 +26,17 @@ import javax.inject.*;
 import javax.servlet.http.*;
 import javax.ws.rs.*;
 import javax.ws.rs.core.*;
-import javax.xml.transform.*;
 
 import org.openscoring.common.*;
 
 import org.jpmml.evaluator.*;
 import org.jpmml.manager.*;
-import org.jpmml.model.*;
 
 import com.google.common.collect.*;
 
 import org.dmg.pmml.*;
 
 import org.supercsv.prefs.*;
-
-import org.xml.sax.*;
 
 @Path("model")
 @PermitAll
@@ -82,6 +78,15 @@ public class ModelService {
 	@Produces(MediaType.APPLICATION_JSON)
 	public List<String> getDeployedIds(){
 		List<String> result = new ArrayList<String>(this.registry.idSet());
+
+		Comparator<String> comparator = new Comparator<String>(){
+
+			@Override
+			public int compare(String left, String right){
+				return (left).compareToIgnoreCase(right);
+			}
+		};
+		Collections.sort(result, comparator);
 
 		return result;
 	}

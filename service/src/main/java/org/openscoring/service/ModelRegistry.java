@@ -38,13 +38,7 @@ import org.xml.sax.*;
 @Singleton
 public class ModelRegistry {
 
-	private Map<String, PMML> models = Maps.<String, String, PMML>newTreeMap(new Comparator<String>(){
-
-		@Override
-		public int compare(String left, String right){
-			return (left).compareToIgnoreCase(right);
-		}
-	});
+	private Map<String, PMML> models = Maps.<String, PMML>newConcurrentMap();
 
 
 	public Set<String> idSet(){
