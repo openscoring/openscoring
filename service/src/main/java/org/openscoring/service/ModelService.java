@@ -36,18 +36,24 @@ import com.google.common.collect.*;
 
 import org.dmg.pmml.*;
 
+import com.codahale.metrics.*;
+import com.codahale.metrics.Timer;
+
 import org.supercsv.prefs.*;
 
 @Path("model")
 @PermitAll
 public class ModelService {
 
-	private ModelRegistry registry = null;
+	private ModelRegistry modelRegistry = null;
+
+	private MetricRegistry metricRegistry = null;
 
 
 	@Inject
-	public ModelService(ModelRegistry registry){
-		this.registry = registry;
+	public ModelService(ModelRegistry modelRegistry, MetricRegistry metricRegistry){
+		this.modelRegistry = modelRegistry;
+		this.metricRegistry = metricRegistry;
 	}
 
 	@PUT
@@ -63,7 +69,7 @@ public class ModelService {
 			InputStream is = request.getInputStream();
 
 			try {
-				this.registry.put(id, is);
+				this.modelRegistry.put(id, is);
 			} finally {
 				is.close();
 			}
@@ -77,7 +83,7 @@ public class ModelService {
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
 	public List<String> getDeployedIds(){
-		List<String> result = new ArrayList<String>(this.registry.idSet());
+		List<String> result = new ArrayList<String>(this.modelRegistry.idSet());
 
 		Comparator<String> comparator = new Comparator<String>(){
 
@@ -95,7 +101,7 @@ public class ModelService {
 	@Path("{id}")
 	@Produces(MediaType.APPLICATION_JSON)
 	public SummaryResponse getSummary(@PathParam("id") String id){
-		PMML pmml = this.registry.get(id);
+		PMML pmml = this.modelRegistry.get(id);
 		if(pmml == null){
 			throw new NotFoundException();
 		}
@@ -123,9 +129,11 @@ public class ModelService {
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
 	public EvaluationResponse evaluate(@PathParam("id") String id, EvaluationRequest request){
+		Timer timer = createTimer("evaluate", id);
+
 		List<EvaluationRequest> requests = Collections.singletonList(request);
 
-		List<EvaluationResponse> responses = doBatch(id, requests);
+		List<EvaluationResponse> responses = doBatch(id, requests, timer);
 
 		return responses.get(0);
 	}
@@ -135,7 +143,9 @@ public class ModelService {
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
 	public List<EvaluationResponse> evaluateBatch(@PathParam("id") String id, List<EvaluationRequest> requests){
-		return doBatch(id, requests);
+		Timer timer = createTimer("evaluateBatch", id);
+
+		return doBatch(id, requests, timer);
 	}
 
 	@POST
@@ -161,7 +171,9 @@ public class ModelService {
 			throw new WebApplicationException(e, Response.Status.BAD_REQUEST);
 		}
 
-		List<EvaluationResponse> responses = doBatch(id, requests);
+		Timer timer = createTimer("evaluateCsv", id);
+
+		List<EvaluationResponse> responses = doBatch(id, requests, timer);
 
 		try {
 			BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(response.getOutputStream(), "UTF-8")); // XXX
@@ -183,7 +195,7 @@ public class ModelService {
 	)
 	@Produces(MediaType.TEXT_PLAIN)
 	public String undeploy(@PathParam("id") String id){
-		PMML pmml = this.registry.remove(id);
+		PMML pmml = this.modelRegistry.remove(id);
 		if(pmml == null){
 			throw new NotFoundException();
 		}
@@ -191,13 +203,19 @@ public class ModelService {
 		return "Model " + id + " undeployed successfully";
 	}
 
-	private List<EvaluationResponse> doBatch(String id, List<EvaluationRequest> requests){
-		PMML pmml = this.registry.get(id);
+	private Timer createTimer(String method, String id){
+		return this.metricRegistry.timer(MetricRegistry.name(getClass(), method, id));
+	}
+
+	private List<EvaluationResponse> doBatch(String id, List<EvaluationRequest> requests, Timer timer){
+		PMML pmml = this.modelRegistry.get(id);
 		if(pmml == null){
 			throw new NotFoundException();
 		}
 
 		List<EvaluationResponse> responses = new ArrayList<EvaluationResponse>();
+
+		Timer.Context context = timer.time();
 
 		try {
 			PMMLManager pmmlManager = new PMMLManager(pmml);
@@ -222,6 +240,8 @@ public class ModelService {
 			}
 		} catch(Exception e){
 			throw new WebApplicationException(e, Response.Status.INTERNAL_SERVER_ERROR);
+		} finally {
+			context.stop();
 		}
 
 		return responses;

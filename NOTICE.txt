@@ -1,4 +1,5 @@
 Openscoring includes third-party dependencies that are released under the Apache License, Version 2.0:
+  * Coda Hale Metrics - http://metrics.codahale.com/
   * Guava - http://guava-libraries.googlecode.com
   * JCommander - http://jcommander.org
   * Super CSV - http://supercsv.sourceforge.net/

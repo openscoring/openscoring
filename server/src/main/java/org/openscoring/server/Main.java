@@ -27,6 +27,8 @@ import org.eclipse.jetty.server.*;
 import org.eclipse.jetty.servlet.*;
 
 import com.beust.jcommander.*;
+import com.codahale.metrics.*;
+import com.codahale.metrics.servlets.*;
 
 import org.glassfish.hk2.utilities.*;
 import org.glassfish.hk2.utilities.binding.*;
@@ -108,6 +110,15 @@ public class Main {
 		ServletContextHandler contextHandler = new ServletContextHandler();
 		contextHandler.setContextPath(this.contextPath);
 
+		contextHandler.addServlet(DefaultServlet.class, "/");
+
+		final
+		MetricRegistry metricRegistry = new MetricRegistry();
+
+		MetricsServlet metricsServlet = new MetricsServlet(metricRegistry);
+
+		contextHandler.addServlet(new ServletHolder(metricsServlet), "/metrics");
+
 		final
 		ModelRegistry modelRegistry = new ModelRegistry();
 
@@ -116,6 +127,7 @@ public class Main {
 			@Override
 			protected void configure(){
 				bind(modelRegistry).to(ModelRegistry.class);
+				bind(metricRegistry).to(MetricRegistry.class);
 			}
 		};
 
@@ -128,10 +140,7 @@ public class Main {
 
 		ServletContainer servletContainer = new ServletContainer(config);
 
-		ServletHolder servletHolder = new ServletHolder(servletContainer);
-		contextHandler.addServlet(servletHolder, "/*");
-
-		contextHandler.addServlet(DefaultServlet.class, "/");
+		contextHandler.addServlet(new ServletHolder(servletContainer), "/*");
 
 		server.setHandler(contextHandler);
 

@@ -34,6 +34,8 @@ import org.dmg.pmml.*;
 
 import org.junit.*;
 
+import com.codahale.metrics.*;
+
 import org.supercsv.prefs.*;
 
 import org.xml.sax.*;
@@ -141,10 +143,12 @@ public class ModelServiceTest {
 
 	static
 	private ModelService createService(String id) throws Exception {
-		ModelRegistry registry = new ModelRegistry();
-		registry.put(id, loadPMML(id));
+		ModelRegistry modelRegistry = new ModelRegistry();
+		modelRegistry.put(id, loadPMML(id));
 
-		return new ModelService(registry);
+		MetricRegistry metricRegistry = new MetricRegistry();
+
+		return new ModelService(modelRegistry, metricRegistry);
 	}
 
 	static
