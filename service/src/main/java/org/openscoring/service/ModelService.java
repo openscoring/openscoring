@@ -138,13 +138,13 @@ public class ModelService {
 		}
 
 		final
-		String prefix = (MetricRegistry.name(getClass()) + "."), suffix = ("." + id);
+		String prefix = MetricRegistry.name(getClass(), id) + ".";
 
 		Predicate<String> filter = new Predicate<String>(){
 
 			@Override
 			public boolean apply(String name){
-				return name.startsWith(prefix) && name.endsWith(suffix);
+				return name.startsWith(prefix);
 			}
 		};
 
@@ -156,9 +156,8 @@ public class ModelService {
 		for(Map.Entry<String, Metric> entry : entries){
 			String name = entry.getKey();
 
-			// Strip prefix and suffix
+			// Strip prefix
 			name = name.substring(prefix.length());
-			name = name.substring(0, name.length() - suffix.length());
 
 			result.register(name, entry.getValue());
 		}
@@ -171,7 +170,7 @@ public class ModelService {
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
 	public EvaluationResponse evaluate(@PathParam("id") String id, EvaluationRequest request){
-		Timer timer = createTimer("evaluate", id);
+		Timer timer = createTimer(id, "evaluate");
 
 		List<EvaluationRequest> requests = Collections.singletonList(request);
 
@@ -185,7 +184,7 @@ public class ModelService {
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
 	public List<EvaluationResponse> evaluateBatch(@PathParam("id") String id, List<EvaluationRequest> requests){
-		Timer timer = createTimer("evaluateBatch", id);
+		Timer timer = createTimer(id, "evaluateBatch");
 
 		return doBatch(id, requests, timer);
 	}
@@ -213,7 +212,7 @@ public class ModelService {
 			throw new WebApplicationException(e, Response.Status.BAD_REQUEST);
 		}
 
-		Timer timer = createTimer("evaluateCsv", id);
+		Timer timer = createTimer(id, "evaluateCsv");
 
 		List<EvaluationResponse> responses = doBatch(id, requests, timer);
 
@@ -245,8 +244,8 @@ public class ModelService {
 		return "Model " + id + " undeployed successfully";
 	}
 
-	private Timer createTimer(String method, String id){
-		return this.metricRegistry.timer(MetricRegistry.name(getClass(), method, id));
+	private Timer createTimer(String id, String method){
+		return this.metricRegistry.timer(MetricRegistry.name(getClass(), id, method));
 	}
 
 	private List<EvaluationResponse> doBatch(String id, List<EvaluationRequest> requests, Timer timer){
