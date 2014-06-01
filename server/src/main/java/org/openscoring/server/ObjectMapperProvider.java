@@ -33,6 +33,7 @@ public class ObjectMapperProvider implements ContextResolver<ObjectMapper> {
 
 	public ObjectMapperProvider(){
 		ObjectMapper mapper = new ObjectMapper();
+		mapper.enable(SerializationFeature.INDENT_OUTPUT);
 		mapper.registerModule(new MetricsModule(TimeUnit.SECONDS, TimeUnit.SECONDS, false));
 
 		setMapper(mapper);
