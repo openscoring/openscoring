@@ -39,7 +39,7 @@
 		</dependency>
 		<dependency>
 			<groupId>com.codahale.metrics</groupId>
-			<artifactId>metrics-servlets</artifactId>
+			<artifactId>metrics-json</artifactId>
 		</dependency>
 
 		<dependency>

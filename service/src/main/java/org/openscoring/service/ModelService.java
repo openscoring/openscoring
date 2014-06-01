@@ -32,6 +32,7 @@ import org.openscoring.common.*;
 import org.jpmml.evaluator.*;
 import org.jpmml.manager.*;
 
+import com.google.common.base.Predicate;
 import com.google.common.collect.*;
 
 import org.dmg.pmml.*;
@@ -122,6 +123,47 @@ public class ModelService {
 		}
 
 		return response;
+	}
+
+	@GET
+	@Path("{id}/metrics")
+	@RolesAllowed (
+		value = {"admin"}
+	)
+	@Produces(MediaType.APPLICATION_JSON)
+	public MetricRegistry getMetrics(@PathParam("id") String id){
+		PMML pmml = this.modelRegistry.get(id);
+		if(pmml == null){
+			throw new NotFoundException();
+		}
+
+		final
+		String prefix = (MetricRegistry.name(getClass()) + "."), suffix = ("." + id);
+
+		Predicate<String> filter = new Predicate<String>(){
+
+			@Override
+			public boolean apply(String name){
+				return name.startsWith(prefix) && name.endsWith(suffix);
+			}
+		};
+
+		Map<String, Metric> metrics = Maps.filterKeys(this.metricRegistry.getMetrics(), filter);
+
+		MetricRegistry result = new MetricRegistry();
+
+		Collection<Map.Entry<String, Metric>> entries = metrics.entrySet();
+		for(Map.Entry<String, Metric> entry : entries){
+			String name = entry.getKey();
+
+			// Strip prefix and suffix
+			name = name.substring(prefix.length());
+			name = name.substring(0, name.length() - suffix.length());
+
+			result.register(name, entry.getValue());
+		}
+
+		return result;
 	}
 
 	@POST

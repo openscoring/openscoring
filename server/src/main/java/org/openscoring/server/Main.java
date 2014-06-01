@@ -28,10 +28,10 @@ import org.eclipse.jetty.servlet.*;
 
 import com.beust.jcommander.*;
 import com.codahale.metrics.*;
-import com.codahale.metrics.servlets.*;
 
 import org.glassfish.hk2.utilities.*;
 import org.glassfish.hk2.utilities.binding.*;
+import org.glassfish.jersey.jackson.*;
 import org.glassfish.jersey.server.*;
 import org.glassfish.jersey.server.filter.*;
 import org.glassfish.jersey.servlet.*;
@@ -113,14 +113,10 @@ public class Main {
 		contextHandler.addServlet(DefaultServlet.class, "/");
 
 		final
-		MetricRegistry metricRegistry = new MetricRegistry();
-
-		MetricsServlet metricsServlet = new MetricsServlet(metricRegistry);
-
-		contextHandler.addServlet(new ServletHolder(metricsServlet), "/metrics");
+		ModelRegistry modelRegistry = new ModelRegistry();
 
 		final
-		ModelRegistry modelRegistry = new ModelRegistry();
+		MetricRegistry metricRegistry = new MetricRegistry();
 
 		Binder binder = new AbstractBinder(){
 
@@ -133,6 +129,8 @@ public class Main {
 
 		ResourceConfig config = new ResourceConfig(ModelService.class);
 		config.register(binder);
+		config.register(JacksonFeature.class);
+		config.register(ObjectMapperProvider.class);
 		config.register(RolesAllowedDynamicFeature.class);
 
 		// Naive implementation that grants the "admin" role to all local network users
