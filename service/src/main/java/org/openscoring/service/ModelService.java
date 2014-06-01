@@ -170,7 +170,7 @@ public class ModelService {
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
 	public EvaluationResponse evaluate(@PathParam("id") String id, EvaluationRequest request){
-		Timer timer = createTimer(id, "evaluate");
+		Timer timer = getTimer(id, "evaluate");
 
 		List<EvaluationRequest> requests = Collections.singletonList(request);
 
@@ -184,7 +184,7 @@ public class ModelService {
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
 	public List<EvaluationResponse> evaluateBatch(@PathParam("id") String id, List<EvaluationRequest> requests){
-		Timer timer = createTimer(id, "evaluateBatch");
+		Timer timer = getTimer(id, "evaluateBatch");
 
 		return doBatch(id, requests, timer);
 	}
@@ -212,7 +212,7 @@ public class ModelService {
 			throw new WebApplicationException(e, Response.Status.BAD_REQUEST);
 		}
 
-		Timer timer = createTimer(id, "evaluateCsv");
+		Timer timer = getTimer(id, "evaluateCsv");
 
 		List<EvaluationResponse> responses = doBatch(id, requests, timer);
 
@@ -242,10 +242,6 @@ public class ModelService {
 		}
 
 		return "Model " + id + " undeployed successfully";
-	}
-
-	private Timer createTimer(String id, String method){
-		return this.metricRegistry.timer(MetricRegistry.name(getClass(), id, method));
 	}
 
 	private List<EvaluationResponse> doBatch(String id, List<EvaluationRequest> requests, Timer timer){
@@ -285,7 +281,24 @@ public class ModelService {
 			context.stop();
 		}
 
+		Counter counter = getCounter(id, "records");
+
+		counter.inc(responses.size());
+
 		return responses;
+	}
+
+	private Counter getCounter(String... names){
+		return this.metricRegistry.counter(createName(names));
+	}
+
+	private Timer getTimer(String... names){
+		return this.metricRegistry.timer(createName(names));
+	}
+
+	static
+	private String createName(String... names){
+		return MetricRegistry.name(ModelService.class, names);
 	}
 
 	static
