@@ -21,7 +21,18 @@ Additionally, the build produces an executable uber-JAR file `client/target/clie
 
 # REST API #
 
-Methods that modify the state of the model registry (i.e. PUT and DELETE) require the "admin" role. By default, the Openscoring application grants this role to all HTTP requests that originate from a local network address.
+| HTTP method | Endpoint | Required role(s) | Description |
+| ----------- | -------- | ---------------- | ----------- |
+| PUT | /model/${id} | admin | Deploy a model |
+| GET | /model | - | Get the list of deployed model identifiers |
+| GET | /model/${id} | - | Get the summary of a model |
+| GET | /model/${id}/metrics | admin | Get the metrics of a model |
+| POST | /model/${id} | - | Perform evaluation of a model |
+| POST | /model/${id}/batch | - | Perform batch evaluation of a model |
+| POST | /model/${id}/csv | - | Perform CSV evaluation of a model |
+| DELETE | /model/${id} | admin | Undeploy a model |
+
+Some REST API endpoints require privileged access. By default, the Openscoring application grants the "admin" role to all HTTP requests that originate from the local network address.
 
 ### PUT - Deploy a model
 
@@ -34,14 +45,14 @@ The example PMML file `DecisionTreeIris.pmml` along with example JSON and CSV fi
 
 ### GET - Obtain model information
 
-##### Get the list of deployed models
+##### Get the list of deployed model identifiers
 
-Obtain the list of deployed models:
+Obtain the list of deployed model identifiers:
 ```
 curl -X GET http://localhost:8080/openscoring/model
 ```
 
-The response body is the JSON serialized form of a list of model identifiers:
+The response body is the JSON serialized form of a list of strings:
 ```json
 [
 	"DecisionTreeIris"
@@ -59,13 +70,13 @@ The response body is the JSON serialized form of an `org.openscoring.common.Summ
 ```json
 {
 	"activeFields" : ["Sepal.Length", "Sepal.Width", "Petal.Length", "Petal.Width"],
-	"groupFields" : []
+	"groupFields" : [],
 	"targetFields" : ["Species"],
 	"outputFields" : ["Predicted_Species", "Probability_setosa", "Probability_versicolor", "Probability_virginica", "Node_Id"]
 }
 ```
 
-Field definitions are retrieved from the [Mining Schema element] (http://www.dmg.org/v4-1/MiningSchema.html) of the PMML document. The execution fails with HTTP status code "500 Internal Server Error" if the PMML document contains an unsupported model type.
+Field definitions are retrieved from the [Mining Schema element] (http://www.dmg.org/v4-1/MiningSchema.html) of the PMML document.
 
 ##### Get the metrics of a deployed model
 
