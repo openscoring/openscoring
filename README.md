@@ -3,6 +3,20 @@ Openscoring [![Build Status](https://travis-ci.org/jpmml/openscoring.png?branch=
 
 REST web service for scoring PMML models.
 
+# Features #
+
+* Full support for PMML specification versions 3.0 through 4.2. The evaluation is handled by the [JPMML-Evaluator] (https://github.com/jpmml/jpmml-evaluator) library.
+* Simple and powerful REST API:
+  * Model deployment and undeployment.
+  * Model evaluation in single prediction, batch prediction and CSV prediction modes.
+  * Model metrics.
+* High performance and high throughput:
+  * Sub-millisecond response times.
+  * Thread safe.
+* Open, extensible architecture for easy integration with proprietary systems and services:
+  * User authentication and authorization.
+  * Metrics dashboards.
+
 # Installation #
 
 Enter the project root directory and build using [Apache Maven] (http://maven.apache.org/):
@@ -20,6 +34,8 @@ By default, the REST web service is started at [http://localhost:8080/openscorin
 Additionally, the build produces an executable uber-JAR file `client/target/client-executable-1.1-SNAPSHOT.jar` which contains a number of command-line client applications.
 
 # REST API #
+
+### Overview
 
 | HTTP method | Endpoint | Required role(s) | Description |
 | ----------- | -------- | ---------------- | ----------- |
