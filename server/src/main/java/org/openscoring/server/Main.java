@@ -28,6 +28,7 @@ import org.eclipse.jetty.servlet.*;
 
 import com.beust.jcommander.*;
 import com.codahale.metrics.*;
+import com.codahale.metrics.jetty9.*;
 
 import org.glassfish.hk2.utilities.*;
 import org.glassfish.hk2.utilities.binding.*;
@@ -140,7 +141,10 @@ public class Main {
 
 		contextHandler.addServlet(new ServletHolder(servletContainer), "/*");
 
-		server.setHandler(contextHandler);
+		InstrumentedHandler instrumentedHandler = new InstrumentedHandler(metricRegistry);
+		instrumentedHandler.setHandler(contextHandler);
+
+		server.setHandler(instrumentedHandler);
 
 		DirectoryDeployer deployer = null;
 
