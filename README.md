@@ -42,7 +42,7 @@ curl -X GET http://localhost:8080/openscoring/model
 ```
 
 The response body is the JSON serialized form of a list of model identifiers:
-```
+```json
 [
 	"DecisionTreeIris"
 ]
@@ -56,7 +56,7 @@ curl -X GET http://localhost:8080/openscoring/model/DecisionTreeIris
 ```
 
 The response body is the JSON serialized form of an `org.openscoring.common.SummaryResponse` object:
-```
+```json
 {
 	"activeFields" : ["Sepal.Length", "Sepal.Width", "Petal.Length", "Petal.Width"],
 	"groupFields" : []
@@ -75,7 +75,7 @@ curl -X GET http://localhost:8080/openscoring/model/DecisionTreeIris/metrics
 ```
 
 The metrics are implemented using the [Coda Hale Metrics] (http://metrics.codahale.com/) library. The response body is the JSON serialized form of an `com.codahale.metrics.MetricRegistry` object:
-```
+```json
 {
 	"version" : "3.0.0",
 	"gauges" : { },
@@ -122,7 +122,7 @@ curl -X POST --data-binary @EvaluationRequest.json -H "Content-type: application
 ```
 
 The request body is the JSON serialized form of an `org.openscoring.common.EvaluationRequest` object:
-```
+```json
 {
 	"id" : "example-001",
 	"arguments" : {
@@ -135,7 +135,7 @@ The request body is the JSON serialized form of an `org.openscoring.common.Evalu
 ```
 
 The response body is the JSON serialized form of an `org.openscoring.common.EvaluationResponse` object:
-```
+```json
 {
 	"id" : "example-001",
 	"result" : {
