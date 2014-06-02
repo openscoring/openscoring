@@ -277,9 +277,9 @@ public class ModelService {
 			}
 		} catch(Exception e){
 			throw new WebApplicationException(e, Response.Status.INTERNAL_SERVER_ERROR);
-		} finally {
-			context.stop();
 		}
+
+		context.stop();
 
 		Counter counter = getCounter(id, "records");
 
