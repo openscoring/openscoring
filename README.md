@@ -3,7 +3,7 @@ Openscoring [![Build Status](https://travis-ci.org/jpmml/openscoring.png?branch=
 
 REST web service for scoring PMML models.
 
-# Usage #
+# Installation #
 
 Enter the project root directory and build using [Apache Maven] (http://maven.apache.org/):
 ```
@@ -48,9 +48,9 @@ The response body is the JSON serialized form of a list of model identifiers:
 ]
 ```
 
-##### Get the description of a deployed model
+##### Get the summary of a deployed model
 
-Obtain the description of the public interface of the model `DecisionTreeIris`:
+Obtain the description of the "public interface" of the model `DecisionTreeIris`:
 ```
 curl -X GET http://localhost:8080/openscoring/model/DecisionTreeIris
 ```
@@ -66,6 +66,49 @@ The response body is the JSON serialized form of an `org.openscoring.common.Summ
 ```
 
 Field definitions are retrieved from the [Mining Schema element] (http://www.dmg.org/v4-1/MiningSchema.html) of the PMML document. The execution fails with HTTP status code "500 Internal Server Error" if the PMML document contains an unsupported model type.
+
+##### Get the metrics of a deployed model
+
+Obtain the metrics of the model `DecisionTreeIris`:
+```
+curl -X GET http://localhost:8080/openscoring/model/DecisionTreeIris/metrics
+```
+
+The metrics are implemented using the [Coda Hale Metrics] (http://metrics.codahale.com/) library. The response body is the JSON serialized form of an `com.codahale.metrics.MetricRegistry` object:
+```
+{
+	"version" : "3.0.0",
+	"gauges" : { },
+	"counters" : {
+		"records" : {
+			"count" : 1
+		}
+	},
+	"histograms" : { },
+	"meters" : { },
+	"timers" : {
+		"evaluate" : {
+			"count" : 1,
+			"max" : 0.008521913,
+			"mean" : 0.008521913,
+			"min" : 0.008521913,
+			"p50" : 0.008521913,
+			"p75" : 0.008521913,
+			"p95" : 0.008521913,
+			"p98" : 0.008521913,
+			"p99" : 0.008521913,
+			"p999" : 0.008521913,
+			"stddev" : 0.0,
+			"m15_rate" : 0.19237151525464488,
+			"m1_rate" : 0.11160702915400945,
+			"m5_rate" : 0.17797635419760474,
+			"mean_rate" : 0.023793073545863026,
+			"duration_units" : "seconds",
+			"rate_units" : "calls/second"
+		}
+	}
+}
+```
 
 ### POST - Perform model evaluation
 
