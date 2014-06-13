@@ -83,7 +83,7 @@ public class ModelResource {
 
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
-	public List<String> getDeployedIds(){
+	public List<String> list(){
 		List<String> result = new ArrayList<String>(this.modelRegistry.idSet());
 
 		Comparator<String> comparator = new Comparator<String>(){
