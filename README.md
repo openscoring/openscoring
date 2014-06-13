@@ -41,7 +41,7 @@ Additionally, the build produces an executable uber-JAR file `client/target/clie
 | ----------- | -------- | ---------------- | ----------- |
 | PUT | /model/${id} | admin | Deploy a model |
 | GET | /model | - | Get the list of deployed model identifiers |
-| GET | /model/${id} | - | Get the summary of a model |
+| GET | /model/${id}/schema | - | Get the schema of a model |
 | GET | /model/${id}/metrics | admin | Get the metrics of a model |
 | POST | /model/${id} | - | Perform evaluation of a model |
 | POST | /model/${id}/batch | - | Perform batch evaluation of a model |
@@ -75,14 +75,14 @@ The response body is the JSON serialized form of a list of strings:
 ]
 ```
 
-##### Get the summary of a deployed model
+##### Get the schema of a deployed model
 
 Obtain the description of the "public interface" of the model `DecisionTreeIris`:
 ```
-curl -X GET http://localhost:8080/openscoring/model/DecisionTreeIris
+curl -X GET http://localhost:8080/openscoring/model/DecisionTreeIris/schema
 ```
 
-The response body is the JSON serialized form of an `org.openscoring.common.SummaryResponse` object:
+The response body is the JSON serialized form of an `org.openscoring.common.SchemaResponse` object:
 ```json
 {
 	"activeFields" : ["Sepal.Length", "Sepal.Width", "Petal.Length", "Petal.Width"],
@@ -92,7 +92,7 @@ The response body is the JSON serialized form of an `org.openscoring.common.Summ
 }
 ```
 
-Field definitions are retrieved from the [Mining Schema element] (http://www.dmg.org/v4-1/MiningSchema.html) of the PMML document.
+Field definitions are retrieved from the [Mining Schema element] (http://www.dmg.org/v4-1/MiningSchema.html) of the PMML document. The active and group fields relate to the `arguments` attribute of the evaluation request, whereas the target and output fields relate to the `result` attribute of the evaluation response (see below).
 
 ##### Get the metrics of a deployed model
 

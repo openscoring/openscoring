@@ -99,15 +99,15 @@ public class ModelResource {
 	}
 
 	@GET
-	@Path("{id}")
+	@Path("{id}/schema")
 	@Produces(MediaType.APPLICATION_JSON)
-	public SummaryResponse getSummary(@PathParam("id") String id){
+	public SchemaResponse getSchema(@PathParam("id") String id){
 		PMML pmml = this.modelRegistry.get(id);
 		if(pmml == null){
 			throw new NotFoundException();
 		}
 
-		SummaryResponse response = new SummaryResponse();
+		SchemaResponse response = new SchemaResponse();
 
 		try {
 			PMMLManager pmmlManager = new PMMLManager(pmml);

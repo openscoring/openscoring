@@ -20,7 +20,7 @@ package org.openscoring.common;
 
 import java.util.*;
 
-public class SummaryResponse {
+public class SchemaResponse {
 
 	private List<String> activeFields = null;
 
@@ -31,6 +31,9 @@ public class SummaryResponse {
 	private List<String> outputFields = null;
 
 
+	/**
+	 * @see EvaluationRequest#getArguments()
+	 */
 	public List<String> getActiveFields(){
 		return this.activeFields;
 	}
@@ -39,6 +42,9 @@ public class SummaryResponse {
 		this.activeFields = activeFields;
 	}
 
+	/**
+	 * @see EvaluationRequest#getArguments()
+	 */
 	public List<String> getGroupFields(){
 		return this.groupFields;
 	}
@@ -47,6 +53,9 @@ public class SummaryResponse {
 		this.groupFields = groupFields;
 	}
 
+	/**
+	 * @see EvaluationResponse#getResult()
+	 */
 	public List<String> getTargetFields(){
 		return this.targetFields;
 	}
@@ -55,6 +64,9 @@ public class SummaryResponse {
 		this.targetFields = targetFields;
 	}
 
+	/**
+	 * @see EvaluationResponse#getResult()
+	 */
 	public List<String> getOutputFields(){
 		return this.outputFields;
 	}
