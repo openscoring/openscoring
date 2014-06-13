@@ -30,7 +30,6 @@ import javax.ws.rs.core.*;
 import org.openscoring.common.*;
 
 import org.jpmml.evaluator.*;
-import org.jpmml.manager.*;
 
 import com.google.common.base.Predicate;
 import com.google.common.collect.*;
@@ -109,11 +108,13 @@ public class ModelResource {
 	)
 	@Produces({MediaType.APPLICATION_XML, MediaType.TEXT_XML})
 	public Response download(@PathParam("id") String id, @Context HttpServletResponse response){
-		final
-		PMML pmml = this.modelRegistry.get(id);
-		if(pmml == null){
+		ModelEvaluator<?> evaluator = this.modelRegistry.get(id);
+		if(evaluator == null){
 			throw new NotFoundException();
 		}
+
+		final
+		PMML pmml = evaluator.getPMML();
 
 		StreamingOutput entity = new StreamingOutput(){
 
@@ -137,25 +138,16 @@ public class ModelResource {
 	@Path("{id}/schema")
 	@Produces(MediaType.APPLICATION_JSON)
 	public SchemaResponse getSchema(@PathParam("id") String id){
-		PMML pmml = this.modelRegistry.get(id);
-		if(pmml == null){
+		ModelEvaluator<?> evaluator = this.modelRegistry.get(id);
+		if(evaluator == null){
 			throw new NotFoundException();
 		}
 
 		SchemaResponse response = new SchemaResponse();
-
-		try {
-			PMMLManager pmmlManager = new PMMLManager(pmml);
-
-			Evaluator evaluator = (Evaluator)pmmlManager.getModelManager(null, ModelEvaluatorFactory.getInstance());
-
-			response.setActiveFields(toValueList(evaluator.getActiveFields()));
-			response.setGroupFields(toValueList(evaluator.getGroupFields()));
-			response.setTargetFields(toValueList(evaluator.getTargetFields()));
-			response.setOutputFields(toValueList(evaluator.getOutputFields()));
-		} catch(Exception e){
-			throw new WebApplicationException(e, Response.Status.INTERNAL_SERVER_ERROR);
-		}
+		response.setActiveFields(toValueList(evaluator.getActiveFields()));
+		response.setGroupFields(toValueList(evaluator.getGroupFields()));
+		response.setTargetFields(toValueList(evaluator.getTargetFields()));
+		response.setOutputFields(toValueList(evaluator.getOutputFields()));
 
 		return response;
 	}
@@ -167,8 +159,8 @@ public class ModelResource {
 	)
 	@Produces(MediaType.APPLICATION_JSON)
 	public MetricRegistry getMetrics(@PathParam("id") String id){
-		PMML pmml = this.modelRegistry.get(id);
-		if(pmml == null){
+		ModelEvaluator<?> evaluator = this.modelRegistry.get(id);
+		if(evaluator == null){
 			throw new NotFoundException();
 		}
 
@@ -271,8 +263,8 @@ public class ModelResource {
 	)
 	@Produces(MediaType.TEXT_PLAIN)
 	public String undeploy(@PathParam("id") String id){
-		PMML pmml = this.modelRegistry.remove(id);
-		if(pmml == null){
+		ModelEvaluator<?> evaluator = this.modelRegistry.remove(id);
+		if(evaluator == null){
 			throw new NotFoundException();
 		}
 
@@ -280,8 +272,8 @@ public class ModelResource {
 	}
 
 	private List<EvaluationResponse> doBatch(String id, List<EvaluationRequest> requests, Timer timer){
-		PMML pmml = this.modelRegistry.get(id);
-		if(pmml == null){
+		ModelEvaluator<?> evaluator = this.modelRegistry.get(id);
+		if(evaluator == null){
 			throw new NotFoundException();
 		}
 
@@ -290,10 +282,6 @@ public class ModelResource {
 		Timer.Context context = timer.time();
 
 		try {
-			PMMLManager pmmlManager = new PMMLManager(pmml);
-
-			Evaluator evaluator = (Evaluator)pmmlManager.getModelManager(null, ModelEvaluatorFactory.getInstance());
-
 			List<FieldName> groupFields = evaluator.getGroupFields();
 			if(groupFields.size() == 1){
 				FieldName groupField = groupFields.get(0);

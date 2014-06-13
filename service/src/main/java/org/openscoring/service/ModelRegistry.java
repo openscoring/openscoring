@@ -26,6 +26,8 @@ import javax.xml.bind.*;
 import javax.xml.transform.*;
 import javax.xml.transform.stream.*;
 
+import org.jpmml.evaluator.*;
+import org.jpmml.manager.*;
 import org.jpmml.model.*;
 
 import com.google.common.collect.*;
@@ -40,22 +42,26 @@ import org.xml.sax.*;
 @Singleton
 public class ModelRegistry {
 
-	private Map<String, PMML> models = Maps.<String, PMML>newConcurrentMap();
+	private Map<String, ModelEvaluator<?>> models = Maps.<String, ModelEvaluator<?>>newConcurrentMap();
 
 
 	public Set<String> keySet(){
 		return Collections.unmodifiableSet(this.models.keySet());
 	}
 
-	public PMML get(String id){
+	public ModelEvaluator<?> get(String id){
 		return this.models.get(id);
 	}
 
-	public PMML put(String id, PMML pmml){
-		return this.models.put(id, pmml);
+	public ModelEvaluator<?> put(String id, PMML pmml){
+		return put(id, createModelEvaluator(pmml));
 	}
 
-	public PMML remove(String id){
+	public ModelEvaluator<?> put(String id, ModelEvaluator<?> evaluator){
+		return this.models.put(id, evaluator);
+	}
+
+	public ModelEvaluator<?> remove(String id){
 		return this.models.remove(id);
 	}
 
@@ -71,5 +77,12 @@ public class ModelRegistry {
 		Result result = new StreamResult(os);
 
 		JAXBUtil.marshalPMML(pmml, result);
+	}
+
+	static
+	private ModelEvaluator<?> createModelEvaluator(PMML pmml){
+		PMMLManager pmmlManager = new PMMLManager(pmml);
+
+		return (ModelEvaluator<?>)pmmlManager.getModelManager(null, ModelEvaluatorFactory.getInstance());
 	}
 }
