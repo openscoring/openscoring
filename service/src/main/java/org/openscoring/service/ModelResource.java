@@ -44,7 +44,7 @@ import org.supercsv.prefs.*;
 
 @Path("model")
 @PermitAll
-public class ModelService {
+public class ModelResource {
 
 	private ModelRegistry modelRegistry = null;
 
@@ -52,7 +52,7 @@ public class ModelService {
 
 
 	@Inject
-	public ModelService(ModelRegistry modelRegistry, MetricRegistry metricRegistry){
+	public ModelResource(ModelRegistry modelRegistry, MetricRegistry metricRegistry){
 		this.modelRegistry = modelRegistry;
 		this.metricRegistry = metricRegistry;
 	}
@@ -298,7 +298,7 @@ public class ModelService {
 
 	static
 	private String createName(String... names){
-		return MetricRegistry.name(ModelService.class, names);
+		return MetricRegistry.name(ModelResource.class, names);
 	}
 
 	static

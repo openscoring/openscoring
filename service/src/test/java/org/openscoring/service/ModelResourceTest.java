@@ -42,11 +42,11 @@ import org.xml.sax.*;
 
 import static org.junit.Assert.*;
 
-public class ModelServiceTest {
+public class ModelResourceTest {
 
 	@Test
 	public void decisionTreeIris() throws Exception {
-		ModelService service = createService("DecisionTreeIris");
+		ModelResource service = createService("DecisionTreeIris");
 
 		List<EvaluationRequest> requests = loadRequest("Iris");
 		List<EvaluationResponse> result = service.evaluateBatch("DecisionTreeIris", requests);
@@ -58,7 +58,7 @@ public class ModelServiceTest {
 
 	@Test
 	public void associationRulesShopping() throws Exception {
-		ModelService service = createService("AssociationRulesShopping");
+		ModelResource service = createService("AssociationRulesShopping");
 
 		List<EvaluationRequest> requests = loadRequest("Shopping");
 		List<EvaluationResponse> result = service.evaluateBatch("AssociationRulesShopping", requests);
@@ -67,7 +67,7 @@ public class ModelServiceTest {
 
 		compare(responses, result);
 
-		List<EvaluationRequest> aggregatedRequests = ModelService.aggregateRequests("transaction", requests);
+		List<EvaluationRequest> aggregatedRequests = ModelResource.aggregateRequests("transaction", requests);
 		List<EvaluationResponse> aggregatedResult = service.evaluateBatch("AssociationRulesShopping", aggregatedRequests);
 
 		assertTrue(aggregatedRequests.size() < requests.size());
@@ -138,22 +138,22 @@ public class ModelServiceTest {
 
 	static
 	private boolean acceptable(String expectedValue, Object actualValue){
-		return VerificationUtil.acceptable(TypeUtil.parse(TypeUtil.getDataType(actualValue), expectedValue), actualValue, ModelServiceTest.precision, ModelServiceTest.zeroThreshold);
+		return VerificationUtil.acceptable(TypeUtil.parse(TypeUtil.getDataType(actualValue), expectedValue), actualValue, ModelResourceTest.precision, ModelResourceTest.zeroThreshold);
 	}
 
 	static
-	private ModelService createService(String id) throws Exception {
+	private ModelResource createService(String id) throws Exception {
 		ModelRegistry modelRegistry = new ModelRegistry();
 		modelRegistry.put(id, loadPMML(id));
 
 		MetricRegistry metricRegistry = new MetricRegistry();
 
-		return new ModelService(modelRegistry, metricRegistry);
+		return new ModelResource(modelRegistry, metricRegistry);
 	}
 
 	static
 	private PMML loadPMML(String id) throws Exception {
-		InputStream is = ModelServiceTest.class.getResourceAsStream("/pmml/" + id + ".pmml");
+		InputStream is = ModelResourceTest.class.getResourceAsStream("/pmml/" + id + ".pmml");
 
 		try {
 			Source source = ImportFilter.apply(new InputSource(is));
@@ -166,7 +166,7 @@ public class ModelServiceTest {
 
 	static
 	private List<EvaluationRequest> loadRequest(String id) throws Exception {
-		InputStream is = ModelServiceTest.class.getResourceAsStream("/csv/" + id + ".csv");
+		InputStream is = ModelResourceTest.class.getResourceAsStream("/csv/" + id + ".csv");
 
 		try {
 			BufferedReader reader = new BufferedReader(new InputStreamReader(is, "UTF-8"));

@@ -128,7 +128,7 @@ public class Main {
 			}
 		};
 
-		ResourceConfig config = new ResourceConfig(ModelService.class);
+		ResourceConfig config = new ResourceConfig(ModelResource.class);
 		config.register(binder);
 		config.register(JacksonFeature.class);
 		config.register(ObjectMapperProvider.class);
