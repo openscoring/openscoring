@@ -60,10 +60,10 @@ public class Main {
 	private String contextPath = "/openscoring";
 
 	@Parameter (
-		names = {"--deploy-dir"},
+		names = {"--model-dir"},
 		description = "Model auto-deployment directory"
 	)
-	private File deployDir = null;
+	private File modelDir = null;
 
 	@Parameter (
 		names = {"--console-war"},
@@ -167,13 +167,13 @@ public class Main {
 
 		DirectoryDeployer deployer = null;
 
-		if(this.deployDir != null){
+		if(this.modelDir != null){
 
-			if(!this.deployDir.isDirectory()){
-				throw new IOException(this.deployDir.getAbsolutePath() + " is not a directory");
+			if(!this.modelDir.isDirectory()){
+				throw new IOException(this.modelDir.getAbsolutePath() + " is not a directory");
 			}
 
-			deployer = new DirectoryDeployer(modelRegistry, this.deployDir.toPath());
+			deployer = new DirectoryDeployer(modelRegistry, this.modelDir.toPath());
 		}
 
 		server.start();
