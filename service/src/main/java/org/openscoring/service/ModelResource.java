@@ -57,6 +57,23 @@ public class ModelResource {
 		this.metricRegistry = metricRegistry;
 	}
 
+	@GET
+	@Produces(MediaType.APPLICATION_JSON)
+	public List<String> list(){
+		List<String> result = new ArrayList<String>(this.modelRegistry.idSet());
+
+		Comparator<String> comparator = new Comparator<String>(){
+
+			@Override
+			public int compare(String left, String right){
+				return (left).compareToIgnoreCase(right);
+			}
+		};
+		Collections.sort(result, comparator);
+
+		return result;
+	}
+
 	@PUT
 	@Path("{id}")
 	@RolesAllowed (
@@ -79,23 +96,6 @@ public class ModelResource {
 		}
 
 		return "Model " + id + " deployed successfully";
-	}
-
-	@GET
-	@Produces(MediaType.APPLICATION_JSON)
-	public List<String> list(){
-		List<String> result = new ArrayList<String>(this.modelRegistry.idSet());
-
-		Comparator<String> comparator = new Comparator<String>(){
-
-			@Override
-			public int compare(String left, String right){
-				return (left).compareToIgnoreCase(right);
-			}
-		};
-		Collections.sort(result, comparator);
-
-		return result;
 	}
 
 	@GET
