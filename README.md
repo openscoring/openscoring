@@ -41,6 +41,7 @@ Additionally, the build produces an executable uber-JAR file `client/target/clie
 | ----------- | -------- | ---------------- | ----------- |
 | PUT | /model/${id} | admin | Deploy a model |
 | GET | /model | - | Get the list of deployed model identifiers |
+| GET | /model/${id} | admin | Download a model |
 | GET | /model/${id}/schema | - | Get the schema of a model |
 | GET | /model/${id}/metrics | admin | Get the metrics of a model |
 | POST | /model/${id} | - | Perform evaluation of a model |
@@ -73,6 +74,13 @@ The response body is the JSON serialized form of a list of strings:
 [
 	"DecisionTreeIris"
 ]
+```
+
+##### Download a model
+
+Download the XML data format representation of a deployed model `DecisionTreeIris`:
+```
+curl -X GET http://localhost:8080/openscoring/model/DecisionTreeIris
 ```
 
 ##### Get the schema of a deployed model

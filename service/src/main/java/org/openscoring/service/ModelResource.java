@@ -26,11 +26,13 @@ import javax.inject.*;
 import javax.servlet.http.*;
 import javax.ws.rs.*;
 import javax.ws.rs.core.*;
+import javax.xml.transform.stream.*;
 
 import org.openscoring.common.*;
 
 import org.jpmml.evaluator.*;
 import org.jpmml.manager.*;
+import org.jpmml.model.*;
 
 import com.google.common.base.Predicate;
 import com.google.common.collect.*;
@@ -96,6 +98,37 @@ public class ModelResource {
 		}
 
 		return "Model " + id + " deployed successfully";
+	}
+
+	@GET
+	@Path("{id}")
+	@RolesAllowed (
+		value = {"admin"}
+	)
+	@Produces({MediaType.APPLICATION_XML, MediaType.TEXT_XML})
+	public Response download(@PathParam("id") String id, @Context HttpServletResponse response){
+		final
+		PMML pmml = this.modelRegistry.get(id);
+		if(pmml == null){
+			throw new NotFoundException();
+		}
+
+		StreamingOutput entity = new StreamingOutput(){
+
+			@Override
+			public void write(OutputStream os){
+
+				try {
+					JAXBUtil.marshalPMML(pmml, new StreamResult(os));
+				} catch(Exception e){
+					throw new WebApplicationException(e);
+				}
+			}
+		};
+
+		return Response.ok(entity, MediaType.TEXT_XML)
+			.header("Content-Disposition", "attachment; filename=" + id + ".pmml.xml") // XXX
+			.build();
 	}
 
 	@GET
