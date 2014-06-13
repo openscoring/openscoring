@@ -24,7 +24,9 @@ import java.net.*;
 import org.openscoring.service.*;
 
 import org.eclipse.jetty.server.*;
+import org.eclipse.jetty.server.handler.*;
 import org.eclipse.jetty.servlet.*;
+import org.eclipse.jetty.webapp.*;
 
 import com.beust.jcommander.*;
 import com.codahale.metrics.*;
@@ -41,13 +43,13 @@ public class Main {
 
 	@Parameter (
 		names = {"--host"},
-		description = "Host"
+		description = "Server host name or ip address"
 	)
 	private String host = null;
 
 	@Parameter (
 		names = {"--port"},
-		description = "Port"
+		description = "Server port"
 	)
 	private int port = 8080;
 
@@ -59,9 +61,16 @@ public class Main {
 
 	@Parameter (
 		names = {"--deploy-dir"},
-		description = "Auto-deployment directory"
+		description = "Model auto-deployment directory"
 	)
-	private File dir = null;
+	private File deployDir = null;
+
+	@Parameter (
+		names = {"--console-war"},
+		description = "Console web application (WAR) file or directory",
+		hidden = true
+	)
+	private File consoleWar = null;
 
 	@Parameter (
 		names = {"--help"},
@@ -108,10 +117,7 @@ public class Main {
 
 		Server server = new Server(address);
 
-		ServletContextHandler contextHandler = new ServletContextHandler();
-		contextHandler.setContextPath(this.contextPath);
-
-		contextHandler.addServlet(DefaultServlet.class, "/");
+		ContextHandlerCollection handlerCollection = new ContextHandlerCollection();
 
 		final
 		ModelRegistry modelRegistry = new ModelRegistry();
@@ -137,24 +143,37 @@ public class Main {
 		// Naive implementation that grants the "admin" role to all local network users
 		config.register(NetworkSecurityContextFilter.class);
 
-		ServletContainer servletContainer = new ServletContainer(config);
+		ServletContextHandler servletHandler = new ServletContextHandler();
+		servletHandler.setContextPath(this.contextPath);
 
-		contextHandler.addServlet(new ServletHolder(servletContainer), "/*");
+		ServletContainer jerseyServlet = new ServletContainer(config);
+
+		servletHandler.addServlet(new ServletHolder(jerseyServlet), "/*");
 
 		InstrumentedHandler instrumentedHandler = new InstrumentedHandler(metricRegistry);
-		instrumentedHandler.setHandler(contextHandler);
+		instrumentedHandler.setHandler(servletHandler);
 
-		server.setHandler(instrumentedHandler);
+		handlerCollection.addHandler(instrumentedHandler);
+
+		if(this.consoleWar != null){
+			WebAppContext consoleHandler = new WebAppContext();
+			consoleHandler.setContextPath(this.contextPath + "/console"); // XXX
+			consoleHandler.setWar(this.consoleWar.getAbsolutePath());
+
+			handlerCollection.addHandler(consoleHandler);
+		}
+
+		server.setHandler(handlerCollection);
 
 		DirectoryDeployer deployer = null;
 
-		if(this.dir != null){
+		if(this.deployDir != null){
 
-			if(!this.dir.isDirectory()){
-				throw new IOException(this.dir.getAbsolutePath() + " is not a directory");
+			if(!this.deployDir.isDirectory()){
+				throw new IOException(this.deployDir.getAbsolutePath() + " is not a directory");
 			}
 
-			deployer = new DirectoryDeployer(modelRegistry, this.dir.toPath());
+			deployer = new DirectoryDeployer(modelRegistry, this.deployDir.toPath());
 		}
 
 		server.start();

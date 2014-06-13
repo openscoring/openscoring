@@ -132,6 +132,11 @@
 				<artifactId>jetty-servlet</artifactId>
 				<version>9.2.0.v20140526</version>
 			</dependency>
+			<dependency>
+				<groupId>org.eclipse.jetty</groupId>
+				<artifactId>jetty-webapp</artifactId>
+				<version>9.2.0.v20140526</version>
+			</dependency>
 
 			<dependency>
 				<groupId>org.glassfish.hk2</groupId>
