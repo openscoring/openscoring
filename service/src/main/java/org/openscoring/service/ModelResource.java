@@ -26,13 +26,11 @@ import javax.inject.*;
 import javax.servlet.http.*;
 import javax.ws.rs.*;
 import javax.ws.rs.core.*;
-import javax.xml.transform.stream.*;
 
 import org.openscoring.common.*;
 
 import org.jpmml.evaluator.*;
 import org.jpmml.manager.*;
-import org.jpmml.model.*;
 
 import com.google.common.base.Predicate;
 import com.google.common.collect.*;
@@ -62,7 +60,7 @@ public class ModelResource {
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
 	public List<String> list(){
-		List<String> result = new ArrayList<String>(this.modelRegistry.idSet());
+		List<String> result = new ArrayList<String>(this.modelRegistry.keySet());
 
 		Comparator<String> comparator = new Comparator<String>(){
 
@@ -86,13 +84,17 @@ public class ModelResource {
 	public String deploy(@PathParam("id") String id, @Context HttpServletRequest request){
 
 		try {
+			PMML pmml;
+
 			InputStream is = request.getInputStream();
 
 			try {
-				this.modelRegistry.put(id, is);
+				pmml = ModelRegistry.unmarshal(is);
 			} finally {
 				is.close();
 			}
+
+			this.modelRegistry.put(id, pmml);
 		} catch(Exception e){
 			throw new WebApplicationException(e, Response.Status.BAD_REQUEST);
 		}
@@ -119,7 +121,7 @@ public class ModelResource {
 			public void write(OutputStream os){
 
 				try {
-					JAXBUtil.marshalPMML(pmml, new StreamResult(os));
+					ModelRegistry.marshal(pmml, os);
 				} catch(Exception e){
 					throw new WebApplicationException(e);
 				}

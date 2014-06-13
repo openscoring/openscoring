@@ -23,6 +23,8 @@ import java.util.*;
 
 import javax.inject.*;
 import javax.xml.bind.*;
+import javax.xml.transform.*;
+import javax.xml.transform.stream.*;
 
 import org.jpmml.model.*;
 
@@ -41,20 +43,12 @@ public class ModelRegistry {
 	private Map<String, PMML> models = Maps.<String, PMML>newConcurrentMap();
 
 
-	public Set<String> idSet(){
+	public Set<String> keySet(){
 		return Collections.unmodifiableSet(this.models.keySet());
 	}
 
 	public PMML get(String id){
 		return this.models.get(id);
-	}
-
-	public PMML put(String id, InputStream is) throws SAXException, JAXBException {
-		InputSource source = new InputSource(is);
-
-		PMML pmml = JAXBUtil.unmarshalPMML(ImportFilter.apply(source));
-
-		return put(id, pmml);
 	}
 
 	public PMML put(String id, PMML pmml){
@@ -63,5 +57,19 @@ public class ModelRegistry {
 
 	public PMML remove(String id){
 		return this.models.remove(id);
+	}
+
+	static
+	public PMML unmarshal(InputStream is) throws SAXException, JAXBException {
+		Source source = ImportFilter.apply(new InputSource(is));
+
+		return JAXBUtil.unmarshalPMML(source);
+	}
+
+	static
+	public void marshal(PMML pmml, OutputStream os) throws JAXBException {
+		Result result = new StreamResult(os);
+
+		JAXBUtil.marshalPMML(pmml, result);
 	}
 }

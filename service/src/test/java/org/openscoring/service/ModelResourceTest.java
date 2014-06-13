@@ -21,12 +21,9 @@ package org.openscoring.service;
 import java.io.*;
 import java.util.*;
 
-import javax.xml.transform.*;
-
 import org.openscoring.common.*;
 
 import org.jpmml.evaluator.*;
-import org.jpmml.model.*;
 
 import com.google.common.collect.*;
 
@@ -37,8 +34,6 @@ import org.junit.*;
 import com.codahale.metrics.*;
 
 import org.supercsv.prefs.*;
-
-import org.xml.sax.*;
 
 import static org.junit.Assert.*;
 
@@ -156,9 +151,7 @@ public class ModelResourceTest {
 		InputStream is = ModelResourceTest.class.getResourceAsStream("/pmml/" + id + ".pmml");
 
 		try {
-			Source source = ImportFilter.apply(new InputSource(is));
-
-			return JAXBUtil.unmarshalPMML(source);
+			return ModelRegistry.unmarshal(is);
 		} finally {
 			is.close();
 		}

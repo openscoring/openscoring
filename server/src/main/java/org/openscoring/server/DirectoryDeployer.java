@@ -25,6 +25,8 @@ import java.util.*;
 
 import org.openscoring.service.*;
 
+import org.dmg.pmml.*;
+
 public class DirectoryDeployer extends Thread {
 
 	private ModelRegistry modelRegistry = null;
@@ -106,13 +108,17 @@ public class DirectoryDeployer extends Thread {
 		if((StandardWatchEventKinds.ENTRY_CREATE).equals(kind)){
 
 			try {
+				PMML pmml;
+
 				InputStream is = Files.newInputStream(path);
 
 				try {
-					modelRegistry.put(id, is);
+					pmml = ModelRegistry.unmarshal(is);
 				} finally {
 					is.close();
 				}
+
+				modelRegistry.put(id, pmml);
 			} catch(Exception e){
 				// Ignored
 			}
