@@ -2,6 +2,7 @@ Openscoring includes third-party dependencies that are released under the Apache
   * Coda Hale Metrics - http://metrics.codahale.com/
   * Guava - http://guava-libraries.googlecode.com
   * JCommander - http://jcommander.org
+  * Jetty - http://www.eclipse.org/jetty/
   * Super CSV - http://supercsv.sourceforge.net/
 
                                  Apache License
