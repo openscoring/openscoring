@@ -31,7 +31,6 @@ import org.openscoring.common.*;
 
 import org.jpmml.evaluator.*;
 
-import com.google.common.base.Predicate;
 import com.google.common.collect.*;
 
 import org.dmg.pmml.*;
@@ -165,28 +164,33 @@ public class ModelResource {
 		}
 
 		final
-		String prefix = MetricRegistry.name(getClass(), id) + ".";
+		String prefix = createName(id) + ".";
 
-		Predicate<String> filter = new Predicate<String>(){
+		MetricFilter filter = new MetricFilter(){
 
 			@Override
-			public boolean apply(String name){
+			public boolean matches(String name, Metric metric){
 				return name.startsWith(prefix);
 			}
 		};
 
-		Map<String, Metric> metrics = Maps.filterKeys(this.metricRegistry.getMetrics(), filter);
+		Map<String, Metric> metrics = this.metricRegistry.getMetrics();
 
 		MetricRegistry result = new MetricRegistry();
 
 		Collection<Map.Entry<String, Metric>> entries = metrics.entrySet();
 		for(Map.Entry<String, Metric> entry : entries){
 			String name = entry.getKey();
+			Metric metric = entry.getValue();
+
+			if(!filter.matches(name, metric)){
+				continue;
+			}
 
 			// Strip prefix
 			name = name.substring(prefix.length());
 
-			result.register(name, entry.getValue());
+			result.register(name, metric);
 		}
 
 		return result;
@@ -268,6 +272,19 @@ public class ModelResource {
 			throw new NotFoundException();
 		}
 
+		final
+		String prefix = createName(id) + ".";
+
+		MetricFilter filter = new MetricFilter(){
+
+			@Override
+			public boolean matches(String name, Metric metric){
+				return name.startsWith(prefix);
+			}
+		};
+
+		this.metricRegistry.removeMatching(filter);
+
 		return "Model " + id + " undeployed successfully";
 	}
 
@@ -309,6 +326,14 @@ public class ModelResource {
 		counter.inc(responses.size());
 
 		return responses;
+	}
+
+	ModelRegistry getModelRegistry(){
+		return this.modelRegistry;
+	}
+
+	MetricRegistry getMetricRegistry(){
+		return this.metricRegistry;
 	}
 
 	private Counter getCounter(String... names){

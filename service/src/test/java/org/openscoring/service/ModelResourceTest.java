@@ -43,12 +43,22 @@ public class ModelResourceTest {
 	public void decisionTreeIris() throws Exception {
 		ModelResource service = createService("DecisionTreeIris");
 
+		MetricRegistry metricRegistry = service.getMetricRegistry();
+
+		assertTrue((metricRegistry.getMetrics()).isEmpty());
+
 		List<EvaluationRequest> requests = loadRequest("Iris");
 		List<EvaluationResponse> result = service.evaluateBatch("DecisionTreeIris", requests);
+
+		assertFalse((metricRegistry.getMetrics()).isEmpty());
 
 		List<EvaluationResponse> responses = loadResponse("DecisionTreeIris");
 
 		compare(responses, result);
+
+		service.undeploy("DecisionTreeIris");
+
+		assertTrue((metricRegistry.getMetrics()).isEmpty());
 	}
 
 	@Test
