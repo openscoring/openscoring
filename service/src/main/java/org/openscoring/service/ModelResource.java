@@ -80,10 +80,9 @@ public class ModelResource {
 	@Consumes({MediaType.APPLICATION_XML, MediaType.TEXT_XML})
 	@Produces(MediaType.TEXT_PLAIN)
 	public String deploy(@PathParam("id") String id, @Context HttpServletRequest request){
+		PMML pmml;
 
 		try {
-			PMML pmml;
-
 			InputStream is = request.getInputStream();
 
 			try {
@@ -91,11 +90,11 @@ public class ModelResource {
 			} finally {
 				is.close();
 			}
-
-			this.modelRegistry.put(id, pmml);
 		} catch(Exception e){
 			throw new WebApplicationException(e, Response.Status.BAD_REQUEST);
 		}
+
+		this.modelRegistry.put(id, pmml);
 
 		return "Model " + id + " deployed successfully";
 	}
@@ -105,32 +104,31 @@ public class ModelResource {
 	@RolesAllowed (
 		value = {"admin"}
 	)
-	@Produces({MediaType.APPLICATION_XML, MediaType.TEXT_XML})
+	@Produces(MediaType.TEXT_XML)
 	public Response download(@PathParam("id") String id, @Context HttpServletResponse response){
 		ModelEvaluator<?> evaluator = this.modelRegistry.get(id);
 		if(evaluator == null){
 			throw new NotFoundException();
 		}
 
-		final
 		PMML pmml = evaluator.getPMML();
 
-		StreamingOutput entity = new StreamingOutput(){
+		try {
+			response.setContentType(MediaType.TEXT_XML);
+			response.setHeader("Content-Disposition", "attachment; filename=" + id + ".pmml.xml"); // XXX
 
-			@Override
-			public void write(OutputStream os){
+			OutputStream os = response.getOutputStream();
 
-				try {
-					ModelRegistry.marshal(pmml, os);
-				} catch(Exception e){
-					throw new WebApplicationException(e);
-				}
+			try {
+				ModelRegistry.marshal(pmml, os);
+			} finally {
+				os.close();
 			}
-		};
+		} catch(Exception e){
+			throw new WebApplicationException(e);
+		}
 
-		return Response.ok(entity, MediaType.TEXT_XML)
-			.header("Content-Disposition", "attachment; filename=" + id + ".pmml.xml") // XXX
-			.build();
+		return null;
 	}
 
 	@GET
@@ -224,7 +222,7 @@ public class ModelResource {
 	@Path("{id}/csv")
 	@Consumes(MediaType.TEXT_PLAIN)
 	@Produces(MediaType.TEXT_PLAIN)
-	public void evaluateCsv(@PathParam("id") String id, @Context HttpServletRequest request, @QueryParam("idColumn") String idColumn, @Context HttpServletResponse response){
+	public Response evaluateCsv(@PathParam("id") String id, @Context HttpServletRequest request, @QueryParam("idColumn") String idColumn, @Context HttpServletResponse response){
 		CsvPreference format;
 
 		List<EvaluationRequest> requests;
@@ -258,6 +256,8 @@ public class ModelResource {
 		} catch(Exception e){
 			throw new WebApplicationException(e, Response.Status.INTERNAL_SERVER_ERROR);
 		}
+
+		return null;
 	}
 
 	@DELETE
