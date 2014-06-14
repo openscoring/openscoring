@@ -199,11 +199,9 @@ public class ModelResource {
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
 	public EvaluationResponse evaluate(@PathParam("id") String id, EvaluationRequest request){
-		Timer timer = getTimer(id, "evaluate");
-
 		List<EvaluationRequest> requests = Collections.singletonList(request);
 
-		List<EvaluationResponse> responses = doBatch(id, requests, timer);
+		List<EvaluationResponse> responses = doBatch(id, requests, "evaluate");
 
 		return responses.get(0);
 	}
@@ -213,9 +211,7 @@ public class ModelResource {
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
 	public List<EvaluationResponse> evaluateBatch(@PathParam("id") String id, List<EvaluationRequest> requests){
-		Timer timer = getTimer(id, "evaluateBatch");
-
-		return doBatch(id, requests, timer);
+		return doBatch(id, requests, "evaluateBatch");
 	}
 
 	@POST
@@ -241,9 +237,7 @@ public class ModelResource {
 			throw new WebApplicationException(e, Response.Status.BAD_REQUEST);
 		}
 
-		Timer timer = getTimer(id, "evaluateCsv");
-
-		List<EvaluationResponse> responses = doBatch(id, requests, timer);
+		List<EvaluationResponse> responses = doBatch(id, requests, "evaluateCsv");
 
 		try {
 			BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(response.getOutputStream(), "UTF-8")); // XXX
@@ -288,13 +282,15 @@ public class ModelResource {
 		return "Model " + id + " undeployed successfully";
 	}
 
-	private List<EvaluationResponse> doBatch(String id, List<EvaluationRequest> requests, Timer timer){
+	private List<EvaluationResponse> doBatch(String id, List<EvaluationRequest> requests, String method){
 		ModelEvaluator<?> evaluator = this.modelRegistry.get(id);
 		if(evaluator == null){
 			throw new NotFoundException();
 		}
 
 		List<EvaluationResponse> responses = new ArrayList<EvaluationResponse>();
+
+		Timer timer = this.metricRegistry.timer(createName(id, method));
 
 		Timer.Context context = timer.time();
 
@@ -321,7 +317,7 @@ public class ModelResource {
 
 		context.stop();
 
-		Counter counter = getCounter(id, "records");
+		Counter counter = this.metricRegistry.counter(createName(id, "records"));
 
 		counter.inc(responses.size());
 
@@ -334,14 +330,6 @@ public class ModelResource {
 
 	MetricRegistry getMetricRegistry(){
 		return this.metricRegistry;
-	}
-
-	private Counter getCounter(String... names){
-		return this.metricRegistry.counter(createName(names));
-	}
-
-	private Timer getTimer(String... names){
-		return this.metricRegistry.timer(createName(names));
 	}
 
 	static
