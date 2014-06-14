@@ -134,7 +134,7 @@ public class ModelResource {
 	@GET
 	@Path("{id}/schema")
 	@Produces(MediaType.APPLICATION_JSON)
-	public SchemaResponse getSchema(@PathParam("id") String id){
+	public SchemaResponse schema(@PathParam("id") String id){
 		ModelEvaluator<?> evaluator = this.modelRegistry.get(id);
 		if(evaluator == null){
 			throw new NotFoundException();
@@ -155,7 +155,7 @@ public class ModelResource {
 		value = {"admin"}
 	)
 	@Produces(MediaType.APPLICATION_JSON)
-	public MetricRegistry getMetrics(@PathParam("id") String id){
+	public MetricRegistry metrics(@PathParam("id") String id){
 		ModelEvaluator<?> evaluator = this.modelRegistry.get(id);
 		if(evaluator == null){
 			throw new NotFoundException();
