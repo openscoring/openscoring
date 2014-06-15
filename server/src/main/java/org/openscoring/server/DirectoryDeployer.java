@@ -25,7 +25,7 @@ import java.util.*;
 
 import org.openscoring.service.*;
 
-import org.dmg.pmml.*;
+import org.jpmml.evaluator.*;
 
 public class DirectoryDeployer extends Thread {
 
@@ -106,26 +106,29 @@ public class DirectoryDeployer extends Thread {
 		} // End if
 
 		if((StandardWatchEventKinds.ENTRY_CREATE).equals(kind)){
+			ModelEvaluator<?> evaluator;
 
 			try {
-				PMML pmml;
-
 				InputStream is = Files.newInputStream(path);
 
 				try {
-					pmml = ModelRegistry.unmarshal(is);
+					evaluator = ModelRegistry.unmarshal(is);
 				} finally {
 					is.close();
 				}
-
-				modelRegistry.put(id, pmml);
 			} catch(Exception e){
 				// Ignored
+
+				return;
 			}
+
+			modelRegistry.put(id, evaluator);
 		} else
 
 		if((StandardWatchEventKinds.ENTRY_DELETE).equals(kind)){
-			modelRegistry.remove(id);
+			ModelEvaluator<?> evaluator = modelRegistry.get(id);
+
+			modelRegistry.remove(id, evaluator);
 		}
 	}
 

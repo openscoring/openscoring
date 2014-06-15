@@ -20,6 +20,7 @@ package org.openscoring.service;
 
 import java.io.*;
 import java.util.*;
+import java.util.concurrent.*;
 
 import javax.inject.*;
 import javax.xml.bind.*;
@@ -30,6 +31,7 @@ import org.jpmml.evaluator.*;
 import org.jpmml.manager.*;
 import org.jpmml.model.*;
 
+import com.google.common.base.*;
 import com.google.common.collect.*;
 
 import org.dmg.pmml.*;
@@ -42,47 +44,48 @@ import org.xml.sax.*;
 @Singleton
 public class ModelRegistry {
 
-	private Map<String, ModelEvaluator<?>> models = Maps.<String, ModelEvaluator<?>>newConcurrentMap();
+	private ConcurrentMap<String, ModelEvaluator<?>> models = Maps.<String, ModelEvaluator<?>>newConcurrentMap();
 
 
-	public Set<String> keySet(){
-		return Collections.unmodifiableSet(this.models.keySet());
+	public Collection<Map.Entry<String, ModelEvaluator<?>>> entries(){
+		return this.models.entrySet();
 	}
 
 	public ModelEvaluator<?> get(String id){
 		return this.models.get(id);
 	}
 
-	public ModelEvaluator<?> put(String id, PMML pmml){
-		return put(id, createModelEvaluator(pmml));
+	public boolean put(String id, ModelEvaluator<?> evaluator){
+		ModelEvaluator<?> oldEvaluator = this.models.putIfAbsent(id, Preconditions.checkNotNull(evaluator));
+
+		return (oldEvaluator == null);
 	}
 
-	public ModelEvaluator<?> put(String id, ModelEvaluator<?> evaluator){
-		return this.models.put(id, evaluator);
+	public boolean replace(String id, ModelEvaluator<?> oldEvaluator, ModelEvaluator<?> evaluator){
+		return this.models.replace(id, oldEvaluator, Preconditions.checkNotNull(evaluator));
 	}
 
-	public ModelEvaluator<?> remove(String id){
-		return this.models.remove(id);
+	public boolean remove(String id, ModelEvaluator<?> evaluator){
+		return this.models.remove(id, evaluator);
 	}
 
 	static
-	public PMML unmarshal(InputStream is) throws SAXException, JAXBException {
+	public ModelEvaluator<?> unmarshal(InputStream is) throws SAXException, JAXBException {
 		Source source = ImportFilter.apply(new InputSource(is));
 
-		return JAXBUtil.unmarshalPMML(source);
-	}
+		PMML pmml = JAXBUtil.unmarshalPMML(source);
 
-	static
-	public void marshal(PMML pmml, OutputStream os) throws JAXBException {
-		Result result = new StreamResult(os);
-
-		JAXBUtil.marshalPMML(pmml, result);
-	}
-
-	static
-	private ModelEvaluator<?> createModelEvaluator(PMML pmml){
 		PMMLManager pmmlManager = new PMMLManager(pmml);
 
 		return (ModelEvaluator<?>)pmmlManager.getModelManager(null, ModelEvaluatorFactory.getInstance());
+	}
+
+	static
+	public void marshal(ModelEvaluator<?> evaluator, OutputStream os) throws JAXBException {
+		PMML pmml = evaluator.getPMML();
+
+		Result result = new StreamResult(os);
+
+		JAXBUtil.marshalPMML(pmml, result);
 	}
 }

@@ -27,8 +27,6 @@ import org.jpmml.evaluator.*;
 
 import com.google.common.collect.*;
 
-import org.dmg.pmml.*;
-
 import org.junit.*;
 
 import com.codahale.metrics.*;
@@ -149,7 +147,7 @@ public class ModelResourceTest {
 	static
 	private ModelResource createService(String id) throws Exception {
 		ModelRegistry modelRegistry = new ModelRegistry();
-		modelRegistry.put(id, loadPMML(id));
+		modelRegistry.put(id, loadModel(id));
 
 		MetricRegistry metricRegistry = new MetricRegistry();
 
@@ -157,7 +155,7 @@ public class ModelResourceTest {
 	}
 
 	static
-	private PMML loadPMML(String id) throws Exception {
+	private ModelEvaluator<?> loadModel(String id) throws Exception {
 		InputStream is = ModelResourceTest.class.getResourceAsStream("/pmml/" + id + ".pmml");
 
 		try {

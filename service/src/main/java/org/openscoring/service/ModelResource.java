@@ -57,14 +57,19 @@ public class ModelResource {
 
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
-	public List<String> list(){
-		List<String> result = new ArrayList<String>(this.modelRegistry.keySet());
+	public List<ModelResponse> list(){
+		List<ModelResponse> result = Lists.newArrayList();
 
-		Comparator<String> comparator = new Comparator<String>(){
+		Collection<Map.Entry<String, ModelEvaluator<?>>> entries = this.modelRegistry.entries();
+		for(Map.Entry<String, ModelEvaluator<?>> entry : entries){
+			result.add(createModelResponse(entry.getKey(), entry.getValue()));
+		}
+
+		Comparator<ModelResponse> comparator = new Comparator<ModelResponse>(){
 
 			@Override
-			public int compare(String left, String right){
-				return (left).compareToIgnoreCase(right);
+			public int compare(ModelResponse left, ModelResponse right){
+				return (left.getId()).compareToIgnoreCase(right.getId());
 			}
 		};
 		Collections.sort(result, comparator);
@@ -78,15 +83,15 @@ public class ModelResource {
 		value = {"admin"}
 	)
 	@Consumes({MediaType.APPLICATION_XML, MediaType.TEXT_XML})
-	@Produces(MediaType.TEXT_PLAIN)
-	public String deploy(@PathParam("id") String id, @Context HttpServletRequest request){
-		PMML pmml;
+	@Produces(MediaType.APPLICATION_JSON)
+	public ModelResponse deploy(@PathParam("id") String id, @Context HttpServletRequest request){
+		ModelEvaluator<?> evaluator;
 
 		try {
 			InputStream is = request.getInputStream();
 
 			try {
-				pmml = ModelRegistry.unmarshal(is);
+				evaluator = ModelRegistry.unmarshal(is);
 			} finally {
 				is.close();
 			}
@@ -94,9 +99,22 @@ public class ModelResource {
 			throw new BadRequestException(e);
 		}
 
-		this.modelRegistry.put(id, pmml);
+		boolean success;
 
-		return "Model " + id + " deployed successfully";
+		ModelEvaluator<?> oldEvaluator = this.modelRegistry.get(id);
+		if(oldEvaluator != null){
+			success = this.modelRegistry.replace(id, oldEvaluator, evaluator);
+		} else
+
+		{
+			success = this.modelRegistry.put(id, evaluator);
+		} // End if
+
+		if(!success){
+			throw new InternalServerErrorException();
+		}
+
+		return createModelResponse(id, evaluator);
 	}
 
 	@GET
@@ -111,8 +129,6 @@ public class ModelResource {
 			throw new NotFoundException();
 		}
 
-		PMML pmml = evaluator.getPMML();
-
 		try {
 			response.setContentType(MediaType.TEXT_XML);
 			response.setHeader("Content-Disposition", "attachment; filename=" + id + ".pmml.xml"); // XXX
@@ -120,7 +136,7 @@ public class ModelResource {
 			OutputStream os = response.getOutputStream();
 
 			try {
-				ModelRegistry.marshal(pmml, os);
+				ModelRegistry.marshal(evaluator, os);
 			} finally {
 				os.close();
 			}
@@ -140,13 +156,7 @@ public class ModelResource {
 			throw new NotFoundException();
 		}
 
-		SchemaResponse response = new SchemaResponse();
-		response.setActiveFields(toValueList(evaluator.getActiveFields()));
-		response.setGroupFields(toValueList(evaluator.getGroupFields()));
-		response.setTargetFields(toValueList(evaluator.getTargetFields()));
-		response.setOutputFields(toValueList(evaluator.getOutputFields()));
-
-		return response;
+		return createSchemaResponse(evaluator);
 	}
 
 	@GET
@@ -259,11 +269,15 @@ public class ModelResource {
 	@RolesAllowed (
 		value = {"admin"}
 	)
-	@Produces(MediaType.TEXT_PLAIN)
-	public String undeploy(@PathParam("id") String id){
-		ModelEvaluator<?> evaluator = this.modelRegistry.remove(id);
+	public Response undeploy(@PathParam("id") String id){
+		ModelEvaluator<?> evaluator = this.modelRegistry.get(id);
 		if(evaluator == null){
 			throw new NotFoundException();
+		}
+
+		boolean success = this.modelRegistry.remove(id, evaluator);
+		if(!success){
+			throw new InternalServerErrorException();
 		}
 
 		final
@@ -279,7 +293,7 @@ public class ModelResource {
 
 		this.metricRegistry.removeMatching(filter);
 
-		return "Model " + id + " undeployed successfully";
+		return null;
 	}
 
 	private List<EvaluationResponse> doBatch(String id, List<EvaluationRequest> requests, String method){
@@ -288,7 +302,7 @@ public class ModelResource {
 			throw new NotFoundException();
 		}
 
-		List<EvaluationResponse> responses = new ArrayList<EvaluationResponse>();
+		List<EvaluationResponse> responses = Lists.newArrayList();
 
 		Timer timer = this.metricRegistry.timer(createName(id, method));
 
@@ -399,6 +413,25 @@ public class ModelResource {
 		Map<FieldName, ?> result = evaluator.evaluate(arguments);
 
 		response.setResult(EvaluatorUtil.decode(result));
+
+		return response;
+	}
+
+	static
+	private ModelResponse createModelResponse(String id, ModelEvaluator<?> evaluator){
+		ModelResponse response = new ModelResponse(id);
+		response.setSummary(evaluator.getSummary());
+
+		return response;
+	}
+
+	static
+	private SchemaResponse createSchemaResponse(ModelEvaluator<?> evaluator){
+		SchemaResponse response = new SchemaResponse();
+		response.setActiveFields(toValueList(evaluator.getActiveFields()));
+		response.setGroupFields(toValueList(evaluator.getGroupFields()));
+		response.setTargetFields(toValueList(evaluator.getTargetFields()));
+		response.setOutputFields(toValueList(evaluator.getOutputFields()));
 
 		return response;
 	}

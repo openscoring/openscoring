@@ -40,7 +40,7 @@ Additionally, the build produces an executable uber-JAR file `client/target/clie
 | HTTP method | Endpoint | Required role(s) | Description |
 | ----------- | -------- | ---------------- | ----------- |
 | PUT | /model/${id} | admin | Deploy a model |
-| GET | /model | - | Get the list of deployed model identifiers |
+| GET | /model | - | Get the list of all deployed models |
 | GET | /model/${id} | admin | Download a model |
 | GET | /model/${id}/schema | - | Get the schema of a model |
 | GET | /model/${id}/metrics | admin | Get the metrics of a model |
@@ -58,23 +58,26 @@ Deploy the contents of the PMML file `DecisionTreeIris.pmml` as a model `Decisio
 curl -X PUT --data-binary @DecisionTreeIris.pmml -H "Content-type: text/xml" http://localhost:8080/openscoring/model/DecisionTreeIris
 ```
 
+The response body is the JSON serialized form of an `org.openscoring.common.ModelResponse` object:
+```json
+{
+	"id" : "DecisionTreeIris",
+	"summary" : "Tree model"
+}
+```
+
 The example PMML file `DecisionTreeIris.pmml` along with example JSON and CSV files is available in the `server/etc` directory.
 
 ### GET - Obtain model information
 
-##### Get the list of deployed model identifiers
+##### Get the list of all deployed models
 
-Obtain the list of deployed model identifiers:
+Obtain the list of deployed models:
 ```
 curl -X GET http://localhost:8080/openscoring/model
 ```
 
-The response body is the JSON serialized form of a list of strings:
-```json
-[
-	"DecisionTreeIris"
-]
-```
+The response body is the JSON serialized form of a list of `org.openscoring.common.ModelResponse` objects.
 
 ##### Download a model
 
