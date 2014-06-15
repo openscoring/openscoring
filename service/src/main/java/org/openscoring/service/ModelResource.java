@@ -91,7 +91,7 @@ public class ModelResource {
 				is.close();
 			}
 		} catch(Exception e){
-			throw new WebApplicationException(e, Response.Status.BAD_REQUEST);
+			throw new BadRequestException(e);
 		}
 
 		this.modelRegistry.put(id, pmml);
@@ -125,7 +125,7 @@ public class ModelResource {
 				os.close();
 			}
 		} catch(Exception e){
-			throw new WebApplicationException(e);
+			throw new InternalServerErrorException(e);
 		}
 
 		return null;
@@ -234,7 +234,7 @@ public class ModelResource {
 				reader.close();
 			}
 		} catch(Exception e){
-			throw new WebApplicationException(e, Response.Status.BAD_REQUEST);
+			throw new BadRequestException(e);
 		}
 
 		List<EvaluationResponse> responses = doBatch(id, requests, "evaluateCsv");
@@ -248,7 +248,7 @@ public class ModelResource {
 				writer.close();
 			}
 		} catch(Exception e){
-			throw new WebApplicationException(e, Response.Status.INTERNAL_SERVER_ERROR);
+			throw new InternalServerErrorException(e);
 		}
 
 		return null;
@@ -312,7 +312,7 @@ public class ModelResource {
 				responses.add(response);
 			}
 		} catch(Exception e){
-			throw new WebApplicationException(e, Response.Status.INTERNAL_SERVER_ERROR);
+			throw new InternalServerErrorException(e);
 		}
 
 		context.stop();
