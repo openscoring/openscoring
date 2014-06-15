@@ -19,6 +19,7 @@
 package org.openscoring.service;
 
 import java.io.*;
+import java.net.*;
 import java.util.*;
 
 import javax.annotation.security.*;
@@ -45,6 +46,9 @@ import org.supercsv.prefs.*;
 @Path("model")
 @PermitAll
 public class ModelResource {
+
+	@Context
+	private UriInfo uriInfo = null;
 
 	private ModelRegistry modelRegistry = null;
 
@@ -85,7 +89,7 @@ public class ModelResource {
 	)
 	@Consumes(MediaType.MULTIPART_FORM_DATA)
 	@Produces(MediaType.APPLICATION_JSON)
-	public ModelResponse deploy(@FormDataParam("id") String id, @FormDataParam("model") InputStream is){
+	public Response deploy(@FormDataParam("id") String id, @FormDataParam("model") InputStream is){
 
 		if(id == null || ("").equals(id.trim())){
 			throw new BadRequestException();
@@ -101,7 +105,7 @@ public class ModelResource {
 	)
 	@Consumes({MediaType.APPLICATION_XML, MediaType.TEXT_XML})
 	@Produces(MediaType.APPLICATION_JSON)
-	public ModelResponse deploy(@PathParam("id") String id, @Context HttpServletRequest request){
+	public Response deploy(@PathParam("id") String id, @Context HttpServletRequest request){
 
 		try {
 			InputStream is = request.getInputStream();
@@ -118,7 +122,7 @@ public class ModelResource {
 		}
 	}
 
-	private ModelResponse doDeploy(String id, InputStream is){
+	private Response doDeploy(String id, InputStream is){
 		ModelEvaluator<?> evaluator;
 
 		try {
@@ -142,7 +146,19 @@ public class ModelResource {
 			throw new InternalServerErrorException();
 		}
 
-		return createModelResponse(id, evaluator);
+		ModelResponse entity = createModelResponse(id, evaluator);
+
+		if(oldEvaluator != null){
+			return (Response.ok().entity(entity)).build();
+		} else
+
+		{
+			UriBuilder uriBuilder = (this.uriInfo.getBaseUriBuilder()).path(ModelResource.class).path(id);
+
+			URI uri = uriBuilder.build();
+
+			return (Response.created(uri).entity(entity)).build();
+		}
 	}
 
 	@GET
@@ -172,7 +188,7 @@ public class ModelResource {
 			throw new InternalServerErrorException(e);
 		}
 
-		return null;
+		return (Response.ok()).build();
 	}
 
 	@GET
@@ -329,7 +345,7 @@ public class ModelResource {
 			throw new InternalServerErrorException(e);
 		}
 
-		return null;
+		return (Response.ok()).build();
 	}
 
 	private List<EvaluationResponse> doEvaluate(String id, List<EvaluationRequest> requests, String method){
@@ -403,7 +419,7 @@ public class ModelResource {
 
 		this.metricRegistry.removeMatching(filter);
 
-		return null;
+		return (Response.noContent()).build();
 	}
 
 	ModelRegistry getModelRegistry(){
