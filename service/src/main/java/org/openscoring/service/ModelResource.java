@@ -204,6 +204,18 @@ public class ModelResource {
 	}
 
 	@GET
+	@Path("metrics")
+	@RolesAllowed (
+		value = {"admin"}
+	)
+	@Produces(MediaType.APPLICATION_JSON)
+	public MetricRegistry metrics(){
+		String prefix = createName() + ".";
+
+		return doMetrics(prefix);
+	}
+
+	@GET
 	@Path("{id}/metrics")
 	@RolesAllowed (
 		value = {"admin"}
@@ -215,8 +227,12 @@ public class ModelResource {
 			throw new NotFoundException();
 		}
 
-		final
 		String prefix = createName(id) + ".";
+
+		return doMetrics(prefix);
+	}
+
+	private MetricRegistry doMetrics(final String prefix){
 
 		MetricFilter filter = new MetricFilter(){
 
