@@ -25,11 +25,11 @@ import org.openscoring.common.*;
 
 import org.jpmml.evaluator.*;
 
+import com.codahale.metrics.*;
+
 import com.google.common.collect.*;
 
 import org.junit.*;
-
-import com.codahale.metrics.*;
 
 import org.supercsv.prefs.*;
 

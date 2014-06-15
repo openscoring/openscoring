@@ -31,12 +31,14 @@ import org.openscoring.common.*;
 
 import org.jpmml.evaluator.*;
 
+import com.codahale.metrics.*;
+import com.codahale.metrics.Timer;
+
 import com.google.common.collect.*;
 
 import org.dmg.pmml.*;
 
-import com.codahale.metrics.*;
-import com.codahale.metrics.Timer;
+import org.glassfish.jersey.media.multipart.*;
 
 import org.supercsv.prefs.*;
 
@@ -77,6 +79,21 @@ public class ModelResource {
 		return result;
 	}
 
+	@POST
+	@RolesAllowed (
+		value = {"admin"}
+	)
+	@Consumes(MediaType.MULTIPART_FORM_DATA)
+	@Produces(MediaType.APPLICATION_JSON)
+	public ModelResponse deploy(@FormDataParam("id") String id, @FormDataParam("model") InputStream is){
+
+		if(id == null || ("").equals(id.trim())){
+			throw new BadRequestException();
+		}
+
+		return doDeploy(id, is);
+	}
+
 	@PUT
 	@Path("{id}")
 	@RolesAllowed (
@@ -85,16 +102,27 @@ public class ModelResource {
 	@Consumes({MediaType.APPLICATION_XML, MediaType.TEXT_XML})
 	@Produces(MediaType.APPLICATION_JSON)
 	public ModelResponse deploy(@PathParam("id") String id, @Context HttpServletRequest request){
-		ModelEvaluator<?> evaluator;
 
 		try {
 			InputStream is = request.getInputStream();
 
 			try {
-				evaluator = ModelRegistry.unmarshal(is);
+				return doDeploy(id, is);
 			} finally {
 				is.close();
 			}
+		} catch(WebApplicationException wae){
+			throw wae;
+		} catch(Exception e){
+			throw new InternalServerErrorException(e);
+		}
+	}
+
+	private ModelResponse doDeploy(String id, InputStream is){
+		ModelEvaluator<?> evaluator;
+
+		try {
+			evaluator = ModelRegistry.unmarshal(is);
 		} catch(Exception e){
 			throw new BadRequestException(e);
 		}
@@ -211,7 +239,7 @@ public class ModelResource {
 	public EvaluationResponse evaluate(@PathParam("id") String id, EvaluationRequest request){
 		List<EvaluationRequest> requests = Collections.singletonList(request);
 
-		List<EvaluationResponse> responses = doBatch(id, requests, "evaluate");
+		List<EvaluationResponse> responses = doEvaluate(id, requests, "evaluate");
 
 		return responses.get(0);
 	}
@@ -221,7 +249,7 @@ public class ModelResource {
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
 	public List<EvaluationResponse> evaluateBatch(@PathParam("id") String id, List<EvaluationRequest> requests){
-		return doBatch(id, requests, "evaluateBatch");
+		return doEvaluate(id, requests, "evaluateBatch");
 	}
 
 	@POST
@@ -247,7 +275,7 @@ public class ModelResource {
 			throw new BadRequestException(e);
 		}
 
-		List<EvaluationResponse> responses = doBatch(id, requests, "evaluateCsv");
+		List<EvaluationResponse> responses = doEvaluate(id, requests, "evaluateCsv");
 
 		try {
 			BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(response.getOutputStream(), "UTF-8")); // XXX
@@ -264,39 +292,7 @@ public class ModelResource {
 		return null;
 	}
 
-	@DELETE
-	@Path("{id}")
-	@RolesAllowed (
-		value = {"admin"}
-	)
-	public Response undeploy(@PathParam("id") String id){
-		ModelEvaluator<?> evaluator = this.modelRegistry.get(id);
-		if(evaluator == null){
-			throw new NotFoundException();
-		}
-
-		boolean success = this.modelRegistry.remove(id, evaluator);
-		if(!success){
-			throw new InternalServerErrorException();
-		}
-
-		final
-		String prefix = createName(id) + ".";
-
-		MetricFilter filter = new MetricFilter(){
-
-			@Override
-			public boolean matches(String name, Metric metric){
-				return name.startsWith(prefix);
-			}
-		};
-
-		this.metricRegistry.removeMatching(filter);
-
-		return null;
-	}
-
-	private List<EvaluationResponse> doBatch(String id, List<EvaluationRequest> requests, String method){
+	private List<EvaluationResponse> doEvaluate(String id, List<EvaluationRequest> requests, String method){
 		ModelEvaluator<?> evaluator = this.modelRegistry.get(id);
 		if(evaluator == null){
 			throw new NotFoundException();
@@ -336,6 +332,38 @@ public class ModelResource {
 		counter.inc(responses.size());
 
 		return responses;
+	}
+
+	@DELETE
+	@Path("{id}")
+	@RolesAllowed (
+		value = {"admin"}
+	)
+	public Response undeploy(@PathParam("id") String id){
+		ModelEvaluator<?> evaluator = this.modelRegistry.get(id);
+		if(evaluator == null){
+			throw new NotFoundException();
+		}
+
+		boolean success = this.modelRegistry.remove(id, evaluator);
+		if(!success){
+			throw new InternalServerErrorException();
+		}
+
+		final
+		String prefix = createName(id) + ".";
+
+		MetricFilter filter = new MetricFilter(){
+
+			@Override
+			public boolean matches(String name, Metric metric){
+				return name.startsWith(prefix);
+			}
+		};
+
+		this.metricRegistry.removeMatching(filter);
+
+		return null;
 	}
 
 	ModelRegistry getModelRegistry(){

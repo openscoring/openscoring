@@ -44,6 +44,7 @@ Additionally, the build produces an executable uber-JAR file `client/target/clie
 | GET | /model/${id} | admin | Download a model |
 | GET | /model/${id}/schema | - | Get the schema of a model |
 | GET | /model/${id}/metrics | admin | Get the metrics of a model |
+| POST | /model | admin | Deploy a model |
 | POST | /model/${id} | - | Perform evaluation of a model |
 | POST | /model/${id}/batch | - | Perform batch evaluation of a model |
 | POST | /model/${id}/csv | - | Perform CSV evaluation of a model |

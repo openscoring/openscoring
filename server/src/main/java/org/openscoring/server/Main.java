@@ -23,18 +23,20 @@ import java.net.*;
 
 import org.openscoring.service.*;
 
+import com.beust.jcommander.*;
+
+import com.codahale.metrics.*;
+import com.codahale.metrics.jetty9.*;
+
 import org.eclipse.jetty.server.*;
 import org.eclipse.jetty.server.handler.*;
 import org.eclipse.jetty.servlet.*;
 import org.eclipse.jetty.webapp.*;
 
-import com.beust.jcommander.*;
-import com.codahale.metrics.*;
-import com.codahale.metrics.jetty9.*;
-
 import org.glassfish.hk2.utilities.*;
 import org.glassfish.hk2.utilities.binding.*;
 import org.glassfish.jersey.jackson.*;
+import org.glassfish.jersey.media.multipart.*;
 import org.glassfish.jersey.server.*;
 import org.glassfish.jersey.server.filter.*;
 import org.glassfish.jersey.servlet.*;
@@ -137,6 +139,7 @@ public class Main {
 		ResourceConfig config = new ResourceConfig(ModelResource.class);
 		config.register(binder);
 		config.register(JacksonFeature.class);
+		config.register(MultiPartFeature.class);
 		config.register(ObjectMapperProvider.class);
 		config.register(RolesAllowedDynamicFeature.class);
 
