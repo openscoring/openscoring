@@ -18,7 +18,9 @@
  */
 package org.openscoring.common;
 
-public class ModelResponse {
+import java.io.*;
+
+public class ModelResponse implements Serializable {
 
 	private String id = null;
 

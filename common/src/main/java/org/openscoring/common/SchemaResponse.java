@@ -18,9 +18,10 @@
  */
 package org.openscoring.common;
 
+import java.io.*;
 import java.util.*;
 
-public class SchemaResponse {
+public class SchemaResponse implements Serializable {
 
 	private List<String> activeFields = null;
 
@@ -30,6 +31,9 @@ public class SchemaResponse {
 
 	private List<String> outputFields = null;
 
+
+	public SchemaResponse(){
+	}
 
 	/**
 	 * @see EvaluationRequest#getArguments()

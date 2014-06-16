@@ -18,9 +18,10 @@
  */
 package org.openscoring.common;
 
+import java.io.*;
 import java.util.*;
 
-public class EvaluationResponse {
+public class EvaluationResponse implements Serializable {
 
 	private String id = null;
 
