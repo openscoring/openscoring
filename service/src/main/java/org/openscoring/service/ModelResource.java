@@ -89,7 +89,7 @@ public class ModelResource {
 	)
 	@Consumes(MediaType.MULTIPART_FORM_DATA)
 	@Produces(MediaType.APPLICATION_JSON)
-	public Response deploy(@FormDataParam("id") String id, @FormDataParam("model") InputStream is){
+	public Response deploy(@FormDataParam("id") String id, @FormDataParam("pmml") InputStream is){
 
 		if(id == null || ("").equals(id.trim())){
 			throw new BadRequestException();
