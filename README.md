@@ -19,6 +19,8 @@ REST web service for scoring PMML models.
 
 # Installation #
 
+The project requires Java 1.7 or newer to run.
+
 Enter the project root directory and build using [Apache Maven] (http://maven.apache.org/):
 ```
 mvn clean install
@@ -37,30 +39,65 @@ Additionally, the build produces an executable uber-JAR file `client/target/clie
 
 ### Overview
 
+Model collection REST API endpoints:
+
+| HTTP method | Endpoint | Required role(s) | Description |
+| ----------- | -------- | ---------------- | ----------- |
+| GET | /model | - | Get all models |
+| GET | /model/metrics | admin | Get the metrics of all models |
+| POST | /model | admin | Deploy a model |
+
+Model REST API endpoints:
+
 | HTTP method | Endpoint | Required role(s) | Description |
 | ----------- | -------- | ---------------- | ----------- |
 | PUT | /model/${id} | admin | Deploy a model |
-| GET | /model | - | Get the list of all deployed models |
-| GET | /model/metrics | admin | Get the metrics of all deployed models |
 | GET | /model/${id} | admin | Download a model |
-| GET | /model/${id}/schema | - | Get the schema of a model |
 | GET | /model/${id}/metrics | admin | Get the metrics of a model |
-| POST | /model | admin | Deploy a model |
-| POST | /model/${id} | - | Perform evaluation of a model |
-| POST | /model/${id}/batch | - | Perform batch evaluation of a model |
-| POST | /model/${id}/csv | - | Perform CSV evaluation of a model |
+| GET | /model/${id}/schema | - | Get the data schema information of a model |
+| POST | /model/${id} | - | Evaluate a model in "single prediction" mode |
+| POST | /model/${id}/batch | - | Evaluate a model in "batch prediction" mode |
+| POST | /model/${id}/csv | - | Evaluate a model is CSV prediction mode |
 | DELETE | /model/${id} | admin | Undeploy a model |
 
 Some REST API endpoints require privileged access. By default, the Openscoring application grants the "admin" role to all HTTP requests that originate from the local network address.
 
-### PUT - Deploy a model
+### Model collection querying
 
-Deploy the contents of the PMML file `DecisionTreeIris.pmml` as a model `DecisionTreeIris`:
+##### GET /model
+
+Gets the list of all models.
+
+The response body is a JSON serialized form of a list of `org.openscoring.common.ModelResponse` objects.
+
+Sample cURL invocation:
+```
+curl -X GET http://localhost:8080/openscoring/model
+```
+
+### Model deployment
+
+##### PUT /model/${id}
+
+Creates or updates a model.
+
+The request body is a PMML document (indicated by content-type header `text/xml` or `application/xml`).
+
+The response body is a JSON serialized form of an `org.openscoring.common.ModelResponse` object that represents the current state of the model.
+
+Response status codes:
+* 200 OK. The model was updated.
+* 201 Created. A new model was created.
+* 400 Bad Request. The request body is not a valid and/or supported PMML document.
+
+Sample cURL invocation:
 ```
 curl -X PUT --data-binary @DecisionTreeIris.pmml -H "Content-type: text/xml" http://localhost:8080/openscoring/model/DecisionTreeIris
 ```
 
-The response body is the JSON serialized form of an `org.openscoring.common.ModelResponse` object:
+The example PMML file `DecisionTreeIris.pmml` along with example JSON and CSV files is available in the `server/etc` directory.
+
+Sample response:
 ```json
 {
 	"id" : "DecisionTreeIris",
@@ -68,53 +105,31 @@ The response body is the JSON serialized form of an `org.openscoring.common.Mode
 }
 ```
 
-The example PMML file `DecisionTreeIris.pmml` along with example JSON and CSV files is available in the `server/etc` directory.
+### Model querying
 
-### GET - Obtain model information
+##### GET /model/${id}
 
-##### Get the list of all deployed models
+Downloads a model.
 
-Obtain the list of deployed models:
-```
-curl -X GET http://localhost:8080/openscoring/model
-```
+The response body is a PMML document.
 
-The response body is the JSON serialized form of a list of `org.openscoring.common.ModelResponse` objects.
-
-##### Download a model
-
-Download the XML data format representation of a deployed model `DecisionTreeIris`:
+Sample cURL invocation:
 ```
 curl -X GET http://localhost:8080/openscoring/model/DecisionTreeIris
 ```
 
-##### Get the schema of a deployed model
+##### GET /model/${id}/metrics
 
-Obtain the description of the "public interface" of the model `DecisionTreeIris`:
-```
-curl -X GET http://localhost:8080/openscoring/model/DecisionTreeIris/schema
-```
+Takes a snapshot of the metrics of a model.
 
-The response body is the JSON serialized form of an `org.openscoring.common.SchemaResponse` object:
-```json
-{
-	"activeFields" : ["Sepal.Length", "Sepal.Width", "Petal.Length", "Petal.Width"],
-	"groupFields" : [],
-	"targetFields" : ["Species"],
-	"outputFields" : ["Predicted_Species", "Probability_setosa", "Probability_versicolor", "Probability_virginica", "Node_Id"]
-}
-```
+The response body is a JSON serialized form of a 'com.codahale.metrics.MetricRegistry' object.
 
-Field definitions are retrieved from the [Mining Schema element] (http://www.dmg.org/v4-1/MiningSchema.html) of the PMML document. The active and group fields relate to the `arguments` attribute of the evaluation request, whereas the target and output fields relate to the `result` attribute of the evaluation response (see below).
-
-##### Get the metrics of a deployed model
-
-Obtain the metrics of the model `DecisionTreeIris`:
+Sample cURL invocation:
 ```
 curl -X GET http://localhost:8080/openscoring/model/DecisionTreeIris/metrics
 ```
 
-The metrics are implemented using the [Coda Hale Metrics] (http://metrics.codahale.com/) library. The response body is the JSON serialized form of an `com.codahale.metrics.MetricRegistry` object:
+Sample response:
 ```json
 {
 	"version" : "3.0.0",
@@ -150,18 +165,50 @@ The metrics are implemented using the [Coda Hale Metrics] (http://metrics.codaha
 }
 ```
 
-### POST - Perform model evaluation
+##### GET /model/${id}/schema
 
-The evaluation can be performed either in single prediction mode or in batch prediction mode (see below). On average, the batch prediction mode is expected to provide better throughput.
+Gets the data schema information of a model.
 
-##### Single prediction mode
+The response body is a JSON serialized form of an `org.openscoring.common.SchemaResponse` object.
 
-Send the contents of the JSON file `EvaluationRequest.json` for evaluation to the model `DecisionTreeIris`:
+Field definitions are retrieved from the [Mining Schema element] (http://www.dmg.org/v4-2/MiningSchema.html) of the PMML document. The active and group fields relate to the `arguments` attribute of the evaluation request, whereas the target and output fields relate to the `result` attribute of the evaluation response (see below).
+
+Sample cURL invocation:
+```
+curl -X GET http://localhost:8080/openscoring/model/DecisionTreeIris/schema
+```
+
+Sample response:
+```json
+{
+	"activeFields" : ["Sepal.Length", "Sepal.Width", "Petal.Length", "Petal.Width"],
+	"groupFields" : [],
+	"targetFields" : ["Species"],
+	"outputFields" : ["Predicted_Species", "Probability_setosa", "Probability_versicolor", "Probability_virginica", "Node_Id"]
+}
+```
+
+### Model evaluation
+
+##### POST /model/${id}
+
+Evaluates a model in "single prediction" mode.
+
+The request body is a JSON serialized form of an `org.openscoring.common.EvaluationRequest` object.
+
+The response body is a JSON serialized form of an `org.openscoring.common.EvaluationResponse` object.
+
+Response status codes:
+* 200 OK. The evaluation was successful.
+* 404 Not Found. The requested model was not found.
+* 500 Internal Server Error. The evaluation failed. This is most likely caused by missing or invalid input data.
+
+Sample cURL invocation:
 ```
 curl -X POST --data-binary @EvaluationRequest.json -H "Content-type: application/json" http://localhost:8080/openscoring/model/DecisionTreeIris
 ```
 
-The request body is the JSON serialized form of an `org.openscoring.common.EvaluationRequest` object:
+Sample request:
 ```json
 {
 	"id" : "example-001",
@@ -174,7 +221,7 @@ The request body is the JSON serialized form of an `org.openscoring.common.Evalu
 }
 ```
 
-The response body is the JSON serialized form of an `org.openscoring.common.EvaluationResponse` object:
+Sample response:
 ```json
 {
 	"id" : "example-001",
@@ -189,25 +236,43 @@ The response body is the JSON serialized form of an `org.openscoring.common.Eval
 }
 ```
 
-##### Batch prediction mode
+##### POST /model/${id}/batch
 
-Send the contents of the JSON file `BatchEvaluationRequest.json` for evaluation to the model `DecisionTreeIris` (please note `/batch` at the end of the URL):
+Evaluates a model in "batch prediction" mode.
+
+The request body is a JSON serialized form of a list of `org.openscoring.common.EvaluationRequest` objects. The number of list elements is not restricted.
+
+The response body is a JSON serialized form of a list of `org.openscoring.common.EvaluationResponse` objects.
+
+Sample cURL invocation:
 ```
 curl -X POST --data-binary @BatchEvaluationRequest.json -H "Content-type: application/json" http://localhost:8080/openscoring/model/DecisionTreeIris/batch
 ```
 
-The request body is the JSON serialized form of a list of `org.openscoring.common.EvaluationRequest` objects. The number of list elements is not restricted.
+##### POST /model/${id}/csv
 
-The response body is the JSON serialized form of a list of `org.openscoring.common.EvaluationResponse` objects.
+Evaluates a model in CSV mode.
 
-##### CSV prediction mode
+The request body is a CSV document (indicated by content-type header `text/plain`). The data table must contain a data column for every active and group field. The ordering of data columns is not significant. They are mapped to fields by name.
 
-Send the contents of the CSV file `input.csv` for evaluation to model `DecisionTreeIris` (please note `/csv` at the end of the path component of the URL):
+The CSV document must conform to Tab-separated values (TSV) dialect or Microsoft Excel dialect.
+
+The response body is a CSV document. The data table contains a data column for every target and output field.
+
+The first data column can be employed for row identification purposes. It will be copied over from the request data table to the response data table if its name equals to "Id" (the comparison is case insensitive) and the number of rows did not change during the evaluation.
+
+Response status codes:
+* 200 OK. The evaluation was successful.
+* 400 Bad request. The request body is not a valid and/or supported CSV document.
+* 404 Not Found. The requested model was not found.
+* 500 Internal Server Error. The evaluation failed. This is most likely caused by missing or invalid input data.
+
+Sample cURL invocation:
 ```
 curl -X POST --data-binary @input.csv -H "Content-type: text/plain" http://localhost:8080/openscoring/model/DecisionTreeIris/csv
 ```
 
-The request body is a CSV document containing active fields:
+Sample request:
 ```
 Id,Sepal.Length,Sepal.Width,Petal.Length,Petal.Width
 example-001,5.1,3.5,1.4,0.2
@@ -215,7 +280,7 @@ example-002,7,3.2,4.7,1.4
 example-003,6.3,3.3,6,2.5
 ```
 
-The response body is a CSV document containing target and output fields:
+Sample response:
 ```
 Id,Species,Predicted_Species,Probability_setosa,Probability_versicolor,Probability_virginica,Node_Id
 example-001,setosa,setosa,1.0,0.0,0.0,2
@@ -223,11 +288,17 @@ example-002,versicolor,versicolor,0.0,0.9074074074074074,0.09259259259259259,6
 example-003,virginica,virginica,0.0,0.021739130434782608,0.9782608695652174,7
 ```
 
-The first column of the data table can used for row identification purposes. It will be transferred over from the input data table to the output data table if its name equals to "Id" (case insensitive) and the number of rows did not change during the evaluation.
+### Model undeployment
 
-### DELETE - Undeploy a model
+##### DELETE /model/${id}
 
-Undeploy the model `DecisionTreeIris`:
+Deletes a model.
+
+Response status codes:
+* 204 No Content. The model was deleted.
+* 404 Not Found. The requested model was not found.
+
+Sample cURL invocation:
 ```
 curl -X DELETE http://localhost:8080/openscoring/model/DecisionTreeIris
 ```
