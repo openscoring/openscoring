@@ -105,6 +105,10 @@ public class DirectoryDeployer extends Thread {
 			id = id.substring(0, dot);
 		} // End if
 
+		if(!ModelRegistry.validateId(id)){
+			return;
+		} // End if
+
 		if((StandardWatchEventKinds.ENTRY_CREATE).equals(kind)){
 			ModelEvaluator<?> evaluator;
 

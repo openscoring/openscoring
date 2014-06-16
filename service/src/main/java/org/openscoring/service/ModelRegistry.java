@@ -70,6 +70,11 @@ public class ModelRegistry {
 	}
 
 	static
+	public boolean validateId(String id){
+		return (id != null && (id).matches(ID_REGEX));
+	}
+
+	static
 	public ModelEvaluator<?> unmarshal(InputStream is) throws SAXException, JAXBException {
 		Source source = ImportFilter.apply(new InputSource(is));
 
@@ -88,4 +93,6 @@ public class ModelRegistry {
 
 		JAXBUtil.marshalPMML(pmml, result);
 	}
+
+	public static final String ID_REGEX = "[a-zA-Z0-9][a-zA-Z0-9\\_\\-]*";
 }

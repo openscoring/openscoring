@@ -99,7 +99,7 @@ public class ModelResource {
 	}
 
 	@PUT
-	@Path("{id}")
+	@Path("{id:" + ModelRegistry.ID_REGEX + "}")
 	@RolesAllowed (
 		value = {"admin"}
 	)
@@ -162,7 +162,7 @@ public class ModelResource {
 	}
 
 	@GET
-	@Path("{id}")
+	@Path("{id:" + ModelRegistry.ID_REGEX + "}")
 	@RolesAllowed (
 		value = {"admin"}
 	)
@@ -192,7 +192,7 @@ public class ModelResource {
 	}
 
 	@GET
-	@Path("{id}/schema")
+	@Path("{id:" + ModelRegistry.ID_REGEX + "}/schema")
 	@Produces(MediaType.APPLICATION_JSON)
 	public SchemaResponse schema(@PathParam("id") String id){
 		ModelEvaluator<?> evaluator = this.modelRegistry.get(id);
@@ -216,7 +216,7 @@ public class ModelResource {
 	}
 
 	@GET
-	@Path("{id}/metrics")
+	@Path("{id:" + ModelRegistry.ID_REGEX + "}/metrics")
 	@RolesAllowed (
 		value = {"admin"}
 	)
@@ -265,7 +265,7 @@ public class ModelResource {
 	}
 
 	@POST
-	@Path("{id}")
+	@Path("{id:" + ModelRegistry.ID_REGEX + "}")
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
 	public EvaluationResponse evaluate(@PathParam("id") String id, EvaluationRequest request){
@@ -277,7 +277,7 @@ public class ModelResource {
 	}
 
 	@POST
-	@Path("{id}/batch")
+	@Path("{id: " + ModelRegistry.ID_REGEX + "}/batch")
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
 	public List<EvaluationResponse> evaluateBatch(@PathParam("id") String id, List<EvaluationRequest> requests){
@@ -285,7 +285,7 @@ public class ModelResource {
 	}
 
 	@POST
-	@Path("{id}/csv")
+	@Path("{id:" + ModelRegistry.ID_REGEX + "}/csv")
 	@Consumes(MediaType.MULTIPART_FORM_DATA)
 	@Produces(MediaType.TEXT_PLAIN)
 	public Response evaluateCsv(@PathParam("id") String id, @FormDataParam("csv") InputStream is, @Context HttpServletResponse response){
@@ -293,7 +293,7 @@ public class ModelResource {
 	}
 
 	@POST
-	@Path("{id}/csv")
+	@Path("{id:" + ModelRegistry.ID_REGEX + "}/csv")
 	@Consumes(MediaType.TEXT_PLAIN)
 	@Produces(MediaType.TEXT_PLAIN)
 	public Response evaluateCsv(@PathParam("id") String id, @Context HttpServletRequest request, @Context HttpServletResponse response){
@@ -413,7 +413,7 @@ public class ModelResource {
 	}
 
 	@DELETE
-	@Path("{id}")
+	@Path("{id:" + ModelRegistry.ID_REGEX + "}")
 	@RolesAllowed (
 		value = {"admin"}
 	)
