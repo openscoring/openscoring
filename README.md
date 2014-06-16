@@ -204,7 +204,7 @@ The response body is the JSON serialized form of a list of `org.openscoring.comm
 
 Send the contents of the CSV file `input.csv` for evaluation to model `DecisionTreeIris` (please note `/csv` at the end of the path component of the URL):
 ```
-curl -X POST --data-binary @input.csv -H "Content-type: text/plain" "http://localhost:8080/openscoring/model/DecisionTreeIris/csv?idColumn=Id"
+curl -X POST --data-binary @input.csv -H "Content-type: text/plain" http://localhost:8080/openscoring/model/DecisionTreeIris/csv
 ```
 
 The request body is a CSV document containing active fields:
@@ -222,6 +222,8 @@ example-001,setosa,setosa,1.0,0.0,0.0,2
 example-002,versicolor,versicolor,0.0,0.9074074074074074,0.09259259259259259,6
 example-003,virginica,virginica,0.0,0.021739130434782608,0.9782608695652174,7
 ```
+
+The first column of the data table can used for row identification purposes. It will be transferred over from the input data table to the output data table if its name equals to "Id" (case insensitive) and the number of rows did not change during the evaluation.
 
 ### DELETE - Undeploy a model
 

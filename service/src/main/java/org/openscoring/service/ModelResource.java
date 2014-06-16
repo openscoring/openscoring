@@ -288,21 +288,21 @@ public class ModelResource {
 	@Path("{id}/csv")
 	@Consumes(MediaType.MULTIPART_FORM_DATA)
 	@Produces(MediaType.TEXT_PLAIN)
-	public Response evaluateCsv(@PathParam("id") String id, @QueryParam("idColumn") String idColumn, @FormDataParam("csv") InputStream is, @Context HttpServletResponse response){
-		return doEvaluateCsv(id, idColumn, is, response);
+	public Response evaluateCsv(@PathParam("id") String id, @FormDataParam("csv") InputStream is, @Context HttpServletResponse response){
+		return doEvaluateCsv(id, is, response);
 	}
 
 	@POST
 	@Path("{id}/csv")
 	@Consumes(MediaType.TEXT_PLAIN)
 	@Produces(MediaType.TEXT_PLAIN)
-	public Response evaluateCsv(@PathParam("id") String id, @QueryParam("idColumn") String idColumn, @Context HttpServletRequest request, @Context HttpServletResponse response){
+	public Response evaluateCsv(@PathParam("id") String id, @Context HttpServletRequest request, @Context HttpServletResponse response){
 
 		try {
 			InputStream is = request.getInputStream();
 
 			try {
-				return doEvaluateCsv(id, idColumn, is, response);
+				return doEvaluateCsv(id, is, response);
 			} finally {
 				is.close();
 			}
@@ -313,10 +313,10 @@ public class ModelResource {
 		}
 	}
 
-	private Response doEvaluateCsv(String id, String idColumn, InputStream is, HttpServletResponse response){
+	private Response doEvaluateCsv(String id, InputStream is, HttpServletResponse response){
 		CsvPreference format;
 
-		List<EvaluationRequest> requests;
+		CsvUtil.Table<EvaluationRequest> requestTable;
 
 		try {
 			BufferedReader reader = new BufferedReader(new InputStreamReader(is, "UTF-8")){ // XXX
@@ -330,7 +330,7 @@ public class ModelResource {
 			try {
 				format = CsvUtil.getFormat(reader);
 
-				requests = CsvUtil.readTable(reader, format, idColumn);
+				requestTable = CsvUtil.readTable(reader, format);
 			} finally {
 				reader.close();
 			}
@@ -338,7 +338,13 @@ public class ModelResource {
 			throw new BadRequestException(e);
 		}
 
+		List<EvaluationRequest> requests = requestTable.getRows();
+
 		List<EvaluationResponse> responses = doEvaluate(id, requests, "evaluateCsv");
+
+		CsvUtil.Table<EvaluationResponse> responseTable = new CsvUtil.Table<EvaluationResponse>();
+		responseTable.setId(requestTable.getId());
+		responseTable.setRows(responses);
 
 		try {
 			response.setContentType(MediaType.TEXT_PLAIN);
@@ -350,7 +356,7 @@ public class ModelResource {
 				BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(os, "UTF-8")); // XXX
 
 				try {
-					CsvUtil.writeTable(writer, format, ((requests.size() == responses.size()) ? idColumn : null), responses);
+					CsvUtil.writeTable(writer, format, responseTable);
 				} finally {
 					writer.close();
 				}

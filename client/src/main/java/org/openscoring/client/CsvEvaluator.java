@@ -48,12 +48,6 @@ public class CsvEvaluator extends Application {
 	)
 	private File output = null;
 
-	@Parameter (
-		names = {"--id-column"},
-		description = "The name of the row identifier column"
-	)
-	private String idColumn = null;
-
 
 	static
 	public void main(String... args) throws Exception {
@@ -65,9 +59,6 @@ public class CsvEvaluator extends Application {
 		Client client = ClientBuilder.newClient();
 
 		WebTarget target = client.target(ensureSuffix(this.model, "/csv"));
-		if(this.idColumn != null){
-			target = target.queryParam("idColumn", this.idColumn);
-		}
 
 		InputStream is = new FileInputStream(this.input);
 

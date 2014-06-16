@@ -170,13 +170,17 @@ public class ModelResourceTest {
 		InputStream is = ModelResourceTest.class.getResourceAsStream("/csv/" + id + ".csv");
 
 		try {
+			CsvUtil.Table<EvaluationRequest> table;
+
 			BufferedReader reader = new BufferedReader(new InputStreamReader(is, "UTF-8"));
 
 			try {
-				return CsvUtil.readTable(reader, CsvPreference.TAB_PREFERENCE, "Id");
+				table = CsvUtil.readTable(reader, CsvPreference.TAB_PREFERENCE);
 			} finally {
 				reader.close();
 			}
+
+			return table.getRows();
 		} finally {
 			is.close();
 		}

@@ -88,12 +88,18 @@ public class CsvUtil {
 	}
 
 	static
-	public List<EvaluationRequest> readTable(BufferedReader reader, CsvPreference format, String idColumn) throws IOException {
-		List<EvaluationRequest> requests = Lists.newArrayList();
+	public Table<EvaluationRequest> readTable(BufferedReader reader, CsvPreference format) throws IOException {
+		Table<EvaluationRequest> table = new Table<EvaluationRequest>();
 
 		CsvMapReader parser = new CsvMapReader(reader, format);
 
 		String[] header = parser.getHeader(true);
+
+		if(header.length > 0 && ("id").equalsIgnoreCase(header[0])){
+			table.setId(header[0]);
+		}
+
+		List<EvaluationRequest> requests = Lists.newArrayList();
 
 		while(true){
 			Map<String, String> arguments = parser.read(header);
@@ -101,7 +107,7 @@ public class CsvUtil {
 				break;
 			}
 
-			String id = arguments.remove(idColumn);
+			String id = arguments.remove(table.getId());
 
 			EvaluationRequest request = new EvaluationRequest(id);
 			request.setArguments(arguments);
@@ -111,20 +117,25 @@ public class CsvUtil {
 
 		parser.close();
 
-		return requests;
+		table.setRows(requests);
+
+		return table;
 	}
 
 	static
-	public void writeTable(BufferedWriter writer, CsvPreference format, String idColumn, List<EvaluationResponse> responses) throws IOException {
+	public void writeTable(BufferedWriter writer, CsvPreference format, Table<EvaluationResponse> table) throws IOException {
 		CsvMapWriter formatter = new CsvMapWriter(writer, format);
 
 		String[] header = null;
 
+		List<EvaluationResponse> responses = table.getRows();
+
 		for(EvaluationResponse response : responses){
 			Map<String, ?> result = response.getResult();
 
-			if(idColumn != null){
-				result = join(Collections.<String, String>singletonMap(idColumn, response.getId()), result);
+			String id = response.getId();
+			if(id != null){
+				result = join(Collections.<String, String>singletonMap(table.getId(), id), result);
 			} // End if
 
 			if(header == null){
@@ -144,10 +155,39 @@ public class CsvUtil {
 
 	static
 	private Map<String, ?> join(Map<String, ?> left, Map<String, ?> right){
-		Map<String, Object> result = Maps.newLinkedHashMap();
-		result.putAll(left);
+		Map<String, Object> result = Maps.newLinkedHashMap(left);
 		result.putAll(right);
 
 		return result;
+	}
+
+	static
+	public class Table<R> {
+
+		private String id = null;
+
+		private List<R> rows = null;
+
+
+		public String getId(){
+			return this.id;
+		}
+
+		public void setId(String id){
+
+			if(this.id != null){
+				throw new IllegalStateException();
+			}
+
+			this.id = id;
+		}
+
+		public List<R> getRows(){
+			return this.rows;
+		}
+
+		public void setRows(List<R> rows){
+			this.rows = rows;
+		}
 	}
 }
