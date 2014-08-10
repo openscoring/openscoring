@@ -33,10 +33,10 @@
 	</developers>
 
 	<modules>
-		<module>client</module>
-		<module>common</module>
-		<module>server</module>
-		<module>service</module>
+		<module>openscoring-client</module>
+		<module>openscoring-common</module>
+		<module>openscoring-server</module>
+		<module>openscoring-service</module>
 	</modules>
 
 	<scm>
@@ -54,22 +54,22 @@
 		<dependencies>
 			<dependency>
 				<groupId>org.openscoring</groupId>
-				<artifactId>client</artifactId>
+				<artifactId>openscoring-client</artifactId>
 				<version>1.2-SNAPSHOT</version>
 			</dependency>
 			<dependency>
 				<groupId>org.openscoring</groupId>
-				<artifactId>common</artifactId>
+				<artifactId>openscoring-common</artifactId>
 				<version>1.2-SNAPSHOT</version>
 			</dependency>
 			<dependency>
 				<groupId>org.openscoring</groupId>
-				<artifactId>server</artifactId>
+				<artifactId>openscoring-server</artifactId>
 				<version>1.2-SNAPSHOT</version>
 			</dependency>
 			<dependency>
 				<groupId>org.openscoring</groupId>
-				<artifactId>service</artifactId>
+				<artifactId>openscoring-service</artifactId>
 				<version>1.2-SNAPSHOT</version>
 			</dependency>
 

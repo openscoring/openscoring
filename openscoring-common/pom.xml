@@ -9,7 +9,7 @@
 	</parent>
 
 	<groupId>org.openscoring</groupId>
-	<artifactId>common</artifactId>
+	<artifactId>openscoring-common</artifactId>
 	<packaging>jar</packaging>
 
 	<name>OpenScoring Common</name>

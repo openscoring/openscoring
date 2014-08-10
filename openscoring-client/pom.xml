@@ -9,10 +9,11 @@
 	</parent>
 
 	<groupId>org.openscoring</groupId>
-	<artifactId>server</artifactId>
+	<artifactId>openscoring-client</artifactId>
+	<packaging>jar</packaging>
 
-	<name>OpenScoring Server</name>
-	<description>Command-line server application</description>
+	<name>OpenScoring Client</name>
+	<description>Command-line client application</description>
 
 	<licenses>
 		<license>
@@ -25,7 +26,7 @@
 	<dependencies>
 		<dependency>
 			<groupId>org.openscoring</groupId>
-			<artifactId>service</artifactId>
+			<artifactId>openscoring-common</artifactId>
 		</dependency>
 
 		<dependency>
@@ -34,54 +35,17 @@
 		</dependency>
 
 		<dependency>
-			<groupId>com.codahale.metrics</groupId>
-			<artifactId>metrics-core</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>com.codahale.metrics</groupId>
-			<artifactId>metrics-jetty9</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>com.codahale.metrics</groupId>
-			<artifactId>metrics-json</artifactId>
-		</dependency>
-
-		<dependency>
 			<groupId>com.google.guava</groupId>
 			<artifactId>guava</artifactId>
 		</dependency>
 
 		<dependency>
-			<groupId>org.eclipse.jetty</groupId>
-			<artifactId>jetty-server</artifactId>
+			<groupId>org.glassfish.jersey.core</groupId>
+			<artifactId>jersey-client</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>org.eclipse.jetty</groupId>
-			<artifactId>jetty-servlet</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.eclipse.jetty</groupId>
-			<artifactId>jetty-webapp</artifactId>
-		</dependency>
-
-		<dependency>
-			<groupId>org.glassfish.jersey.containers</groupId>
-			<artifactId>jersey-container-servlet</artifactId>
-		</dependency>
-
-		<dependency>
-			<groupId>org.glassfish.hk2</groupId>
-			<artifactId>hk2-locator</artifactId>
-		</dependency>
-
-		<dependency>
-			<groupId>org.slf4j</groupId>
-			<artifactId>slf4j-jdk14</artifactId>
-		</dependency>
-
-		<dependency>
-			<groupId>javax.servlet</groupId>
-			<artifactId>servlet-api</artifactId>
+			<groupId>org.glassfish.jersey.media</groupId>
+			<artifactId>jersey-media-json-jackson</artifactId>
 		</dependency>
 	</dependencies>
 
@@ -109,14 +73,7 @@
 									</excludes>
 								</filter>
 							</filters>
-							<finalName>${project.artifactId}-executable-${project.version}</finalName>
-							<transformers>
-								<transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
-									<mainClass>org.openscoring.server.Main</mainClass>
-								</transformer>
-								<!-- See http://java.net/jira/browse/JERSEY-440 -->
-								<transformer implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer" />
-							</transformers>
+							<finalName>client-executable-${project.version}</finalName>
 						</configuration>
 					</execution>
 				</executions>

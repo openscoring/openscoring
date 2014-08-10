@@ -26,14 +26,14 @@ Enter the project root directory and build using [Apache Maven] (http://maven.ap
 mvn clean install
 ```
 
-The build produces an executable uber-JAR file `server/target/server-executable-1.2-SNAPSHOT.jar`. The main class of the Openscoring application `org.openscoring.server.Main` can be automatically loaded and executed by specifying the `-jar` command-line option:
+The build produces an executable uber-JAR file `openscoring-server/target/server-executable-1.2-SNAPSHOT.jar`. The main class of the Openscoring application `org.openscoring.server.Main` can be automatically loaded and executed by specifying the `-jar` command-line option:
 ```
 java -jar server-executable-1.2-SNAPSHOT.jar
 ```
 
 By default, the REST web service is started at [http://localhost:8080/openscoring] (http://localhost:8080/openscoring/). The main class accepts a number of configuration options for URI customization and other purposes. Please specify `--help` for more information.
 
-Additionally, the build produces an executable uber-JAR file `client/target/client-executable-1.2-SNAPSHOT.jar` which contains a number of command-line client applications.
+Additionally, the build produces an executable uber-JAR file `openscoring-client/target/client-executable-1.2-SNAPSHOT.jar` which contains a number of command-line client applications.
 
 # REST API #
 
@@ -95,7 +95,7 @@ Sample cURL invocation:
 curl -X PUT --data-binary @DecisionTreeIris.pmml -H "Content-type: text/xml" http://localhost:8080/openscoring/model/DecisionTreeIris
 ```
 
-The example PMML file `DecisionTreeIris.pmml` along with example JSON and CSV files is available in the `server/etc` directory.
+The example PMML file `DecisionTreeIris.pmml` along with example JSON and CSV files is available in the `openscoring-server/etc` directory.
 
 Sample response:
 ```json
