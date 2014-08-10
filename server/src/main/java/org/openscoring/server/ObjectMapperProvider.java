@@ -18,13 +18,14 @@
  */
 package org.openscoring.server;
 
-import java.util.concurrent.*;
+import java.util.concurrent.TimeUnit;
 
-import javax.ws.rs.ext.*;
+import javax.ws.rs.ext.ContextResolver;
+import javax.ws.rs.ext.Provider;
 
-import com.codahale.metrics.json.*;
-
-import com.fasterxml.jackson.databind.*;
+import com.codahale.metrics.json.MetricsModule;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
 
 @Provider
 public class ObjectMapperProvider implements ContextResolver<ObjectMapper> {

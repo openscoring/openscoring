@@ -18,19 +18,22 @@
  */
 package org.openscoring.client;
 
-import java.util.*;
+import java.util.Map;
 
-import javax.ws.rs.client.*;
-import javax.ws.rs.core.*;
+import javax.ws.rs.client.Client;
+import javax.ws.rs.client.ClientBuilder;
+import javax.ws.rs.client.Entity;
+import javax.ws.rs.client.Invocation;
+import javax.ws.rs.client.WebTarget;
+import javax.ws.rs.core.MediaType;
 
-import org.openscoring.common.*;
-
-import com.google.common.collect.*;
-
-import com.beust.jcommander.*;
-import com.fasterxml.jackson.jaxrs.json.*;
-
-import org.glassfish.jersey.client.*;
+import com.beust.jcommander.DynamicParameter;
+import com.beust.jcommander.Parameter;
+import com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider;
+import com.google.common.collect.Maps;
+import org.glassfish.jersey.client.ClientConfig;
+import org.openscoring.common.EvaluationRequest;
+import org.openscoring.common.EvaluationResponse;
 
 public class Evaluator extends Application {
 

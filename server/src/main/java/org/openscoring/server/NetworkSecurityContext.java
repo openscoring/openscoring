@@ -18,15 +18,16 @@
  */
 package org.openscoring.server;
 
-import java.io.*;
-import java.net.*;
-import java.security.*;
-import java.util.*;
+import java.io.IOException;
+import java.net.InetAddress;
+import java.security.Principal;
+import java.util.Set;
 
-import javax.servlet.*;
-import javax.ws.rs.core.*;
+import javax.servlet.ServletRequest;
+import javax.ws.rs.core.SecurityContext;
 
-import com.google.common.collect.*;
+import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.Sets;
 
 public class NetworkSecurityContext implements SecurityContext {
 

@@ -18,28 +18,29 @@
  */
 package org.openscoring.server;
 
-import java.io.*;
-import java.net.*;
+import java.io.File;
+import java.io.IOException;
+import java.net.InetSocketAddress;
 
-import org.openscoring.service.*;
-
-import com.beust.jcommander.*;
-
-import com.codahale.metrics.*;
-import com.codahale.metrics.jetty9.*;
-
-import org.eclipse.jetty.server.*;
-import org.eclipse.jetty.server.handler.*;
-import org.eclipse.jetty.servlet.*;
-import org.eclipse.jetty.webapp.*;
-
-import org.glassfish.hk2.utilities.*;
-import org.glassfish.hk2.utilities.binding.*;
-import org.glassfish.jersey.jackson.*;
-import org.glassfish.jersey.media.multipart.*;
-import org.glassfish.jersey.server.*;
-import org.glassfish.jersey.server.filter.*;
-import org.glassfish.jersey.servlet.*;
+import com.beust.jcommander.JCommander;
+import com.beust.jcommander.Parameter;
+import com.beust.jcommander.ParameterException;
+import com.codahale.metrics.MetricRegistry;
+import com.codahale.metrics.jetty9.InstrumentedHandler;
+import org.eclipse.jetty.server.Server;
+import org.eclipse.jetty.server.handler.ContextHandlerCollection;
+import org.eclipse.jetty.servlet.ServletContextHandler;
+import org.eclipse.jetty.servlet.ServletHolder;
+import org.eclipse.jetty.webapp.WebAppContext;
+import org.glassfish.hk2.utilities.Binder;
+import org.glassfish.hk2.utilities.binding.AbstractBinder;
+import org.glassfish.jersey.jackson.JacksonFeature;
+import org.glassfish.jersey.media.multipart.MultiPartFeature;
+import org.glassfish.jersey.server.ResourceConfig;
+import org.glassfish.jersey.server.filter.RolesAllowedDynamicFeature;
+import org.glassfish.jersey.servlet.ServletContainer;
+import org.openscoring.service.ModelRegistry;
+import org.openscoring.service.ModelResource;
 
 public class Main {
 

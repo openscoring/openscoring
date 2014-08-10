@@ -18,22 +18,29 @@
  */
 package org.openscoring.service;
 
-import java.io.*;
-import java.util.*;
+import java.io.BufferedReader;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
-import org.openscoring.common.*;
+import com.codahale.metrics.MetricRegistry;
+import com.google.common.collect.Lists;
+import org.jpmml.evaluator.ModelEvaluator;
+import org.jpmml.evaluator.TypeUtil;
+import org.jpmml.evaluator.VerificationUtil;
+import org.junit.Test;
+import org.openscoring.common.EvaluationRequest;
+import org.openscoring.common.EvaluationResponse;
+import org.supercsv.prefs.CsvPreference;
 
-import org.jpmml.evaluator.*;
-
-import com.codahale.metrics.*;
-
-import com.google.common.collect.*;
-
-import org.junit.*;
-
-import org.supercsv.prefs.*;
-
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 public class ModelResourceTest {
 

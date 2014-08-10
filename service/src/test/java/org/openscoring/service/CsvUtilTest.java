@@ -18,13 +18,14 @@
  */
 package org.openscoring.service;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.StringReader;
 
-import org.junit.*;
+import org.junit.Test;
+import org.supercsv.prefs.CsvPreference;
 
-import org.supercsv.prefs.*;
-
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertNotSame;
 
 public class CsvUtilTest {
 

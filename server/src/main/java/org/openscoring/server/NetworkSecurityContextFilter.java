@@ -18,12 +18,14 @@
  */
 package org.openscoring.server;
 
-import javax.annotation.*;
-import javax.servlet.http.*;
-import javax.ws.rs.*;
-import javax.ws.rs.container.*;
-import javax.ws.rs.core.*;
-import javax.ws.rs.ext.*;
+import javax.annotation.Priority;
+import javax.servlet.http.HttpServletRequest;
+import javax.ws.rs.Priorities;
+import javax.ws.rs.container.ContainerRequestContext;
+import javax.ws.rs.container.ContainerRequestFilter;
+import javax.ws.rs.container.PreMatching;
+import javax.ws.rs.core.Context;
+import javax.ws.rs.ext.Provider;
 
 @Provider
 @PreMatching

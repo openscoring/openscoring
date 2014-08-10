@@ -18,10 +18,13 @@
  */
 package org.openscoring.client;
 
-import javax.ws.rs.client.*;
-import javax.ws.rs.core.*;
+import javax.ws.rs.client.Client;
+import javax.ws.rs.client.ClientBuilder;
+import javax.ws.rs.client.Invocation;
+import javax.ws.rs.client.WebTarget;
+import javax.ws.rs.core.MediaType;
 
-import com.beust.jcommander.*;
+import com.beust.jcommander.Parameter;
 
 public class Undeployer extends Application {
 

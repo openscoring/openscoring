@@ -18,16 +18,23 @@
  */
 package org.openscoring.service;
 
-import java.io.*;
-import java.util.*;
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.IOException;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
-import org.openscoring.common.*;
-
-import com.google.common.collect.*;
-
-import org.supercsv.encoder.*;
-import org.supercsv.io.*;
-import org.supercsv.prefs.*;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
+import org.openscoring.common.EvaluationRequest;
+import org.openscoring.common.EvaluationResponse;
+import org.supercsv.encoder.DefaultCsvEncoder;
+import org.supercsv.io.CsvListReader;
+import org.supercsv.io.CsvMapReader;
+import org.supercsv.io.CsvMapWriter;
+import org.supercsv.prefs.CsvPreference;
 
 public class CsvUtil {
 

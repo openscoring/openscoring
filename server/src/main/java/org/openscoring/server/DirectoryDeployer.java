@@ -18,14 +18,20 @@
  */
 package org.openscoring.server;
 
-import java.io.*;
-import java.nio.file.*;
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.file.DirectoryStream;
 import java.nio.file.FileSystem;
-import java.util.*;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.StandardWatchEventKinds;
+import java.nio.file.WatchEvent;
+import java.nio.file.WatchKey;
+import java.nio.file.WatchService;
+import java.util.List;
 
-import org.openscoring.service.*;
-
-import org.jpmml.evaluator.*;
+import org.jpmml.evaluator.ModelEvaluator;
+import org.openscoring.service.ModelRegistry;
 
 public class DirectoryDeployer extends Thread {
 

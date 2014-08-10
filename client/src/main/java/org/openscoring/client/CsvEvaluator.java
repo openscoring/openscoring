@@ -18,12 +18,21 @@
  */
 package org.openscoring.client;
 
-import java.io.*;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 
-import javax.ws.rs.client.*;
-import javax.ws.rs.core.*;
+import javax.ws.rs.client.Client;
+import javax.ws.rs.client.ClientBuilder;
+import javax.ws.rs.client.Entity;
+import javax.ws.rs.client.Invocation;
+import javax.ws.rs.client.WebTarget;
+import javax.ws.rs.core.MediaType;
 
-import com.beust.jcommander.*;
+import com.beust.jcommander.Parameter;
 
 public class CsvEvaluator extends Application {
 

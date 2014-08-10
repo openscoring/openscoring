@@ -18,8 +18,8 @@
  */
 package org.openscoring.common;
 
-import java.io.*;
-import java.util.*;
+import java.io.Serializable;
+import java.util.Map;
 
 public class EvaluationRequest implements Serializable {
 

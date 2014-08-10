@@ -18,7 +18,9 @@
  */
 package org.openscoring.client;
 
-import com.beust.jcommander.*;
+import com.beust.jcommander.JCommander;
+import com.beust.jcommander.Parameter;
+import com.beust.jcommander.ParameterException;
 
 abstract
 public class Application {

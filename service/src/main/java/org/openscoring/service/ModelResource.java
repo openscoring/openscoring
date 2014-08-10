@@ -18,30 +18,62 @@
  */
 package org.openscoring.service;
 
-import java.io.*;
-import java.net.*;
-import java.util.*;
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.net.URI;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Map;
 
-import javax.annotation.security.*;
-import javax.inject.*;
-import javax.servlet.http.*;
-import javax.ws.rs.*;
-import javax.ws.rs.core.*;
+import javax.annotation.security.PermitAll;
+import javax.annotation.security.RolesAllowed;
+import javax.inject.Inject;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.ws.rs.BadRequestException;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
+import javax.ws.rs.GET;
+import javax.ws.rs.InternalServerErrorException;
+import javax.ws.rs.NotFoundException;
+import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
+import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.UriBuilder;
+import javax.ws.rs.core.UriInfo;
 
-import org.openscoring.common.*;
-
-import org.jpmml.evaluator.*;
-
-import com.codahale.metrics.*;
+import com.codahale.metrics.Counter;
+import com.codahale.metrics.Metric;
+import com.codahale.metrics.MetricFilter;
+import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.Timer;
-
-import com.google.common.collect.*;
-
-import org.dmg.pmml.*;
-
-import org.glassfish.jersey.media.multipart.*;
-
-import org.supercsv.prefs.*;
+import com.google.common.collect.ArrayListMultimap;
+import com.google.common.collect.ListMultimap;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
+import org.dmg.pmml.FieldName;
+import org.glassfish.jersey.media.multipart.FormDataParam;
+import org.jpmml.evaluator.EvaluationException;
+import org.jpmml.evaluator.Evaluator;
+import org.jpmml.evaluator.EvaluatorUtil;
+import org.jpmml.evaluator.ModelEvaluator;
+import org.openscoring.common.EvaluationRequest;
+import org.openscoring.common.EvaluationResponse;
+import org.openscoring.common.ModelResponse;
+import org.openscoring.common.SchemaResponse;
+import org.supercsv.prefs.CsvPreference;
 
 @Path("model")
 @PermitAll

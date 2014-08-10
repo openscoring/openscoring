@@ -18,27 +18,29 @@
  */
 package org.openscoring.service;
 
-import java.io.*;
-import java.util.*;
-import java.util.concurrent.*;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.util.Collection;
+import java.util.Map;
+import java.util.concurrent.ConcurrentMap;
 
-import javax.inject.*;
-import javax.xml.bind.*;
-import javax.xml.transform.*;
-import javax.xml.transform.stream.*;
+import javax.inject.Singleton;
+import javax.xml.bind.JAXBException;
+import javax.xml.transform.Result;
+import javax.xml.transform.Source;
+import javax.xml.transform.stream.StreamResult;
 
-import org.jpmml.evaluator.*;
-import org.jpmml.manager.*;
-import org.jpmml.model.*;
-
-import com.google.common.base.*;
-import com.google.common.collect.*;
-
-import org.dmg.pmml.*;
-
-import org.jvnet.hk2.annotations.*;
-
-import org.xml.sax.*;
+import com.google.common.base.Preconditions;
+import com.google.common.collect.Maps;
+import org.dmg.pmml.PMML;
+import org.jpmml.evaluator.ModelEvaluator;
+import org.jpmml.evaluator.ModelEvaluatorFactory;
+import org.jpmml.manager.PMMLManager;
+import org.jpmml.model.ImportFilter;
+import org.jpmml.model.JAXBUtil;
+import org.jvnet.hk2.annotations.Service;
+import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
 
 @Service
 @Singleton
