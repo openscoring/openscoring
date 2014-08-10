@@ -54,7 +54,7 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-shade-plugin</artifactId>
-				<version>1.7.1</version>
+				<version>2.3</version>
 				<executions>
 					<execution>
 						<phase>package</phase>
@@ -73,7 +73,7 @@
 									</excludes>
 								</filter>
 							</filters>
-							<outputFile>${project.build.directory}/${project.artifactId}-executable-${project.version}.jar</outputFile>
+							<finalName>${project.artifactId}-executable-${project.version}</finalName>
 						</configuration>
 					</execution>
 				</executions>
