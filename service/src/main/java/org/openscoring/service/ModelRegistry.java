@@ -84,7 +84,7 @@ public class ModelRegistry {
 
 		PMMLManager pmmlManager = new PMMLManager(pmml);
 
-		return (ModelEvaluator<?>)pmmlManager.getModelManager(null, ModelEvaluatorFactory.getInstance());
+		return (ModelEvaluator<?>)pmmlManager.getModelManager(ModelEvaluatorFactory.getInstance());
 	}
 
 	static
