@@ -1,9 +1,9 @@
 {
 	"id" : "example-001",
 	"arguments" : {
-		"Sepal.Length" : 5.1,
-		"Sepal.Width" : 3.5,
-		"Petal.Length" : 1.4,
-		"Petal.Width" : 0.2
+		"Sepal_Length" : 5.1,
+		"Sepal_Width" : 3.5,
+		"Petal_Length" : 1.4,
+		"Petal_Width" : 0.2
 	}
 }

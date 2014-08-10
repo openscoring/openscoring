@@ -181,7 +181,7 @@ curl -X GET http://localhost:8080/openscoring/model/DecisionTreeIris/schema
 Sample response:
 ```json
 {
-	"activeFields" : ["Sepal.Length", "Sepal.Width", "Petal.Length", "Petal.Width"],
+	"activeFields" : ["Sepal_Length", "Sepal_Width", "Petal_Length", "Petal_Width"],
 	"groupFields" : [],
 	"targetFields" : ["Species"],
 	"outputFields" : ["Predicted_Species", "Probability_setosa", "Probability_versicolor", "Probability_virginica", "Node_Id"]
@@ -213,10 +213,10 @@ Sample request:
 {
 	"id" : "example-001",
 	"arguments" : {
-		"Sepal.Length" : 5.1,
-		"Sepal.Width" : 3.5,
-		"Petal.Length" : 1.4,
-		"Petal.Width" : 0.2
+		"Sepal_Length" : 5.1,
+		"Sepal_Width" : 3.5,
+		"Petal_Length" : 1.4,
+		"Petal_Width" : 0.2
 	}
 }
 ```
@@ -274,7 +274,7 @@ curl -X POST --data-binary @input.csv -H "Content-type: text/plain" http://local
 
 Sample request:
 ```
-Id,Sepal.Length,Sepal.Width,Petal.Length,Petal.Width
+Id,Sepal_Length,Sepal_Width,Petal_Length,Petal_Width
 example-001,5.1,3.5,1.4,0.2
 example-002,7,3.2,4.7,1.4
 example-003,6.3,3.3,6,2.5
@@ -309,7 +309,7 @@ The following sequence of commands replays the life cycle of a model `DecisionTr
 ```
 java -cp client-executable-1.1-SNAPSHOT.jar org.openscoring.client.Deployer --model http://localhost:8080/openscoring/model/DecisionTreeIris --file DecisionTreeIris.pmml
 
-java -cp client-executable-1.1-SNAPSHOT.jar org.openscoring.client.Evaluator --model http://localhost:8080/openscoring/model/DecisionTreeIris -XSepal.Length=5.1 -XSepal.Width=3.5 -XPetal.Length=1.4 -XPetal.Width=0.2
+java -cp client-executable-1.1-SNAPSHOT.jar org.openscoring.client.Evaluator --model http://localhost:8080/openscoring/model/DecisionTreeIris -XSepal_Length=5.1 -XSepal_Width=3.5 -XPetal_Length=1.4 -XPetal_Width=0.2
 
 java -cp client-executable-1.1-SNAPSHOT.jar org.openscoring.client.CsvEvaluator --model http://localhost:8080/openscoring/model/DecisionTreeIris --input input.csv --output output.csv
 
