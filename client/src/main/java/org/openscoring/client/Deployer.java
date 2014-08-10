@@ -63,7 +63,7 @@ public class Deployer extends Application {
 		InputStream is = new FileInputStream(this.file);
 
 		try {
-			Invocation invocation = target.request(MediaType.TEXT_PLAIN).buildPut(Entity.xml(is));
+			Invocation invocation = target.request(MediaType.APPLICATION_JSON_TYPE).buildPut(Entity.xml(is));
 
 			String result = invocation.invoke(String.class);
 
