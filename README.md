@@ -311,7 +311,7 @@ java -cp client-executable-1.1-SNAPSHOT.jar org.openscoring.client.Deployer --mo
 
 java -cp client-executable-1.1-SNAPSHOT.jar org.openscoring.client.Evaluator --model http://localhost:8080/openscoring/model/DecisionTreeIris -XSepal.Length=5.1 -XSepal.Width=3.5 -XPetal.Length=1.4 -XPetal.Width=0.2
 
-java -cp client-executable-1.1-SNAPSHOT.jar org.openscoring.client.CsvEvaluator --model http://localhost:8080/openscoring/model/DecisionTreeIris --input input.csv --output output.csv --id-column Id
+java -cp client-executable-1.1-SNAPSHOT.jar org.openscoring.client.CsvEvaluator --model http://localhost:8080/openscoring/model/DecisionTreeIris --input input.csv --output output.csv
 
 java -cp client-executable-1.1-SNAPSHOT.jar org.openscoring.client.Undeployer --model http://localhost:8080/openscoring/model/DecisionTreeIris
 ```
