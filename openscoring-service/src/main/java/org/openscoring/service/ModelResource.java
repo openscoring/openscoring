@@ -73,6 +73,8 @@ import org.openscoring.common.EvaluationRequest;
 import org.openscoring.common.EvaluationResponse;
 import org.openscoring.common.ModelResponse;
 import org.openscoring.common.SchemaResponse;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.supercsv.prefs.CsvPreference;
 
 @Path("model")
@@ -402,6 +404,9 @@ public class ModelResource {
 		return (Response.ok()).build();
 	}
 
+	@SuppressWarnings (
+		value = "resource"
+	)
 	private List<EvaluationResponse> doEvaluate(String id, List<EvaluationRequest> requests, String method){
 		ModelEvaluator<?> evaluator = this.modelRegistry.get(id);
 		if(evaluator == null){
@@ -537,6 +542,8 @@ public class ModelResource {
 
 	static
 	protected EvaluationResponse evaluate(Evaluator evaluator, EvaluationRequest request){
+		logger.info("Received {}", request);
+
 		EvaluationResponse response = new EvaluationResponse(request.getId());
 
 		Map<FieldName, Object> arguments = Maps.newLinkedHashMap();
@@ -548,9 +555,15 @@ public class ModelResource {
 			arguments.put(activeField, EvaluatorUtil.prepare(evaluator, activeField, value));
 		}
 
+		logger.debug("Evaluation request {} has prepared arguments: {}", request.getId(), arguments);
+
 		Map<FieldName, ?> result = evaluator.evaluate(arguments);
 
+		logger.debug("Evaluation response {} has result: {}", response.getId(), result);
+
 		response.setResult(EvaluatorUtil.decode(result));
+
+		logger.info("Returned {}", response);
 
 		return response;
 	}
@@ -584,4 +597,6 @@ public class ModelResource {
 
 		return result;
 	}
+
+	private static final Logger logger = LoggerFactory.getLogger(ModelResource.class);
 }

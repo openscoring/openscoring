@@ -23,6 +23,13 @@
 		</license>
 	</licenses>
 
+	<dependencies>
+		<dependency>
+			<groupId>com.google.guava</groupId>
+			<artifactId>guava</artifactId>
+		</dependency>
+	</dependencies>
+
 	<build>
 	</build>
 </project>

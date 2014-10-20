@@ -21,6 +21,9 @@ package org.openscoring.common;
 import java.io.Serializable;
 import java.util.Map;
 
+import com.google.common.base.MoreObjects;
+import com.google.common.base.MoreObjects.ToStringHelper;
+
 public class EvaluationResponse implements Serializable {
 
 	private String id = null;
@@ -33,6 +36,15 @@ public class EvaluationResponse implements Serializable {
 
 	public EvaluationResponse(String id){
 		setId(id);
+	}
+
+	@Override
+	public String toString(){
+		ToStringHelper stringHelper = MoreObjects.toStringHelper(getClass())
+			.add("id", getId())
+			.add("result", getResult());
+
+		return stringHelper.toString();
 	}
 
 	public String getId(){
