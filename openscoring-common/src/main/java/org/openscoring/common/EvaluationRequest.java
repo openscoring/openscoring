@@ -38,10 +38,6 @@ public class EvaluationRequest implements Serializable {
 		setId(id);
 	}
 
-	public Object getArgument(String key){
-		return this.arguments.get(key);
-	}
-
 	@Override
 	public String toString(){
 		ToStringHelper stringHelper = MoreObjects.toStringHelper(getClass())

@@ -424,7 +424,7 @@ public class ModelResource {
 			if(groupFields.size() == 1){
 				FieldName groupField = groupFields.get(0);
 
-				requests = aggregateRequests(groupField.getValue(), requests);
+				requests = aggregateRequests(groupField, requests);
 			} else
 
 			if(groupFields.size() > 1){
@@ -495,22 +495,27 @@ public class ModelResource {
 	}
 
 	static
-	protected List<EvaluationRequest> aggregateRequests(String groupKey, List<EvaluationRequest> requests){
+	protected List<EvaluationRequest> aggregateRequests(FieldName groupField, List<EvaluationRequest> requests){
 		Map<Object, ListMultimap<String, Object>> groupedArguments = Maps.newLinkedHashMap();
 
+		String key = groupField.getValue();
+
 		for(EvaluationRequest request : requests){
-			Map<String, ?> arguments = request.getArguments();
+			Map<String, ?> requestArguments = request.getArguments();
 
-			Object groupValue = arguments.get(groupKey);
+			Object value = requestArguments.get(key);
+			if(value == null && !requestArguments.containsKey(key)){
+				logger.warn("Evaluation request {} does not specify a group field {}", request.getId(), key);
+			}
 
-			ListMultimap<String, Object> groupedArgumentMap = groupedArguments.get(groupValue);
+			ListMultimap<String, Object> groupedArgumentMap = groupedArguments.get(value);
 			if(groupedArgumentMap == null){
 				groupedArgumentMap = ArrayListMultimap.create();
 
-				groupedArguments.put(groupValue, groupedArgumentMap);
+				groupedArguments.put(value, groupedArgumentMap);
 			}
 
-			Collection<? extends Map.Entry<String, ?>> entries = arguments.entrySet();
+			Collection<? extends Map.Entry<String, ?>> entries = requestArguments.entrySet();
 			for(Map.Entry<String, ?> entry : entries){
 				groupedArgumentMap.put(entry.getKey(), entry.getValue());
 			}
@@ -529,7 +534,7 @@ public class ModelResource {
 			arguments.putAll((entry.getValue()).asMap());
 
 			// The value of the "group by" column is a single Object, not a Collection (ie. java.util.List) of Objects
-			arguments.put(groupKey, entry.getKey());
+			arguments.put(key, entry.getKey());
 
 			EvaluationRequest resultRequest = new EvaluationRequest();
 			resultRequest.setArguments(arguments);
@@ -544,13 +549,20 @@ public class ModelResource {
 	protected EvaluationResponse evaluate(Evaluator evaluator, EvaluationRequest request){
 		logger.info("Received {}", request);
 
+		Map<String, ?> requestArguments = request.getArguments();
+
 		EvaluationResponse response = new EvaluationResponse(request.getId());
 
 		Map<FieldName, Object> arguments = Maps.newLinkedHashMap();
 
 		List<FieldName> activeFields = evaluator.getActiveFields();
 		for(FieldName activeField : activeFields){
-			Object value = request.getArgument(activeField.getValue());
+			String key = activeField.getValue();
+
+			Object value = requestArguments.get(key);
+			if(value == null && !requestArguments.containsKey(key)){
+				logger.warn("Evaluation request {} does not specify an active field {}", request.getId(), key);
+			}
 
 			arguments.put(activeField, EvaluatorUtil.prepare(evaluator, activeField, value));
 		}

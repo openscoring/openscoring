@@ -29,6 +29,7 @@ import java.util.Set;
 
 import com.codahale.metrics.MetricRegistry;
 import com.google.common.collect.Lists;
+import org.dmg.pmml.FieldName;
 import org.jpmml.evaluator.ModelEvaluator;
 import org.jpmml.evaluator.TypeUtil;
 import org.jpmml.evaluator.VerificationUtil;
@@ -77,7 +78,7 @@ public class ModelResourceTest {
 
 		compare(responses, result);
 
-		List<EvaluationRequest> aggregatedRequests = ModelResource.aggregateRequests("transaction", requests);
+		List<EvaluationRequest> aggregatedRequests = ModelResource.aggregateRequests(new FieldName("transaction"), requests);
 		List<EvaluationResponse> aggregatedResult = service.evaluateBatch("AssociationRulesShopping", aggregatedRequests);
 
 		assertTrue(aggregatedRequests.size() < requests.size());
