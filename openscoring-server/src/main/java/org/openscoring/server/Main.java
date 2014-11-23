@@ -87,6 +87,14 @@ public class Main {
 	private File modelDir = null;
 
 	@Parameter (
+		names = {"--visitor-classes"},
+		description = "PMML class model visitor classes",
+		converter = ClassConverter.class,
+		hidden = true
+	)
+	private List<Class<?>> visitorClasses = Lists.newArrayList();
+
+	@Parameter (
 		names = {"--help"},
 		description = "Show the list of configuration options and exit",
 		help = true
@@ -135,6 +143,7 @@ public class Main {
 
 		final
 		ModelRegistry modelRegistry = new ModelRegistry();
+		modelRegistry.registerClasses(Sets.newLinkedHashSet(this.visitorClasses));
 
 		final
 		MetricRegistry metricRegistry = new MetricRegistry();

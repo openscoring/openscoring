@@ -160,7 +160,7 @@ public class ModelResource {
 		ModelEvaluator<?> evaluator;
 
 		try {
-			evaluator = ModelRegistry.unmarshal(is);
+			evaluator = this.modelRegistry.load(is);
 		} catch(Exception e){
 			throw new BadRequestException(e);
 		}
@@ -214,7 +214,7 @@ public class ModelResource {
 			OutputStream os = response.getOutputStream();
 
 			try {
-				ModelRegistry.marshal(evaluator, os);
+				this.modelRegistry.store(evaluator, os);
 			} finally {
 				os.close();
 			}

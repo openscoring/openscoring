@@ -122,7 +122,7 @@ public class DirectoryDeployer extends Thread {
 				InputStream is = Files.newInputStream(path);
 
 				try {
-					evaluator = ModelRegistry.unmarshal(is);
+					evaluator = modelRegistry.load(is);
 				} finally {
 					is.close();
 				}

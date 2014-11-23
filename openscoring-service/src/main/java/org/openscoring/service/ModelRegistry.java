@@ -22,6 +22,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Collection;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentMap;
 
 import javax.inject.Singleton;
@@ -32,7 +33,9 @@ import javax.xml.transform.stream.StreamResult;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Maps;
+import jersey.repackaged.com.google.common.collect.Sets;
 import org.dmg.pmml.PMML;
+import org.dmg.pmml.Visitor;
 import org.jpmml.evaluator.ModelEvaluator;
 import org.jpmml.evaluator.ModelEvaluatorFactory;
 import org.jpmml.manager.PMMLManager;
@@ -46,11 +49,42 @@ import org.xml.sax.SAXException;
 @Singleton
 public class ModelRegistry {
 
-	private ConcurrentMap<String, ModelEvaluator<?>> models = Maps.<String, ModelEvaluator<?>>newConcurrentMap();
+	private Set<Class<? extends Visitor>> visitorClazzes = Sets.newHashSet();
 
+	private ConcurrentMap<String, ModelEvaluator<?>> models = Maps.newConcurrentMap();
+
+
+	public void registerClasses(Set<Class<?>> clazzes){
+
+		for(Class<?> clazz : clazzes){
+
+			if((Visitor.class).isAssignableFrom(clazz)){
+				this.visitorClazzes.add((Class<? extends Visitor>)clazz);
+			}
+		}
+	}
 
 	public Collection<Map.Entry<String, ModelEvaluator<?>>> entries(){
 		return this.models.entrySet();
+	}
+
+	public ModelEvaluator<?> load(InputStream is) throws Exception {
+		ModelEvaluator<?> evaluator = unmarshal(is);
+
+		PMML pmml = evaluator.getPMML();
+
+		Iterable<Class<? extends Visitor>> visitorClazzes = this.visitorClazzes;
+		for(Class<? extends Visitor> visitorClazz : visitorClazzes){
+			Visitor visitor = visitorClazz.newInstance();
+
+			pmml.accept(visitor);
+		}
+
+		return evaluator;
+	}
+
+	public void store(ModelEvaluator<?> evaluator, OutputStream os) throws Exception {
+		marshal(evaluator, os);
 	}
 
 	public ModelEvaluator<?> get(String id){
@@ -77,7 +111,7 @@ public class ModelRegistry {
 	}
 
 	static
-	public ModelEvaluator<?> unmarshal(InputStream is) throws SAXException, JAXBException {
+	private ModelEvaluator<?> unmarshal(InputStream is) throws SAXException, JAXBException {
 		Source source = ImportFilter.apply(new InputSource(is));
 
 		PMML pmml = JAXBUtil.unmarshalPMML(source);
@@ -88,7 +122,7 @@ public class ModelRegistry {
 	}
 
 	static
-	public void marshal(ModelEvaluator<?> evaluator, OutputStream os) throws JAXBException {
+	private void marshal(ModelEvaluator<?> evaluator, OutputStream os) throws JAXBException {
 		PMML pmml = evaluator.getPMML();
 
 		Result result = new StreamResult(os);

@@ -23,6 +23,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -30,9 +31,11 @@ import java.util.Set;
 import com.codahale.metrics.MetricRegistry;
 import com.google.common.collect.Lists;
 import org.dmg.pmml.FieldName;
+import org.dmg.pmml.PMML;
 import org.jpmml.evaluator.ModelEvaluator;
 import org.jpmml.evaluator.TypeUtil;
 import org.jpmml.evaluator.VerificationUtil;
+import org.jpmml.model.SourceLocationNullifier;
 import org.junit.Test;
 import org.openscoring.common.EvaluationRequest;
 import org.openscoring.common.EvaluationResponse;
@@ -40,6 +43,7 @@ import org.supercsv.prefs.CsvPreference;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
@@ -155,22 +159,27 @@ public class ModelResourceTest {
 	static
 	private ModelResource createService(String id) throws Exception {
 		ModelRegistry modelRegistry = new ModelRegistry();
-		modelRegistry.put(id, loadModel(id));
+		modelRegistry.registerClasses(Collections.<Class<?>>singleton(SourceLocationNullifier.class));
 
 		MetricRegistry metricRegistry = new MetricRegistry();
 
-		return new ModelResource(modelRegistry, metricRegistry);
-	}
+		ModelEvaluator<?> evaluator;
 
-	static
-	private ModelEvaluator<?> loadModel(String id) throws Exception {
 		InputStream is = ModelResourceTest.class.getResourceAsStream("/pmml/" + id + ".pmml");
 
 		try {
-			return ModelRegistry.unmarshal(is);
+			evaluator = modelRegistry.load(is);
 		} finally {
 			is.close();
 		}
+
+		PMML pmml = evaluator.getPMML();
+
+		assertNull(pmml.sourceLocation());
+
+		modelRegistry.put(id, evaluator);
+
+		return new ModelResource(modelRegistry, metricRegistry);
 	}
 
 	static
