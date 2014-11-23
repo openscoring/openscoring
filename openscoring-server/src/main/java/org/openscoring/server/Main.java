@@ -21,12 +21,15 @@ package org.openscoring.server;
 import java.io.File;
 import java.io.IOException;
 import java.net.InetSocketAddress;
+import java.util.List;
 
 import com.beust.jcommander.JCommander;
 import com.beust.jcommander.Parameter;
 import com.beust.jcommander.ParameterException;
 import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.jetty9.InstrumentedHandler;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.handler.ContextHandlerCollection;
 import org.eclipse.jetty.servlet.ServletContextHandler;
@@ -63,10 +66,12 @@ public class Main {
 	private String contextPath = "/openscoring";
 
 	@Parameter (
-		names = {"--model-dir"},
-		description = "Model auto-deployment directory"
+		names = {"--component-classes"},
+		description = "JAX-RS component classes",
+		converter = ClassConverter.class,
+		hidden = true
 	)
-	private File modelDir = null;
+	private List<Class<?>> componentClasses = Lists.newArrayList();
 
 	@Parameter (
 		names = {"--console-war"},
@@ -74,6 +79,12 @@ public class Main {
 		hidden = true
 	)
 	private File consoleWar = null;
+
+	@Parameter (
+		names = {"--model-dir"},
+		description = "Model auto-deployment directory"
+	)
+	private File modelDir = null;
 
 	@Parameter (
 		names = {"--help"},
@@ -138,6 +149,7 @@ public class Main {
 		};
 
 		ResourceConfig config = new ResourceConfig(ModelResource.class);
+		config.registerClasses(Sets.newLinkedHashSet(this.componentClasses));
 		config.register(binder);
 		config.register(JacksonFeature.class);
 		config.register(MultiPartFeature.class);
