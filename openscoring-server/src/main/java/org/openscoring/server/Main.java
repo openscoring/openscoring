@@ -48,24 +48,6 @@ import org.openscoring.service.ModelResource;
 public class Main {
 
 	@Parameter (
-		names = {"--host"},
-		description = "Server host name or ip address"
-	)
-	private String host = null;
-
-	@Parameter (
-		names = {"--port"},
-		description = "Server port"
-	)
-	private int port = 8080;
-
-	@Parameter (
-		names = {"--context-path"},
-		description = "Context path"
-	)
-	private String contextPath = "/openscoring";
-
-	@Parameter (
 		names = {"--component-classes"},
 		description = "JAX-RS component classes",
 		converter = ClassConverter.class,
@@ -81,10 +63,35 @@ public class Main {
 	private File consoleWar = null;
 
 	@Parameter (
+		names = {"--context-path"},
+		description = "Context path"
+	)
+	private String contextPath = "/openscoring";
+
+	@Parameter (
+		names = {"--help"},
+		description = "Show the list of configuration options and exit",
+		help = true
+	)
+	private boolean help = false;
+
+	@Parameter (
+		names = {"--host"},
+		description = "Server host name or ip address"
+	)
+	private String host = null;
+
+	@Parameter (
 		names = {"--model-dir"},
 		description = "Model auto-deployment directory"
 	)
 	private File modelDir = null;
+
+	@Parameter (
+		names = {"--port"},
+		description = "Server port"
+	)
+	private int port = 8080;
 
 	@Parameter (
 		names = {"--visitor-classes"},
@@ -93,13 +100,6 @@ public class Main {
 		hidden = true
 	)
 	private List<Class<?>> visitorClasses = Lists.newArrayList();
-
-	@Parameter (
-		names = {"--help"},
-		description = "Show the list of configuration options and exit",
-		help = true
-	)
-	private boolean help = false;
 
 
 	static
