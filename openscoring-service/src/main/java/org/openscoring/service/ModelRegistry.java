@@ -80,6 +80,8 @@ public class ModelRegistry {
 			pmml.accept(visitor);
 		}
 
+		evaluator.verify();
+
 		return evaluator;
 	}
 
