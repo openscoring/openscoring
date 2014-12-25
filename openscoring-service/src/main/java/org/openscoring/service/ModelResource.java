@@ -63,14 +63,22 @@ import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.ListMultimap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import org.dmg.pmml.DataField;
+import org.dmg.pmml.DataType;
 import org.dmg.pmml.FieldName;
+import org.dmg.pmml.MiningField;
+import org.dmg.pmml.OpType;
+import org.dmg.pmml.OutputField;
 import org.glassfish.jersey.media.multipart.FormDataParam;
 import org.jpmml.evaluator.EvaluationException;
 import org.jpmml.evaluator.Evaluator;
 import org.jpmml.evaluator.EvaluatorUtil;
 import org.jpmml.evaluator.ModelEvaluator;
+import org.jpmml.evaluator.OutputUtil;
+import org.jpmml.evaluator.TypeUtil;
 import org.openscoring.common.EvaluationRequest;
 import org.openscoring.common.EvaluationResponse;
+import org.openscoring.common.Field;
 import org.openscoring.common.ModelResponse;
 import org.openscoring.common.SchemaResponse;
 import org.slf4j.Logger;
@@ -591,23 +599,63 @@ public class ModelResource {
 	static
 	private SchemaResponse createSchemaResponse(ModelEvaluator<?> evaluator){
 		SchemaResponse response = new SchemaResponse();
-		response.setActiveFields(toValueList(evaluator.getActiveFields()));
-		response.setGroupFields(toValueList(evaluator.getGroupFields()));
-		response.setTargetFields(toValueList(evaluator.getTargetFields()));
-		response.setOutputFields(toValueList(evaluator.getOutputFields()));
+		response.setActiveFields(encodeMiningFields(evaluator.getActiveFields(), evaluator));
+		response.setGroupFields(encodeMiningFields(evaluator.getGroupFields(), evaluator));
+		response.setTargetFields(encodeMiningFields(evaluator.getTargetFields(), evaluator));
+		response.setOutputFields(encodeOutputFields(evaluator.getOutputFields(), evaluator));
 
 		return response;
 	}
 
 	static
-	private List<String> toValueList(List<FieldName> names){
-		List<String> result = Lists.newArrayListWithCapacity(names.size());
+	private List<Field> encodeMiningFields(List<FieldName> names, ModelEvaluator<?> evaluator){
+		List<Field> fields = Lists.newArrayList();
 
 		for(FieldName name : names){
-			result.add(name.getValue());
+			MiningField miningField = evaluator.getMiningField(name);
+			DataField dataField = evaluator.getDataField(name);
+
+			DataType dataType = dataField.getDataType();
+
+			OpType opType = miningField.getOptype();
+			if(opType == null){
+				opType = dataField.getOptype();
+			}
+
+			Field field = new Field(name.getValue());
+			field.setName(dataField.getDisplayName());
+			field.setDataType(dataType);
+			field.setOpType(opType);
+
+			fields.add(field);
 		}
 
-		return result;
+		return fields;
+	}
+
+	static
+	private List<Field> encodeOutputFields(List<FieldName> names, ModelEvaluator<?> evaluator){
+		List<Field> fields = Lists.newArrayList();
+
+		for(FieldName name : names){
+			OutputField outputField = evaluator.getOutputField(name);
+
+			DataType dataType = OutputUtil.getDataType(outputField, evaluator);
+
+			OpType opType = outputField.getOptype();
+			if(opType == null){
+				opType = TypeUtil.getOpType(dataType);
+			}
+
+			Field field = new Field(name.getValue());
+			field.setName(outputField.getDisplayName());
+			field.setDataType(dataType);
+			field.setOpType(opType);
+
+			fields.add(field);
+		}
+
+		return fields;
 	}
 
 	private static final Logger logger = LoggerFactory.getLogger(ModelResource.class);

@@ -181,10 +181,67 @@ curl -X GET http://localhost:8080/openscoring/model/DecisionTreeIris/schema
 Sample response:
 ```json
 {
-	"activeFields" : ["Sepal_Length", "Sepal_Width", "Petal_Length", "Petal_Width"],
+	"activeFields" : [
+		{
+			"id" : "Sepal_Length",
+			"name" : "Sepal length in cm",
+			"dataType" : "double",
+			"opType" : "continuous"
+		},
+		{
+			"id" : "Sepal_Width",
+			"name" : "Sepal width in cm",
+			"dataType" : "double",
+			"opType" : "continuous"
+		},
+		{
+			"id" : "Petal_Length",
+			"name" : "Petal length in cm",
+			"dataType" : "double",
+			"opType" : "continuous"
+		},
+		{
+			"id" : "Petal_Width",
+			"name" : "Petal width in cm",
+			"dataType" : "double",
+			"opType" : "continuous"
+		}
+	],
 	"groupFields" : [],
-	"targetFields" : ["Species"],
-	"outputFields" : ["Predicted_Species", "Probability_setosa", "Probability_versicolor", "Probability_virginica", "Node_Id"]
+	"targetFields" : [
+		{
+			"id" : "Species",
+			"dataType" : "string",
+			"opType" : "categorical"
+		}
+	],
+	"outputFields" : [
+		{
+			"id" : "Predicted_Species",
+			"dataType" : "string",
+			"opType" : "categorical"
+		},
+		{
+			"id" : "Probability_setosa",
+			"dataType" : "double",
+			"opType" : "continuous"
+		},
+		{
+			"id" : "Probability_versicolor",
+			"dataType" : "double",
+			"opType" : "continuous"
+		},
+		{
+			"id" : "Probability_virginica",
+			"dataType" : "double",
+			"opType" : "continuous"
+		},
+		{
+			"id" : "Node_Id",
+			"dataType" : "string",
+			"opType" : "categorical"
+		}
+	]
 }
 ```
 

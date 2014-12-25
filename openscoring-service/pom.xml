@@ -29,12 +29,6 @@
 		</dependency>
 
 		<dependency>
-			<groupId>org.jpmml</groupId>
-			<artifactId>pmml-evaluator</artifactId>
-			<version>1.1.13</version>
-		</dependency>
-
-		<dependency>
 			<groupId>com.codahale.metrics</groupId>
 			<artifactId>metrics-core</artifactId>
 		</dependency>
@@ -57,6 +51,11 @@
 			<artifactId>jersey-media-multipart</artifactId>
 		</dependency>
 
+		<dependency>
+			<groupId>org.jpmml</groupId>
+			<artifactId>pmml-evaluator</artifactId>
+		</dependency>
+		
 		<dependency>
 			<groupId>org.slf4j</groupId>
 			<artifactId>slf4j-api</artifactId>

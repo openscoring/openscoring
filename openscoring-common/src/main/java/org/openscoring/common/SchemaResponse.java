@@ -23,13 +23,13 @@ import java.util.List;
 
 public class SchemaResponse implements Serializable {
 
-	private List<String> activeFields = null;
+	private List<Field> activeFields = null;
 
-	private List<String> groupFields = null;
+	private List<Field> groupFields = null;
 
-	private List<String> targetFields = null;
+	private List<Field> targetFields = null;
 
-	private List<String> outputFields = null;
+	private List<Field> outputFields = null;
 
 
 	public SchemaResponse(){
@@ -38,44 +38,44 @@ public class SchemaResponse implements Serializable {
 	/**
 	 * @see EvaluationRequest#getArguments()
 	 */
-	public List<String> getActiveFields(){
+	public List<Field> getActiveFields(){
 		return this.activeFields;
 	}
 
-	public void setActiveFields(List<String> activeFields){
+	public void setActiveFields(List<Field> activeFields){
 		this.activeFields = activeFields;
 	}
 
 	/**
 	 * @see EvaluationRequest#getArguments()
 	 */
-	public List<String> getGroupFields(){
+	public List<Field> getGroupFields(){
 		return this.groupFields;
 	}
 
-	public void setGroupFields(List<String> groupFields){
+	public void setGroupFields(List<Field> groupFields){
 		this.groupFields = groupFields;
 	}
 
 	/**
 	 * @see EvaluationResponse#getResult()
 	 */
-	public List<String> getTargetFields(){
+	public List<Field> getTargetFields(){
 		return this.targetFields;
 	}
 
-	public void setTargetFields(List<String> targetFields){
+	public void setTargetFields(List<Field> targetFields){
 		this.targetFields = targetFields;
 	}
 
 	/**
 	 * @see EvaluationResponse#getResult()
 	 */
-	public List<String> getOutputFields(){
+	public List<Field> getOutputFields(){
 		return this.outputFields;
 	}
 
-	public void setOutputFields(List<String> outputFields){
+	public void setOutputFields(List<Field> outputFields){
 		this.outputFields = outputFields;
 	}
 }
