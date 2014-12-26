@@ -21,6 +21,11 @@ package org.openscoring.common;
 import java.io.Serializable;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+
+@JsonInclude (
+	value = JsonInclude.Include.NON_EMPTY
+)
 public class SchemaResponse implements Serializable {
 
 	private List<Field> activeFields = null;

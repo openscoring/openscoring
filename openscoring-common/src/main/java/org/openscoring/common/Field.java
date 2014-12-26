@@ -21,11 +21,15 @@ package org.openscoring.common;
 import java.io.Serializable;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import org.dmg.pmml.DataType;
 import org.dmg.pmml.OpType;
 
+@JsonInclude (
+	value = JsonInclude.Include.NON_EMPTY
+)
 public class Field implements Serializable {
 
 	private String id = null;

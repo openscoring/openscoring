@@ -21,9 +21,13 @@ package org.openscoring.common;
 import java.io.Serializable;
 import java.util.Map;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.google.common.base.MoreObjects;
 import com.google.common.base.MoreObjects.ToStringHelper;
 
+@JsonInclude (
+	value = JsonInclude.Include.NON_EMPTY
+)
 public class EvaluationRequest implements Serializable {
 
 	private String id = null;

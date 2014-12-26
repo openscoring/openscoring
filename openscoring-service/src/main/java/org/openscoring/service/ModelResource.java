@@ -624,13 +624,11 @@ public class ModelResource {
 				opType = dataField.getOptype();
 			}
 
-			List<String> values = encodeValues(dataField);
-
 			Field field = new Field(name.getValue());
 			field.setName(dataField.getDisplayName());
 			field.setDataType(dataType);
 			field.setOpType(opType);
-			field.setValues((values != null && values.size() > 0) ? values : null);
+			field.setValues(encodeValues(dataField));
 
 			fields.add(field);
 		}
@@ -656,7 +654,6 @@ public class ModelResource {
 			field.setName(outputField.getDisplayName());
 			field.setDataType(dataType);
 			field.setOpType(opType);
-			field.setValues(null);
 
 			fields.add(field);
 		}
