@@ -19,6 +19,7 @@
 package org.openscoring.common;
 
 import java.io.Serializable;
+import java.util.List;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
@@ -46,6 +47,8 @@ public class Field implements Serializable {
 		using = OpTypeDeserializer.class
 	)
 	private OpType opType = null;
+
+	private List<String> values = null;
 
 
 	public Field(){
@@ -85,5 +88,13 @@ public class Field implements Serializable {
 
 	public void setOpType(OpType opType){
 		this.opType = opType;
+	}
+
+	public List<String> getValues(){
+		return this.values;
+	}
+
+	public void setValues(List<String> values){
+		this.values = values;
 	}
 }

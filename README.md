@@ -186,25 +186,29 @@ Sample response:
 			"id" : "Sepal_Length",
 			"name" : "Sepal length in cm",
 			"dataType" : "double",
-			"opType" : "continuous"
+			"opType" : "continuous",
+			"values" : [ "[4.3, 7.9]" ]
 		},
 		{
 			"id" : "Sepal_Width",
 			"name" : "Sepal width in cm",
 			"dataType" : "double",
-			"opType" : "continuous"
+			"opType" : "continuous",
+			"values" : [ "[2.0, 4.4]" ]
 		},
 		{
 			"id" : "Petal_Length",
 			"name" : "Petal length in cm",
 			"dataType" : "double",
-			"opType" : "continuous"
+			"opType" : "continuous",
+			"values" : [ "[1.0, 6.9]" ]
 		},
 		{
 			"id" : "Petal_Width",
 			"name" : "Petal width in cm",
 			"dataType" : "double",
-			"opType" : "continuous"
+			"opType" : "continuous",
+			"values" : [ "[0.1, 2.5]" ]
 		}
 	],
 	"groupFields" : [],
@@ -212,7 +216,8 @@ Sample response:
 		{
 			"id" : "Species",
 			"dataType" : "string",
-			"opType" : "categorical"
+			"opType" : "categorical",
+			"values" : [ "setosa", "versicolor", "virginica" ]
 		}
 	],
 	"outputFields" : [

@@ -66,9 +66,11 @@ import com.google.common.collect.Maps;
 import org.dmg.pmml.DataField;
 import org.dmg.pmml.DataType;
 import org.dmg.pmml.FieldName;
+import org.dmg.pmml.Interval;
 import org.dmg.pmml.MiningField;
 import org.dmg.pmml.OpType;
 import org.dmg.pmml.OutputField;
+import org.dmg.pmml.Value;
 import org.glassfish.jersey.media.multipart.FormDataParam;
 import org.jpmml.evaluator.EvaluationException;
 import org.jpmml.evaluator.Evaluator;
@@ -622,10 +624,13 @@ public class ModelResource {
 				opType = dataField.getOptype();
 			}
 
+			List<String> values = encodeValues(dataField);
+
 			Field field = new Field(name.getValue());
 			field.setName(dataField.getDisplayName());
 			field.setDataType(dataType);
 			field.setOpType(opType);
+			field.setValues((values != null && values.size() > 0) ? values : null);
 
 			fields.add(field);
 		}
@@ -651,11 +656,65 @@ public class ModelResource {
 			field.setName(outputField.getDisplayName());
 			field.setDataType(dataType);
 			field.setOpType(opType);
+			field.setValues(null);
 
 			fields.add(field);
 		}
 
 		return fields;
+	}
+
+	static
+	private List<String> encodeValues(DataField dataField){
+		List<String> result = Lists.newArrayList();
+
+		List<Interval> intervals = dataField.getIntervals();
+		for(Interval interval : intervals){
+			StringBuffer sb = new StringBuffer();
+
+			Double leftMargin = interval.getLeftMargin();
+			sb.append(leftMargin != null ? leftMargin : "-\u221e");
+
+			sb.append(", ");
+
+			Double rightMargin = interval.getRightMargin();
+			sb.append(rightMargin != null ? rightMargin : "\u221e");
+
+			String value = sb.toString();
+
+			Interval.Closure closure = interval.getClosure();
+			switch(closure){
+				case OPEN_OPEN:
+					result.add("(" + value + ")");
+					break;
+				case OPEN_CLOSED:
+					result.add("(" + value + "]");
+					break;
+				case CLOSED_OPEN:
+					result.add("[" + value + ")");
+					break;
+				case CLOSED_CLOSED:
+					result.add("[" + value + "]");
+					break;
+				default:
+					break;
+			}
+		}
+
+		List<Value> values = dataField.getValues();
+		for(Value value : values){
+			Value.Property property = value.getProperty();
+
+			switch(property){
+				case VALID:
+					result.add(value.getValue());
+					break;
+				default:
+					break;
+			}
+		}
+
+		return result;
 	}
 
 	private static final Logger logger = LoggerFactory.getLogger(ModelResource.class);
