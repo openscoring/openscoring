@@ -12,8 +12,8 @@
 	<artifactId>openscoring-common</artifactId>
 	<packaging>jar</packaging>
 
-	<name>OpenScoring Common</name>
-	<description>Shared functionality between client and service modules</description>
+	<name>Openscoring Common</name>
+	<description>Data model</description>
 
 	<licenses>
 		<license>

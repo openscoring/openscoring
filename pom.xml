@@ -13,7 +13,7 @@
 	<version>1.2-SNAPSHOT</version>
 	<packaging>pom</packaging>
 
-	<name>OpenScoring</name>
+	<name>Openscoring</name>
 	<description>REST web service for scoring PMML models</description>
 	<url>http://www.openscoring.org</url>
 

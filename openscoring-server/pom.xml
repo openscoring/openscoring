@@ -11,7 +11,7 @@
 	<groupId>org.openscoring</groupId>
 	<artifactId>openscoring-server</artifactId>
 
-	<name>OpenScoring Server</name>
+	<name>Openscoring Server</name>
 	<description>Command-line server application</description>
 
 	<licenses>

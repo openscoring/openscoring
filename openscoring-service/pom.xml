@@ -11,8 +11,8 @@
 	<groupId>org.openscoring</groupId>
 	<artifactId>openscoring-service</artifactId>
 
-	<name>OpenScoring Service</name>
-	<description>REST web service</description>
+	<name>Openscoring Service</name>
+	<description>RESTful Web service</description>
 
 	<licenses>
 		<license>
