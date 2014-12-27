@@ -35,15 +35,9 @@ import org.eclipse.jetty.server.handler.ContextHandlerCollection;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
 import org.eclipse.jetty.webapp.WebAppContext;
-import org.glassfish.hk2.utilities.Binder;
-import org.glassfish.hk2.utilities.binding.AbstractBinder;
-import org.glassfish.jersey.jackson.JacksonFeature;
-import org.glassfish.jersey.media.multipart.MultiPartFeature;
-import org.glassfish.jersey.server.ResourceConfig;
-import org.glassfish.jersey.server.filter.RolesAllowedDynamicFeature;
 import org.glassfish.jersey.servlet.ServletContainer;
 import org.openscoring.service.ModelRegistry;
-import org.openscoring.service.ModelResource;
+import org.openscoring.service.Openscoring;
 
 public class Main {
 
@@ -139,44 +133,32 @@ public class Main {
 
 		Server server = new Server(address);
 
-		ContextHandlerCollection handlerCollection = new ContextHandlerCollection();
+		Openscoring application = new Openscoring();
 
-		final
-		ModelRegistry modelRegistry = new ModelRegistry();
-		modelRegistry.registerClasses(Sets.newLinkedHashSet(this.visitorClasses));
-
-		final
-		MetricRegistry metricRegistry = new MetricRegistry();
-
-		Binder binder = new AbstractBinder(){
-
-			@Override
-			protected void configure(){
-				bind(modelRegistry).to(ModelRegistry.class);
-				bind(metricRegistry).to(MetricRegistry.class);
-			}
-		};
-
-		ResourceConfig config = new ResourceConfig(ModelResource.class);
-		config.registerClasses(Sets.newLinkedHashSet(this.componentClasses));
-		config.register(binder);
-		config.register(JacksonFeature.class);
-		config.register(MultiPartFeature.class);
-		config.register(ObjectMapperProvider.class);
-		config.register(RolesAllowedDynamicFeature.class);
+		List<Class<?>> componentClazzes = this.componentClasses;
+		for(Class<?> componentClazz : componentClazzes){
+			application.register(componentClazz);
+		}
 
 		// Naive implementation that grants the "admin" role to all local network users
-		config.register(NetworkSecurityContextFilter.class);
+		application.register(NetworkSecurityContextFilter.class);
+
+		ModelRegistry modelRegistry = application.getModelRegistry();
+		modelRegistry.registerClasses(Sets.newLinkedHashSet(this.visitorClasses));
+
+		MetricRegistry metricRegistry = application.getMetricRegistry();
+
+		ServletContainer jerseyServlet = new ServletContainer(application);
 
 		ServletContextHandler servletHandler = new ServletContextHandler();
 		servletHandler.setContextPath(this.contextPath);
-
-		ServletContainer jerseyServlet = new ServletContainer(config);
 
 		servletHandler.addServlet(new ServletHolder(jerseyServlet), "/*");
 
 		InstrumentedHandler instrumentedHandler = new InstrumentedHandler(metricRegistry);
 		instrumentedHandler.setHandler(servletHandler);
+
+		ContextHandlerCollection handlerCollection = new ContextHandlerCollection();
 
 		handlerCollection.addHandler(instrumentedHandler);
 

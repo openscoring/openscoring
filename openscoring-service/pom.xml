@@ -32,6 +32,14 @@
 			<groupId>com.codahale.metrics</groupId>
 			<artifactId>metrics-core</artifactId>
 		</dependency>
+		<dependency>
+			<groupId>com.codahale.metrics</groupId>
+			<artifactId>metrics-jetty9</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>com.codahale.metrics</groupId>
+			<artifactId>metrics-json</artifactId>
+		</dependency>
 
 		<dependency>
 			<groupId>com.google.guava</groupId>

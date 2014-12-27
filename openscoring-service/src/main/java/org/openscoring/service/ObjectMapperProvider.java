@@ -16,7 +16,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with Openscoring.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.openscoring.server;
+package org.openscoring.service;
 
 import java.util.concurrent.TimeUnit;
 
@@ -40,7 +40,6 @@ public class ObjectMapperProvider implements ContextResolver<ObjectMapper> {
 
 		setMapper(mapper);
 	}
-
 
 	@Override
 	public ObjectMapper getContext(Class<?> clazz){
