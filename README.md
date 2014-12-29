@@ -108,7 +108,7 @@ Sample cURL invocation:
 curl -X PUT --data-binary @DecisionTreeIris.pmml -H "Content-type: text/xml" http://localhost:8080/openscoring/model/DecisionTreeIris
 ```
 
-The example PMML file `DecisionTreeIris.pmml` along with example JSON and CSV files is available in the `openscoring-server/etc` directory.
+The example PMML file `DecisionTreeIris.pmml` along with example JSON and CSV files is available in the `openscoring-service/src/etc` directory.
 
 Sample response:
 ```json
