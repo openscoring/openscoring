@@ -1,0 +1,58 @@
+<?xml version="1.0" ?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<parent>
+		<groupId>org.openscoring</groupId>
+		<artifactId>openscoring</artifactId>
+		<version>1.2-SNAPSHOT</version>
+	</parent>
+
+	<groupId>org.openscoring</groupId>
+	<artifactId>openscoring-webapp</artifactId>
+	<packaging>war</packaging>
+
+	<name>Openscoring WebApp</name>
+	<description>Web application</description>
+
+	<licenses>
+		<license>
+			<name>GNU Affero General Public License (AGPL) version 3.0</name>
+			<url>http://www.gnu.org/licenses/agpl-3.0.html</url>
+			<distribution>repo</distribution>
+		</license>
+	</licenses>
+
+	<dependencies>
+		<dependency>
+			<groupId>org.openscoring</groupId>
+			<artifactId>openscoring-service</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>org.glassfish.jersey.containers</groupId>
+			<artifactId>jersey-container-servlet</artifactId>
+		</dependency>
+	</dependencies>
+
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.eclipse.jetty</groupId>
+				<artifactId>jetty-maven-plugin</artifactId>
+				<version>9.2.6.v20141205</version>
+				<configuration>
+					<webApp>
+						<contextPath>/openscoring</contextPath>
+					</webApp>
+					<loginServices>
+						<loginService implementation="org.eclipse.jetty.security.HashLoginService">
+							<name>Test Realm</name>
+							<config>${project.basedir}/src/etc/realm.properties</config>
+						</loginService>
+					</loginServices>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
+</project>

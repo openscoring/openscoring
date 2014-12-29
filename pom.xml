@@ -37,6 +37,7 @@
 		<module>openscoring-common</module>
 		<module>openscoring-server</module>
 		<module>openscoring-service</module>
+		<module>openscoring-webapp</module>
 	</modules>
 
 	<scm>
@@ -70,6 +71,11 @@
 			<dependency>
 				<groupId>org.openscoring</groupId>
 				<artifactId>openscoring-service</artifactId>
+				<version>1.2-SNAPSHOT</version>
+			</dependency>
+			<dependency>
+				<groupId>org.openscoring</groupId>
+				<artifactId>openscoring-webapp</artifactId>
 				<version>1.2-SNAPSHOT</version>
 			</dependency>
 

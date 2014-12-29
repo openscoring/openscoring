@@ -17,7 +17,7 @@ REST web service for scoring PMML models.
   * User authentication and authorization.
   * Metrics dashboards.
 
-# Installation #
+# Installation and Usage #
 
 The project requires Java 1.7 or newer to run.
 
@@ -26,14 +26,29 @@ Enter the project root directory and build using [Apache Maven] (http://maven.ap
 mvn clean install
 ```
 
-The build produces an executable uber-JAR file `openscoring-server/target/server-executable-1.2-SNAPSHOT.jar`. The main class of the Openscoring application `org.openscoring.server.Main` can be automatically loaded and executed by specifying the `-jar` command-line option:
+By default, the REST web service is started at [http://localhost:8080/openscoring] (http://localhost:8080/openscoring/).
+
+### Standalone application
+
+The build produces an executable uber-JAR file `openscoring-server/target/server-executable-1.2-SNAPSHOT.jar`. Change the working directory to `openscoring-server` and execute the following command:
 ```
-java -jar server-executable-1.2-SNAPSHOT.jar
+java -jar target/server-executable-1.2-SNAPSHOT.jar
 ```
 
-By default, the REST web service is started at [http://localhost:8080/openscoring] (http://localhost:8080/openscoring/). The main class accepts a number of configuration options for URI customization and other purposes. Please specify `--help` for more information.
+The main class `org.openscoring.server.Main` accepts a number of configuration options for URI customization and other purposes. Please specify `--help` for more information.
 
-Additionally, the build produces an executable uber-JAR file `openscoring-client/target/client-executable-1.2-SNAPSHOT.jar` which contains a number of command-line client applications.
+The standalone application grants the "admin" role to all HTTP requests that originate from the local network address.
+
+### Web application
+
+The build produces a WAR file `openscoring-webapp/target/openscoring-webapp-1.2-SNAPSHOT.war`. This WAR file can be deployed using any Java web container.
+
+In testing mode, the web application can be launced using [Jetty Maven Plugin] (http://eclipse.org/jetty/documentation/current/jetty-maven-plugin.html). Change the working directory to `openscoring-webapp` and execute the following command:
+```
+mvn jetty:run-war
+```
+
+In testing mode, the web application performs the authentication and authorization of users according to the contents of the `openscoring-webapp/src/etc/realm.properties` properties file. User credentials have to be provided with the request using the basic access authentication method. For the sample cURL invocations (in "REST API", see below), simply add `--user <user name>:<password>` to the command line.
 
 # REST API #
 
@@ -45,12 +60,12 @@ Model collection REST API endpoints:
 | ----------- | -------- | ---------------- | ----------- |
 | GET | /model | - | Get all models |
 | GET | /model/metrics | admin | Get the metrics of all models |
-| POST | /model | admin | Deploy a model |
 
 Model REST API endpoints:
 
 | HTTP method | Endpoint | Required role(s) | Description |
 | ----------- | -------- | ---------------- | ----------- |
+| POST | /model | admin | Deploy a model |
 | PUT | /model/${id} | admin | Deploy a model |
 | GET | /model/${id} | admin | Download a model |
 | GET | /model/${id}/metrics | admin | Get the metrics of a model |
@@ -59,8 +74,6 @@ Model REST API endpoints:
 | POST | /model/${id}/batch | - | Evaluate a model in "batch prediction" mode |
 | POST | /model/${id}/csv | - | Evaluate a model is CSV prediction mode |
 | DELETE | /model/${id} | admin | Undeploy a model |
-
-Some REST API endpoints require privileged access. By default, the Openscoring application grants the "admin" role to all HTTP requests that originate from the local network address.
 
 ### Model collection querying
 
