@@ -26,29 +26,47 @@ Enter the project root directory and build using [Apache Maven] (http://maven.ap
 mvn clean install
 ```
 
-By default, the REST web service is started at [http://localhost:8080/openscoring] (http://localhost:8080/openscoring/).
+### Server side
 
-### Standalone application
+##### Standalone application
 
 The build produces an executable uber-JAR file `openscoring-server/target/server-executable-1.2-SNAPSHOT.jar`. Change the working directory to `openscoring-server` and execute the following command:
 ```
 java -jar target/server-executable-1.2-SNAPSHOT.jar
 ```
 
-The main class `org.openscoring.server.Main` accepts a number of configuration options for URI customization and other purposes. Please specify `--help` for more information.
+By default, the REST web service is started at [http://localhost:8080/openscoring] (http://localhost:8080/openscoring/). The main class `org.openscoring.server.Main` accepts a number of configuration options for URI customization and other purposes. Please specify `--help` for more information.
 
 The standalone application grants the "admin" role to all HTTP requests that originate from the local network address.
 
-### Web application
+##### Web application
 
 The build produces a WAR file `openscoring-webapp/target/openscoring-webapp-1.2-SNAPSHOT.war`. This WAR file can be deployed using any Java web container.
 
-In testing mode, the web application can be launced using [Jetty Maven Plugin] (http://eclipse.org/jetty/documentation/current/jetty-maven-plugin.html). Change the working directory to `openscoring-webapp` and execute the following command:
+The web application can be launced using [Jetty Maven Plugin] (http://eclipse.org/jetty/documentation/current/jetty-maven-plugin.html). Change the working directory to `openscoring-webapp` and execute the following command:
 ```
 mvn jetty:run-war
 ```
 
-In testing mode, the web application performs the authentication and authorization of users according to the contents of the `openscoring-webapp/src/etc/realm.properties` properties file. User credentials have to be provided with the request using the basic access authentication method. For the sample cURL invocations (in "REST API", see below), simply add `--user <user name>:<password>` to the command line.
+The web application performs the authentication and authorization of users according to the contents of the `openscoring-webapp/src/etc/realm.properties` properties file. User credentials have to be provided with the request using the basic access authentication method. For cURL invocations, simply add `--user <user name>:<password>` to the command line.
+
+### Client side
+
+The build produces an executable uber-JAR file `openscoring-client/target/client-executable-1.2-SNAPSHOT.jar`. Change the working directory to `openscoring-client` and replay the life cycle of a sample `DecisionTreeIris` model (in "REST API", see below) by executing the following sequence of commands:
+```
+java -cp target/client-executable-1.2-SNAPSHOT.jar org.openscoring.client.Deployer --model http://localhost:8080/openscoring/model/DecisionTreeIris --file DecisionTreeIris.pmml
+
+java -cp target/client-executable-1.2-SNAPSHOT.jar org.openscoring.client.Evaluator --model http://localhost:8080/openscoring/model/DecisionTreeIris -XSepal_Length=5.1 -XSepal_Width=3.5 -XPetal_Length=1.4 -XPetal_Width=0.2
+
+java -cp target/client-executable-1.2-SNAPSHOT.jar org.openscoring.client.CsvEvaluator --model http://localhost:8080/openscoring/model/DecisionTreeIris --input input.csv --output output.csv
+
+java -cp target/client-executable-1.2-SNAPSHOT.jar org.openscoring.client.Undeployer --model http://localhost:8080/openscoring/model/DecisionTreeIris
+```
+
+Additionally, this JAR file contains an application class `org.openscoring.client.DirectoryDeployer`, which monitors the specified directory for PMML file addition and removal events:
+```
+java -cp target/client-executable-1.2-SNAPSHOT.jar org.openscoring.client.DirectoryDeployer --model-collection http://localhost:8080/openscoring/model --dir pmml
+```
 
 # REST API #
 
@@ -375,19 +393,6 @@ Response status codes:
 Sample cURL invocation:
 ```
 curl -X DELETE http://localhost:8080/openscoring/model/DecisionTreeIris
-```
-
-# Command-line client applications #
-
-The following sequence of commands replays the life cycle of a model `DecisionTreeIris`:
-```
-java -cp client-executable-1.2-SNAPSHOT.jar org.openscoring.client.Deployer --model http://localhost:8080/openscoring/model/DecisionTreeIris --file DecisionTreeIris.pmml
-
-java -cp client-executable-1.2-SNAPSHOT.jar org.openscoring.client.Evaluator --model http://localhost:8080/openscoring/model/DecisionTreeIris -XSepal_Length=5.1 -XSepal_Width=3.5 -XPetal_Length=1.4 -XPetal_Width=0.2
-
-java -cp client-executable-1.2-SNAPSHOT.jar org.openscoring.client.CsvEvaluator --model http://localhost:8080/openscoring/model/DecisionTreeIris --input input.csv --output output.csv
-
-java -cp client-executable-1.2-SNAPSHOT.jar org.openscoring.client.Undeployer --model http://localhost:8080/openscoring/model/DecisionTreeIris
 ```
 
 # License #

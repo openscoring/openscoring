@@ -19,7 +19,6 @@
 package org.openscoring.server;
 
 import java.io.File;
-import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.util.List;
 
@@ -72,12 +71,6 @@ public class Main {
 		description = "Server host name or ip address"
 	)
 	private String host = null;
-
-	@Parameter (
-		names = {"--model-dir"},
-		description = "Model auto-deployment directory"
-	)
-	private File modelDir = null;
 
 	@Parameter (
 		names = {"--port"},
@@ -165,29 +158,7 @@ public class Main {
 
 		server.setHandler(handlerCollection);
 
-		DirectoryDeployer deployer = null;
-
-		if(this.modelDir != null){
-
-			if(!this.modelDir.isDirectory()){
-				throw new IOException(this.modelDir.getAbsolutePath() + " is not a directory");
-			}
-
-			deployer = new DirectoryDeployer(modelRegistry, this.modelDir.toPath());
-		}
-
 		server.start();
-
-		if(deployer != null){
-			deployer.start();
-		}
-
 		server.join();
-
-		if(deployer != null){
-			deployer.interrupt();
-
-			deployer.join();
-		}
 	}
 }
