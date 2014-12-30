@@ -26,8 +26,6 @@ import java.util.List;
 import com.beust.jcommander.JCommander;
 import com.beust.jcommander.Parameter;
 import com.beust.jcommander.ParameterException;
-import com.codahale.metrics.MetricRegistry;
-import com.codahale.metrics.jetty9.InstrumentedHandler;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import org.eclipse.jetty.server.Server;
@@ -146,8 +144,6 @@ public class Main {
 		ModelRegistry modelRegistry = application.getModelRegistry();
 		modelRegistry.registerClasses(Sets.newLinkedHashSet(this.visitorClasses));
 
-		MetricRegistry metricRegistry = application.getMetricRegistry();
-
 		ServletContainer jerseyServlet = new ServletContainer(application);
 
 		ServletContextHandler servletHandler = new ServletContextHandler();
@@ -155,12 +151,9 @@ public class Main {
 
 		servletHandler.addServlet(new ServletHolder(jerseyServlet), "/*");
 
-		InstrumentedHandler instrumentedHandler = new InstrumentedHandler(metricRegistry);
-		instrumentedHandler.setHandler(servletHandler);
-
 		ContextHandlerCollection handlerCollection = new ContextHandlerCollection();
 
-		handlerCollection.addHandler(instrumentedHandler);
+		handlerCollection.addHandler(servletHandler);
 
 		if(this.consoleWar != null){
 			WebAppContext consoleHandler = new WebAppContext();
