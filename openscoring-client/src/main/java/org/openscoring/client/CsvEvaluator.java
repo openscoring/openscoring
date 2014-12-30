@@ -34,14 +34,7 @@ import javax.ws.rs.core.MediaType;
 
 import com.beust.jcommander.Parameter;
 
-public class CsvEvaluator extends Application {
-
-	@Parameter (
-		names = {"--model"},
-		description = "The URI of the model",
-		required = true
-	)
-	private String model = null;
+public class CsvEvaluator extends ModelApplication {
 
 	@Parameter (
 		names = {"--input"},
@@ -67,12 +60,12 @@ public class CsvEvaluator extends Application {
 	public void run() throws IOException {
 		Client client = ClientBuilder.newClient();
 
-		WebTarget target = client.target(ensureSuffix(this.model, "/csv"));
+		WebTarget target = client.target(ensureSuffix(getModel(), "/csv"));
 
-		InputStream is = new FileInputStream(this.input);
+		InputStream is = new FileInputStream(getInput());
 
 		try {
-			OutputStream os = new FileOutputStream(this.output);
+			OutputStream os = new FileOutputStream(getOutput());
 
 			try {
 				Invocation invocation = target.request(MediaType.TEXT_PLAIN).buildPost(Entity.text(is));
@@ -92,6 +85,22 @@ public class CsvEvaluator extends Application {
 		}
 
 		client.close();
+	}
+
+	public File getInput(){
+		return this.input;
+	}
+
+	public void setInput(File input){
+		this.input = input;
+	}
+
+	public File getOutput(){
+		return this.output;
+	}
+
+	public void setOutput(File output){
+		this.output = output;
 	}
 
 	static

@@ -28,21 +28,13 @@ import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.MediaType;
 
 import com.beust.jcommander.DynamicParameter;
-import com.beust.jcommander.Parameter;
 import com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider;
 import com.google.common.collect.Maps;
 import org.glassfish.jersey.client.ClientConfig;
 import org.openscoring.common.EvaluationRequest;
 import org.openscoring.common.EvaluationResponse;
 
-public class Evaluator extends Application {
-
-	@Parameter (
-		names = {"--model"},
-		description = "The URI of the model",
-		required = true
-	)
-	private String model = null;
+public class Evaluator extends ModelApplication {
 
 	@DynamicParameter (
 		names = {"-X"},
@@ -63,10 +55,10 @@ public class Evaluator extends Application {
 
 		Client client = ClientBuilder.newClient(config);
 
-		WebTarget target = client.target(this.model);
+		WebTarget target = client.target(getModel());
 
 		EvaluationRequest request = new EvaluationRequest();
-		request.setArguments(this.arguments);
+		request.setArguments(getArguments());
 
 		Invocation invocation = target.request(MediaType.APPLICATION_JSON_TYPE).buildPost(Entity.json(request));
 
@@ -75,5 +67,13 @@ public class Evaluator extends Application {
 		System.out.println(response.getResult());
 
 		client.close();
+	}
+
+	public Map<String, String> getArguments(){
+		return this.arguments;
+	}
+
+	public void setArguments(Map<String, String> arguments){
+		this.arguments = arguments;
 	}
 }

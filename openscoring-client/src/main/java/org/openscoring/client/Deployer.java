@@ -32,14 +32,7 @@ import javax.ws.rs.core.MediaType;
 
 import com.beust.jcommander.Parameter;
 
-public class Deployer extends Application {
-
-	@Parameter (
-		names = {"--model"},
-		description = "The URI of the model",
-		required = true
-	)
-	private String model = null;
+public class Deployer extends ModelApplication {
 
 	@Parameter (
 		names = {"--file"},
@@ -58,9 +51,9 @@ public class Deployer extends Application {
 	public void run() throws IOException {
 		Client client = ClientBuilder.newClient();
 
-		WebTarget target = client.target(this.model);
+		WebTarget target = client.target(getModel());
 
-		InputStream is = new FileInputStream(this.file);
+		InputStream is = new FileInputStream(getFile());
 
 		try {
 			Invocation invocation = target.request(MediaType.APPLICATION_JSON_TYPE).buildPut(Entity.xml(is));
@@ -73,5 +66,13 @@ public class Deployer extends Application {
 		}
 
 		client.close();
+	}
+
+	public File getFile(){
+		return this.file;
+	}
+
+	public void setFile(File file){
+		this.file = file;
 	}
 }

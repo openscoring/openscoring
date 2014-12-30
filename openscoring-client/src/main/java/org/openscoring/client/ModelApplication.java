@@ -18,31 +18,24 @@
  */
 package org.openscoring.client;
 
-import javax.ws.rs.client.Client;
-import javax.ws.rs.client.ClientBuilder;
-import javax.ws.rs.client.Invocation;
-import javax.ws.rs.client.WebTarget;
-import javax.ws.rs.core.MediaType;
+import com.beust.jcommander.Parameter;
 
-public class Undeployer extends ModelApplication {
+abstract
+public class ModelApplication extends Application {
 
-	static
-	public void main(String... args) throws Exception {
-		run(Undeployer.class, args);
+	@Parameter (
+		names = {"--model"},
+		description = "The URI of the model",
+		required = true
+	)
+	private String model = null;
+
+
+	public String getModel(){
+		return this.model;
 	}
 
-	@Override
-	public void run(){
-		Client client = ClientBuilder.newClient();
-
-		WebTarget target = client.target(getModel());
-
-		Invocation invocation = target.request(MediaType.TEXT_PLAIN_TYPE).buildDelete();
-
-		String result = invocation.invoke(String.class);
-
-		System.out.println(result);
-
-		client.close();
+	public void setModel(String model){
+		this.model = model;
 	}
 }
