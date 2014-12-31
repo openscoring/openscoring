@@ -20,31 +20,19 @@ package org.openscoring.server;
 
 import java.io.File;
 import java.net.InetSocketAddress;
-import java.util.List;
 
 import com.beust.jcommander.JCommander;
 import com.beust.jcommander.Parameter;
 import com.beust.jcommander.ParameterException;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Sets;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.handler.ContextHandlerCollection;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
 import org.eclipse.jetty.webapp.WebAppContext;
 import org.glassfish.jersey.servlet.ServletContainer;
-import org.openscoring.service.ModelRegistry;
 import org.openscoring.service.Openscoring;
 
 public class Main {
-
-	@Parameter (
-		names = {"--component-classes"},
-		description = "JAX-RS component classes",
-		converter = ClassConverter.class,
-		hidden = true
-	)
-	private List<Class<?>> componentClasses = Lists.newArrayList();
 
 	@Parameter (
 		names = {"--console-war"},
@@ -77,14 +65,6 @@ public class Main {
 		description = "Server port"
 	)
 	private int port = 8080;
-
-	@Parameter (
-		names = {"--visitor-classes"},
-		description = "PMML class model visitor classes",
-		converter = ClassConverter.class,
-		hidden = true
-	)
-	private List<Class<?>> visitorClasses = Lists.newArrayList();
 
 
 	static
@@ -126,16 +106,8 @@ public class Main {
 
 		Openscoring application = new Openscoring();
 
-		List<Class<?>> componentClazzes = this.componentClasses;
-		for(Class<?> componentClazz : componentClazzes){
-			application.register(componentClazz);
-		}
-
 		// Naive implementation that grants the "admin" role to all local network users
 		application.register(NetworkSecurityContextFilter.class);
-
-		ModelRegistry modelRegistry = application.getModelRegistry();
-		modelRegistry.registerClasses(Sets.newLinkedHashSet(this.visitorClasses));
 
 		ServletContainer jerseyServlet = new ServletContainer(application);
 

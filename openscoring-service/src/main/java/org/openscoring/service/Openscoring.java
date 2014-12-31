@@ -18,7 +18,13 @@
  */
 package org.openscoring.service;
 
+import java.util.List;
+
+import javax.inject.Singleton;
+
 import com.codahale.metrics.MetricRegistry;
+import com.typesafe.config.Config;
+import com.typesafe.config.ConfigFactory;
 import org.glassfish.hk2.utilities.Binder;
 import org.glassfish.hk2.utilities.binding.AbstractBinder;
 import org.glassfish.jersey.jackson.JacksonFeature;
@@ -28,22 +34,20 @@ import org.glassfish.jersey.server.filter.RolesAllowedDynamicFeature;
 
 public class Openscoring extends ResourceConfig {
 
-	final
-	private ModelRegistry modelRegistry = new ModelRegistry();
-
-	final
-	private MetricRegistry metricRegistry = new MetricRegistry();
-
-
 	public Openscoring(){
 		super(ModelResource.class);
+
+		final
+		Config config = ConfigFactory.load();
 
 		Binder binder = new AbstractBinder(){
 
 			@Override
 			public void configure(){
-				bind(getModelRegistry()).to(ModelRegistry.class);
-				bind(getMetricRegistry()).to(MetricRegistry.class);
+				bind(config).to(Config.class);
+
+				bind(ModelRegistry.class).to(ModelRegistry.class).in(Singleton.class);
+				bind(MetricRegistry.class).to(MetricRegistry.class).in(Singleton.class);
 			}
 		};
 		register(binder);
@@ -57,13 +61,18 @@ public class Openscoring extends ResourceConfig {
 
 		// Security support
 		register(RolesAllowedDynamicFeature.class);
-	}
 
-	public ModelRegistry getModelRegistry(){
-		return this.modelRegistry;
-	}
+		List<String> componentClassNames = config.getStringList("application.componentClasses");
+		for(String componentClassName : componentClassNames){
+			Class<?> clazz;
 
-	public MetricRegistry getMetricRegistry(){
-		return this.metricRegistry;
+			try {
+				clazz = Class.forName(componentClassName);
+			} catch(ClassNotFoundException cnfe){
+				throw new IllegalArgumentException(cnfe);
+			}
+
+			register(clazz);
+		}
 	}
 }

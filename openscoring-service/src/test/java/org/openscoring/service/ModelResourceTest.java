@@ -30,6 +30,8 @@ import java.util.Set;
 
 import com.codahale.metrics.MetricRegistry;
 import com.google.common.collect.Lists;
+import com.typesafe.config.Config;
+import com.typesafe.config.ConfigFactory;
 import org.dmg.pmml.FieldName;
 import org.dmg.pmml.PMML;
 import org.jpmml.evaluator.ModelEvaluator;
@@ -158,8 +160,9 @@ public class ModelResourceTest {
 
 	static
 	private ModelResource createService(String id) throws Exception {
-		ModelRegistry modelRegistry = new ModelRegistry();
-		modelRegistry.registerClasses(Collections.<Class<?>>singleton(SourceLocationNullifier.class));
+		Config config = ConfigFactory.parseMap(Collections.singletonMap("modelregistry.visitorClasses", Collections.singletonList(SourceLocationNullifier.class.getName())));
+
+		ModelRegistry modelRegistry = new ModelRegistry(config);
 
 		MetricRegistry metricRegistry = new MetricRegistry();
 

@@ -21,10 +21,11 @@ package org.openscoring.service;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.concurrent.ConcurrentMap;
 
+import javax.inject.Inject;
 import javax.inject.Singleton;
 import javax.xml.bind.JAXBException;
 import javax.xml.transform.Result;
@@ -33,7 +34,8 @@ import javax.xml.transform.stream.StreamResult;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Maps;
-import jersey.repackaged.com.google.common.collect.Sets;
+import com.typesafe.config.Config;
+import jersey.repackaged.com.google.common.collect.Lists;
 import org.dmg.pmml.PMML;
 import org.dmg.pmml.Visitor;
 import org.jpmml.evaluator.ModelEvaluator;
@@ -49,18 +51,32 @@ import org.xml.sax.SAXException;
 @Singleton
 public class ModelRegistry {
 
-	private Set<Class<? extends Visitor>> visitorClazzes = Sets.newHashSet();
+	private List<Class<? extends Visitor>> visitorClazzes = Lists.newArrayList();
 
 	private ConcurrentMap<String, ModelEvaluator<?>> models = Maps.newConcurrentMap();
 
 
-	public void registerClasses(Set<Class<?>> clazzes){
+	@Inject
+	public ModelRegistry(Config config){
+		List<String> visitorClassNames = config.getStringList("modelregistry.visitorClasses");
+		for(String visitorClassName : visitorClassNames){
+			Class<?> clazz;
 
-		for(Class<?> clazz : clazzes){
-
-			if((Visitor.class).isAssignableFrom(clazz)){
-				this.visitorClazzes.add((Class<? extends Visitor>)clazz);
+			try {
+				clazz = Class.forName(visitorClassName);
+			} catch(ClassNotFoundException cnfe){
+				throw new IllegalArgumentException(cnfe);
 			}
+
+			Class<? extends Visitor> visitorClazz;
+
+			try {
+				visitorClazz = clazz.asSubclass(Visitor.class);
+			} catch(ClassCastException cce){
+				throw new IllegalArgumentException(cce);
+			}
+
+			this.visitorClazzes.add(visitorClazz);
 		}
 	}
 
@@ -73,8 +89,7 @@ public class ModelRegistry {
 
 		PMML pmml = evaluator.getPMML();
 
-		Iterable<Class<? extends Visitor>> visitorClazzes = this.visitorClazzes;
-		for(Class<? extends Visitor> visitorClazz : visitorClazzes){
+		for(Class<? extends Visitor> visitorClazz : this.visitorClazzes){
 			Visitor visitor = visitorClazz.newInstance();
 
 			pmml.accept(visitor);
