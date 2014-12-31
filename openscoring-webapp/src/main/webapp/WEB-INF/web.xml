@@ -14,9 +14,4 @@
 		<servlet-name>Openscoring</servlet-name>
 		<url-pattern>/*</url-pattern>
 	</servlet-mapping>
-
-	<login-config>
-		<realm-name>Test Realm</realm-name>
-		<auth-method>BASIC</auth-method>
-	</login-config>
 </web-app>

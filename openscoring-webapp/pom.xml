@@ -45,12 +45,6 @@
 					<webApp>
 						<contextPath>/openscoring</contextPath>
 					</webApp>
-					<loginServices>
-						<loginService implementation="org.eclipse.jetty.security.HashLoginService">
-							<name>Test Realm</name>
-							<config>${project.basedir}/src/etc/realm.properties</config>
-						</loginService>
-					</loginServices>
 				</configuration>
 			</plugin>
 		</plugins>

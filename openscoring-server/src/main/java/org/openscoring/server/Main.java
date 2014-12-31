@@ -106,9 +106,6 @@ public class Main {
 
 		Openscoring application = new Openscoring();
 
-		// Naive implementation that grants the "admin" role to all local network users
-		application.register(NetworkSecurityContextFilter.class);
-
 		ServletContainer jerseyServlet = new ServletContainer(application);
 
 		ServletContextHandler servletHandler = new ServletContextHandler();

@@ -37,8 +37,6 @@ java -jar target/server-executable-1.2-SNAPSHOT.jar
 
 By default, the REST web service is started at [http://localhost:8080/openscoring] (http://localhost:8080/openscoring/). The main class `org.openscoring.server.Main` accepts a number of configuration options for URI customization and other purposes. Please specify `--help` for more information.
 
-The standalone application grants the "admin" role to all HTTP requests that originate from the local network address.
-
 ##### Web application
 
 The build produces a WAR file `openscoring-webapp/target/openscoring-webapp-1.2-SNAPSHOT.war`. This WAR file can be deployed using any Java web container.
@@ -47,8 +45,6 @@ The web application can be launced using [Jetty Maven Plugin] (http://eclipse.or
 ```
 mvn jetty:run-war
 ```
-
-The web application performs the authentication and authorization of users according to the contents of the `openscoring-webapp/src/etc/realm.properties` properties file. User credentials have to be provided with the request using the basic access authentication method. For cURL invocations, simply add `--user <user name>:<password>` to the command line.
 
 ### Client side
 
@@ -92,6 +88,8 @@ Model REST API endpoints:
 | POST | /model/${id}/batch | - | Evaluate a model in "batch prediction" mode |
 | POST | /model/${id}/csv | - | Evaluate a model is CSV prediction mode |
 | DELETE | /model/${id} | admin | Undeploy a model |
+
+By default, the "admin" role is granted to all HTTP requests that originate from the local network address.
 
 ### Model collection querying
 
