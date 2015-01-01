@@ -39,6 +39,8 @@ import org.jpmml.evaluator.TypeUtil;
 import org.jpmml.evaluator.VerificationUtil;
 import org.jpmml.model.SourceLocationNullifier;
 import org.junit.Test;
+import org.openscoring.common.BatchEvaluationRequest;
+import org.openscoring.common.BatchEvaluationResponse;
 import org.openscoring.common.EvaluationRequest;
 import org.openscoring.common.EvaluationResponse;
 import org.supercsv.prefs.CsvPreference;
@@ -60,7 +62,7 @@ public class ModelResourceTest {
 		assertTrue((metricRegistry.getMetrics()).isEmpty());
 
 		List<EvaluationRequest> requests = loadRequest("Iris");
-		List<EvaluationResponse> result = service.evaluateBatch("DecisionTreeIris", requests);
+		List<EvaluationResponse> result = doBatch(service, "DecisionTreeIris", requests);
 
 		assertFalse((metricRegistry.getMetrics()).isEmpty());
 
@@ -78,18 +80,28 @@ public class ModelResourceTest {
 		ModelResource service = createService("AssociationRulesShopping");
 
 		List<EvaluationRequest> requests = loadRequest("Shopping");
-		List<EvaluationResponse> result = service.evaluateBatch("AssociationRulesShopping", requests);
+		List<EvaluationResponse> result = doBatch(service, "AssociationRulesShopping", requests);
 
 		List<EvaluationResponse> responses = loadResponse("AssociationRulesShopping");
 
 		compare(responses, result);
 
 		List<EvaluationRequest> aggregatedRequests = ModelResource.aggregateRequests(new FieldName("transaction"), requests);
-		List<EvaluationResponse> aggregatedResult = service.evaluateBatch("AssociationRulesShopping", aggregatedRequests);
+		List<EvaluationResponse> aggregatedResult = doBatch(service, "AssociationRulesShopping", aggregatedRequests);
 
 		assertTrue(aggregatedRequests.size() < requests.size());
 
 		compare(responses, aggregatedResult);
+	}
+
+	static
+	private List<EvaluationResponse> doBatch(ModelResource service, String id, List<EvaluationRequest> requests){
+		BatchEvaluationRequest request = new BatchEvaluationRequest();
+		request.setRequests(requests);
+
+		BatchEvaluationResponse response = service.evaluateBatch(id, request);
+
+		return response.getResponses();
 	}
 
 	static

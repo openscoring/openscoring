@@ -298,7 +298,7 @@ curl -X POST --data-binary @EvaluationRequest.json -H "Content-type: application
 Sample request:
 ```json
 {
-	"id" : "example-001",
+	"id" : "record-001",
 	"arguments" : {
 		"Sepal_Length" : 5.1,
 		"Sepal_Width" : 3.5,
@@ -311,7 +311,7 @@ Sample request:
 Sample response:
 ```json
 {
-	"id" : "example-001",
+	"id" : "record-001",
 	"result" : {
 		"Species" : "setosa",
 		"Predicted_Species" : "setosa",
@@ -327,9 +327,9 @@ Sample response:
 
 Evaluates a model in "batch prediction" mode.
 
-The request body is a JSON serialized form of a list of `org.openscoring.common.EvaluationRequest` objects. The number of list elements is not restricted.
+The request body is a JSON serialized form of an `org.openscoring.common.BatchEvaluationRequest` object.
 
-The response body is a JSON serialized form of a list of `org.openscoring.common.EvaluationResponse` objects.
+The response body is a JSON serialized form of an `org.openscoring.common.BatchEvaluationResponse` object.
 
 Sample cURL invocation:
 ```
@@ -362,17 +362,17 @@ curl -X POST --data-binary @input.csv -H "Content-type: text/plain" http://local
 Sample request:
 ```
 Id,Sepal_Length,Sepal_Width,Petal_Length,Petal_Width
-example-001,5.1,3.5,1.4,0.2
-example-002,7,3.2,4.7,1.4
-example-003,6.3,3.3,6,2.5
+record-001,5.1,3.5,1.4,0.2
+record-002,7,3.2,4.7,1.4
+record-003,6.3,3.3,6,2.5
 ```
 
 Sample response:
 ```
 Id,Species,Predicted_Species,Probability_setosa,Probability_versicolor,Probability_virginica,Node_Id
-example-001,setosa,setosa,1.0,0.0,0.0,2
-example-002,versicolor,versicolor,0.0,0.9074074074074074,0.09259259259259259,6
-example-003,virginica,virginica,0.0,0.021739130434782608,0.9782608695652174,7
+record-001,setosa,setosa,1.0,0.0,0.0,2
+record-002,versicolor,versicolor,0.0,0.9074074074074074,0.09259259259259259,6
+record-003,virginica,virginica,0.0,0.021739130434782608,0.9782608695652174,7
 ```
 
 ### Model undeployment

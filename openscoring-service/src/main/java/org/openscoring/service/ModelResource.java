@@ -78,6 +78,8 @@ import org.jpmml.evaluator.EvaluatorUtil;
 import org.jpmml.evaluator.ModelEvaluator;
 import org.jpmml.evaluator.OutputUtil;
 import org.jpmml.evaluator.TypeUtil;
+import org.openscoring.common.BatchEvaluationRequest;
+import org.openscoring.common.BatchEvaluationResponse;
 import org.openscoring.common.BatchModelResponse;
 import org.openscoring.common.EvaluationRequest;
 import org.openscoring.common.EvaluationResponse;
@@ -328,8 +330,16 @@ public class ModelResource {
 	@Path("{id: " + ModelRegistry.ID_REGEX + "}/batch")
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
-	public List<EvaluationResponse> evaluateBatch(@PathParam("id") String id, List<EvaluationRequest> requests){
-		return doEvaluate(id, requests, "evaluateBatch");
+	public BatchEvaluationResponse evaluateBatch(@PathParam("id") String id, BatchEvaluationRequest request){
+		BatchEvaluationResponse response = new BatchEvaluationResponse(request.getId());
+
+		List<EvaluationRequest> requests = request.getRequests();
+
+		List<EvaluationResponse> responses = doEvaluate(id, requests, "evaluateBatch");
+
+		response.setResponses(responses);
+
+		return response;
 	}
 
 	@POST

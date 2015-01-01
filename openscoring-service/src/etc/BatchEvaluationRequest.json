@@ -1,29 +1,32 @@
-[
-	{
-		"id" : "example-001",
-		"arguments" : {
-			"Sepal_Length" : 5.1,
-			"Sepal_Width" : 3.5,
-			"Petal_Length" : 1.4,
-			"Petal_Width" : 0.2
+{
+	"id" : "batch-001",
+	"requests" : [
+		{
+			"id" : "record-001",
+			"arguments" : {
+				"Sepal_Length" : 5.1,
+				"Sepal_Width" : 3.5,
+				"Petal_Length" : 1.4,
+				"Petal_Width" : 0.2
+			}
+		},
+		{
+			"id" : "record-002",
+			"arguments" : {
+				"Sepal_Length" : 7,
+				"Sepal_Width" : 3.2,
+				"Petal_Length" : 4.7,
+				"Petal_Width" : 1.4
+			}
+		},
+		{
+			"id" : "record-003",
+			"arguments" : {
+				"Sepal_Length" : 6.3,
+				"Sepal_Width" : 3.3,
+				"Petal_Length" : 6,
+				"Petal_Width" : 2.5
+			}
 		}
-	},
-	{
-		"id" : "example-002",
-		"arguments" : {
-			"Sepal_Length" : 7,
-			"Sepal_Width" : 3.2,
-			"Petal_Length" : 4.7,
-			"Petal_Width" : 1.4
-		}
-	},
-	{
-		"id" : "example-003",
-		"arguments" : {
-			"Sepal_Length" : 6.3,
-			"Sepal_Width" : 3.3,
-			"Petal_Length" : 6,
-			"Petal_Width" : 2.5
-		}
-	}
-]
+	]
+}
