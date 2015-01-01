@@ -160,7 +160,7 @@ public class ModelResourceTest {
 
 	static
 	private ModelResource createService(String id) throws Exception {
-		Config config = ConfigFactory.parseMap(Collections.singletonMap("modelregistry.visitorClasses", Collections.singletonList(SourceLocationNullifier.class.getName())));
+		Config config = ConfigFactory.parseMap(Collections.singletonMap("modelRegistry.visitorClasses", Collections.singletonList(SourceLocationNullifier.class.getName())));
 
 		ModelRegistry modelRegistry = new ModelRegistry(config);
 

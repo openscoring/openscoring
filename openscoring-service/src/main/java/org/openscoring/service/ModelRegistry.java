@@ -59,7 +59,9 @@ public class ModelRegistry {
 
 	@Inject
 	public ModelRegistry(@Named("openscoring") Config config){
-		List<String> visitorClassNames = config.getStringList("modelregistry.visitorClasses");
+		Config modelRegistryConfig = config.getConfig("modelRegistry");
+
+		List<String> visitorClassNames = modelRegistryConfig.getStringList("visitorClasses");
 		for(String visitorClassName : visitorClassNames){
 			Class<?> clazz;
 

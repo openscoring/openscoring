@@ -62,7 +62,9 @@ public class Openscoring extends ResourceConfig {
 		// Security support
 		register(RolesAllowedDynamicFeature.class);
 
-		List<String> componentClassNames = config.getStringList("application.componentClasses");
+		Config applicationConfig = config.getConfig("application");
+
+		List<String> componentClassNames = applicationConfig.getStringList("componentClasses");
 		for(String componentClassName : componentClassNames){
 			Class<?> clazz;
 
