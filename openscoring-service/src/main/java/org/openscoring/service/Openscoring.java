@@ -44,7 +44,7 @@ public class Openscoring extends ResourceConfig {
 
 			@Override
 			public void configure(){
-				bind(config).to(Config.class);
+				bind(config).to(Config.class).named("openscoring");
 
 				bind(ModelRegistry.class).to(ModelRegistry.class).in(Singleton.class);
 				bind(MetricRegistry.class).to(MetricRegistry.class).in(Singleton.class);

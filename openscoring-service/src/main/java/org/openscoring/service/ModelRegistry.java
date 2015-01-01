@@ -26,6 +26,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentMap;
 
 import javax.inject.Inject;
+import javax.inject.Named;
 import javax.inject.Singleton;
 import javax.xml.bind.JAXBException;
 import javax.xml.transform.Result;
@@ -57,7 +58,7 @@ public class ModelRegistry {
 
 
 	@Inject
-	public ModelRegistry(Config config){
+	public ModelRegistry(@Named("openscoring") Config config){
 		List<String> visitorClassNames = config.getStringList("modelregistry.visitorClasses");
 		for(String visitorClassName : visitorClassNames){
 			Class<?> clazz;
