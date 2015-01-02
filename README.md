@@ -68,43 +68,30 @@ java -cp target/client-executable-1.2-SNAPSHOT.jar org.openscoring.client.Direct
 
 ### Overview
 
-Model collection REST API endpoints:
-
-| HTTP method | Endpoint | Required role(s) | Description |
-| ----------- | -------- | ---------------- | ----------- |
-| GET | /model | - | Get the summaries of all models |
-| GET | /model/metrics | admin | Get the metrics of all models |
-
 Model REST API endpoints:
 
 | HTTP method | Endpoint | Required role(s) | Description |
 | ----------- | -------- | ---------------- | ----------- |
+| GET | /model | - | Get the summaries of all models |
 | POST | /model | admin | Deploy a model |
 | PUT | /model/${id} | admin | Deploy a model |
 | GET | /model/${id} | - | Get the summary of a model |
 | GET | /model/${id}/pmml | - | Download a model as a PMML document |
-| GET | /model/${id}/metrics | admin | Get the metrics of a model |
 | POST | /model/${id} | - | Evaluate a model in "single prediction" mode |
 | POST | /model/${id}/batch | - | Evaluate a model in "batch prediction" mode |
 | POST | /model/${id}/csv | - | Evaluate a model is CSV prediction mode |
 | DELETE | /model/${id} | admin | Undeploy a model |
 
+Metric REST API endpoints:
+
+| HTTP method | Endpoint | Required role(s) | Description |
+| ----------- | -------- | ---------------- | ----------- |
+| GET | /metric | admin | Get the metrics of all models |
+| GET | /metric/${id} | admin | Get the metrics of a model |
+
 By default, the "admin" role is granted to all HTTP requests that originate from the local network address.
 
 The example PMML file `DecisionTreeIris.pmml` along with example JSON and CSV files is available in the `openscoring-service/src/etc` directory.
-
-### Model collection querying
-
-##### GET /model
-
-Gets the summaries of all models.
-
-The response body is a JSON serialized form of an `org.openscoring.common.BatchModelResponse` object.
-
-Sample cURL invocation:
-```
-curl -X GET http://localhost:8080/openscoring/model
-```
 
 ### Model deployment
 
@@ -127,6 +114,17 @@ curl -X PUT --data-binary @DecisionTreeIris.pmml -H "Content-type: text/xml" htt
 ```
 
 ### Model querying
+
+##### GET /model
+
+Gets the summaries of all models.
+
+The response body is a JSON serialized form of an `org.openscoring.common.BatchModelResponse` object.
+
+Sample cURL invocation:
+```
+curl -X GET http://localhost:8080/openscoring/model
+```
 
 ##### GET /model/${id}
 
@@ -216,53 +214,6 @@ Sample response:
 ```
 
 Field definitions are retrieved from the [MiningSchema] (http://www.dmg.org/v4-2-1/MiningSchema.html) and [Output] (http://www.dmg.org/v4-2-1/Output.html) elements of the PMML document. The active and group fields relate to the `arguments` attribute of the evaluation request, whereas the target and output fields relate to the `result` attribute of the evaluation response (see below).
-
-##### GET /model/${id}/metrics
-
-Takes a snapshot of the metrics of a model.
-
-The response body is a JSON serialized form of a `com.codahale.metrics.MetricRegistry` object.
-
-Sample cURL invocation:
-```
-curl -X GET http://localhost:8080/openscoring/model/DecisionTreeIris/metrics
-```
-
-Sample response:
-```json
-{
-	"version" : "3.0.0",
-	"gauges" : { },
-	"counters" : {
-		"records" : {
-			"count" : 1
-		}
-	},
-	"histograms" : { },
-	"meters" : { },
-	"timers" : {
-		"evaluate" : {
-			"count" : 1,
-			"max" : 0.008521913,
-			"mean" : 0.008521913,
-			"min" : 0.008521913,
-			"p50" : 0.008521913,
-			"p75" : 0.008521913,
-			"p95" : 0.008521913,
-			"p98" : 0.008521913,
-			"p99" : 0.008521913,
-			"p999" : 0.008521913,
-			"stddev" : 0.0,
-			"m15_rate" : 0.19237151525464488,
-			"m1_rate" : 0.11160702915400945,
-			"m5_rate" : 0.17797635419760474,
-			"mean_rate" : 0.023793073545863026,
-			"duration_units" : "seconds",
-			"rate_units" : "calls/second"
-		}
-	}
-}
-```
 
 ##### GET /model/${id}/pmml
 
@@ -388,6 +339,59 @@ Response status codes:
 Sample cURL invocation:
 ```
 curl -X DELETE http://localhost:8080/openscoring/model/DecisionTreeIris
+```
+
+### Metric querying
+
+##### GET /metric/${id}
+
+Gets the snapshot of the metrics of a model.
+
+The response body is a JSON serialized form of a `com.codahale.metrics.MetricRegistry` object.
+
+Response status codes:
+* 200 OK. The evaluation was successful.
+* 404 Not Found. The requested model was not found.
+
+Sample cURL invocation:
+```
+curl -X GET http://localhost:8080/openscoring/metric/DecisionTreeIris
+```
+
+Sample response:
+```json
+{
+	"version" : "3.0.0",
+	"gauges" : { },
+	"counters" : {
+		"records" : {
+			"count" : 1
+		}
+	},
+	"histograms" : { },
+	"meters" : { },
+	"timers" : {
+		"evaluate" : {
+			"count" : 1,
+			"max" : 0.008521913,
+			"mean" : 0.008521913,
+			"min" : 0.008521913,
+			"p50" : 0.008521913,
+			"p75" : 0.008521913,
+			"p95" : 0.008521913,
+			"p98" : 0.008521913,
+			"p99" : 0.008521913,
+			"p999" : 0.008521913,
+			"stddev" : 0.0,
+			"m15_rate" : 0.19237151525464488,
+			"m1_rate" : 0.11160702915400945,
+			"m5_rate" : 0.17797635419760474,
+			"mean_rate" : 0.023793073545863026,
+			"duration_units" : "seconds",
+			"rate_units" : "calls/second"
+		}
+	}
+}
 ```
 
 # License #

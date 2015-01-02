@@ -253,67 +253,6 @@ public class ModelResource {
 		return (Response.ok()).build();
 	}
 
-	@GET
-	@Path("metrics")
-	@RolesAllowed (
-		value = {"admin"}
-	)
-	@Produces(MediaType.APPLICATION_JSON)
-	public MetricRegistry metrics(){
-		String prefix = createName() + ".";
-
-		return doMetrics(prefix);
-	}
-
-	@GET
-	@Path("{id:" + ModelRegistry.ID_REGEX + "}/metrics")
-	@RolesAllowed (
-		value = {"admin"}
-	)
-	@Produces(MediaType.APPLICATION_JSON)
-	public MetricRegistry metrics(@PathParam("id") String id){
-		ModelEvaluator<?> evaluator = this.modelRegistry.get(id);
-		if(evaluator == null){
-			throw new NotFoundException();
-		}
-
-		String prefix = createName(id) + ".";
-
-		return doMetrics(prefix);
-	}
-
-	private MetricRegistry doMetrics(final String prefix){
-
-		MetricFilter filter = new MetricFilter(){
-
-			@Override
-			public boolean matches(String name, Metric metric){
-				return name.startsWith(prefix);
-			}
-		};
-
-		Map<String, Metric> metrics = this.metricRegistry.getMetrics();
-
-		MetricRegistry result = new MetricRegistry();
-
-		Collection<Map.Entry<String, Metric>> entries = metrics.entrySet();
-		for(Map.Entry<String, Metric> entry : entries){
-			String name = entry.getKey();
-			Metric metric = entry.getValue();
-
-			if(!filter.matches(name, metric)){
-				continue;
-			}
-
-			// Strip prefix
-			name = name.substring(prefix.length());
-
-			result.register(name, metric);
-		}
-
-		return result;
-	}
-
 	@POST
 	@Path("{id:" + ModelRegistry.ID_REGEX + "}")
 	@Consumes(MediaType.APPLICATION_JSON)
@@ -514,7 +453,7 @@ public class ModelResource {
 	}
 
 	static
-	private String createName(String... names){
+	String createName(String... names){
 		return MetricRegistry.name(ModelResource.class, names);
 	}
 
