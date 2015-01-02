@@ -18,7 +18,6 @@
  */
 package org.openscoring.common;
 
-import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
 
@@ -27,7 +26,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 @JsonInclude (
 	value = JsonInclude.Include.NON_EMPTY
 )
-public class ModelResponse implements Serializable {
+public class ModelResponse extends SimpleResponse {
 
 	private String id = null;
 

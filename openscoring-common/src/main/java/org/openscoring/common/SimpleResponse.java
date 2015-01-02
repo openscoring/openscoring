@@ -18,40 +18,7 @@
  */
 package org.openscoring.common;
 
-import java.util.List;
+import java.io.Serializable;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
-
-@JsonInclude (
-	value = JsonInclude.Include.NON_EMPTY
-)
-public class BatchEvaluationResponse extends SimpleResponse {
-
-	private String id = null;
-
-	private List<EvaluationResponse> responses = null;
-
-
-	public BatchEvaluationResponse(){
-	}
-
-	public BatchEvaluationResponse(String id){
-		setId(id);
-	}
-
-	public String getId(){
-		return this.id;
-	}
-
-	public void setId(String id){
-		this.id = id;
-	}
-
-	public List<EvaluationResponse> getResponses(){
-		return this.responses;
-	}
-
-	public void setResponses(List<EvaluationResponse> responses){
-		this.responses = responses;
-	}
+public class SimpleResponse implements Serializable {
 }
