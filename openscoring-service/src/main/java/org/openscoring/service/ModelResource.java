@@ -400,7 +400,7 @@ public class ModelResource {
 				responses.add(response);
 			}
 		} catch(Exception e){
-			throw new InternalServerErrorException(e);
+			throw new BadRequestException(e);
 		}
 
 		context.stop();
