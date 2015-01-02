@@ -72,7 +72,7 @@ Model collection REST API endpoints:
 
 | HTTP method | Endpoint | Required role(s) | Description |
 | ----------- | -------- | ---------------- | ----------- |
-| GET | /model | - | Get all models |
+| GET | /model | - | Get the summaries of all models |
 | GET | /model/metrics | admin | Get the metrics of all models |
 
 Model REST API endpoints:
@@ -81,9 +81,9 @@ Model REST API endpoints:
 | ----------- | -------- | ---------------- | ----------- |
 | POST | /model | admin | Deploy a model |
 | PUT | /model/${id} | admin | Deploy a model |
-| GET | /model/${id} | admin | Download a model |
+| GET | /model/${id} | - | Get the summary of a model |
+| GET | /model/${id}/pmml | - | Download a model as a PMML document |
 | GET | /model/${id}/metrics | admin | Get the metrics of a model |
-| GET | /model/${id}/schema | - | Get the data schema information of a model |
 | POST | /model/${id} | - | Evaluate a model in "single prediction" mode |
 | POST | /model/${id}/batch | - | Evaluate a model in "batch prediction" mode |
 | POST | /model/${id}/csv | - | Evaluate a model is CSV prediction mode |
@@ -91,13 +91,15 @@ Model REST API endpoints:
 
 By default, the "admin" role is granted to all HTTP requests that originate from the local network address.
 
+The example PMML file `DecisionTreeIris.pmml` along with example JSON and CSV files is available in the `openscoring-service/src/etc` directory.
+
 ### Model collection querying
 
 ##### GET /model
 
-Gets the list of all models.
+Gets the summaries of all models.
 
-The response body is a JSON serialized form of a list of `org.openscoring.common.ModelResponse` objects.
+The response body is a JSON serialized form of an `org.openscoring.common.BatchModelResponse` object.
 
 Sample cURL invocation:
 ```
@@ -112,7 +114,7 @@ Creates or updates a model.
 
 The request body is a PMML document (indicated by content-type header `text/xml` or `application/xml`).
 
-The response body is a JSON serialized form of an `org.openscoring.common.ModelResponse` object that represents the current state of the model.
+The response body is a JSON serialized form of an `org.openscoring.common.ModelResponse` object.
 
 Response status codes:
 * 200 OK. The model was updated.
@@ -124,34 +126,102 @@ Sample cURL invocation:
 curl -X PUT --data-binary @DecisionTreeIris.pmml -H "Content-type: text/xml" http://localhost:8080/openscoring/model/DecisionTreeIris
 ```
 
-The example PMML file `DecisionTreeIris.pmml` along with example JSON and CSV files is available in the `openscoring-service/src/etc` directory.
-
-Sample response:
-```json
-{
-	"id" : "DecisionTreeIris",
-	"summary" : "Tree model"
-}
-```
-
 ### Model querying
 
 ##### GET /model/${id}
 
-Downloads a model.
+Gets the summary of a model.
 
-The response body is a PMML document.
+The response body is a JSON serialized form of an `org.openscoring.common.ModelResponse` object.
 
 Sample cURL invocation:
 ```
 curl -X GET http://localhost:8080/openscoring/model/DecisionTreeIris
 ```
 
+Sample response:
+```json
+{
+	"id" : "DecisionTreeIris",
+	"summary" : "Tree model",
+	"schema" : {
+		"activeFields" : [
+			{
+				"id" : "Sepal_Length",
+				"name" : "Sepal length in cm",
+				"dataType" : "double",
+				"opType" : "continuous",
+				"values" : [ "[4.3, 7.9]" ]
+			},
+			{
+				"id" : "Sepal_Width",
+				"name" : "Sepal width in cm",
+				"dataType" : "double",
+				"opType" : "continuous",
+				"values" : [ "[2.0, 4.4]" ]
+			},
+			{
+				"id" : "Petal_Length",
+				"name" : "Petal length in cm",
+				"dataType" : "double",
+				"opType" : "continuous",
+				"values" : [ "[1.0, 6.9]" ]
+			},
+			{
+				"id" : "Petal_Width",
+				"name" : "Petal width in cm",
+				"dataType" : "double",
+				"opType" : "continuous",
+				"values" : [ "[0.1, 2.5]" ]
+			}
+		],
+		"groupFields" : [],
+		"targetFields" : [
+			{
+				"id" : "Species",
+				"dataType" : "string",
+				"opType" : "categorical",
+				"values" : [ "setosa", "versicolor", "virginica" ]
+			}
+		],
+		"outputFields" : [
+			{
+				"id" : "Predicted_Species",
+				"dataType" : "string",
+				"opType" : "categorical"
+			},
+			{
+				"id" : "Probability_setosa",
+				"dataType" : "double",
+				"opType" : "continuous"
+			},
+			{
+				"id" : "Probability_versicolor",
+				"dataType" : "double",
+				"opType" : "continuous"
+			},
+			{
+				"id" : "Probability_virginica",
+				"dataType" : "double",
+				"opType" : "continuous"
+			},
+			{
+				"id" : "Node_Id",
+				"dataType" : "string",
+				"opType" : "categorical"
+			}
+		]
+	}
+}
+```
+
+Field definitions are retrieved from the [MiningSchema] (http://www.dmg.org/v4-2-1/MiningSchema.html) and [Output] (http://www.dmg.org/v4-2-1/Output.html) elements of the PMML document. The active and group fields relate to the `arguments` attribute of the evaluation request, whereas the target and output fields relate to the `result` attribute of the evaluation response (see below).
+
 ##### GET /model/${id}/metrics
 
 Takes a snapshot of the metrics of a model.
 
-The response body is a JSON serialized form of a 'com.codahale.metrics.MetricRegistry' object.
+The response body is a JSON serialized form of a `com.codahale.metrics.MetricRegistry` object.
 
 Sample cURL invocation:
 ```
@@ -194,88 +264,15 @@ Sample response:
 }
 ```
 
-##### GET /model/${id}/schema
+##### GET /model/${id}/pmml
 
-Gets the data schema information of a model.
+Downloads a model.
 
-The response body is a JSON serialized form of an `org.openscoring.common.SchemaResponse` object.
-
-Field definitions are retrieved from the [Mining Schema element] (http://www.dmg.org/v4-2/MiningSchema.html) of the PMML document. The active and group fields relate to the `arguments` attribute of the evaluation request, whereas the target and output fields relate to the `result` attribute of the evaluation response (see below).
+The response body is a PMML document.
 
 Sample cURL invocation:
 ```
-curl -X GET http://localhost:8080/openscoring/model/DecisionTreeIris/schema
-```
-
-Sample response:
-```json
-{
-	"activeFields" : [
-		{
-			"id" : "Sepal_Length",
-			"name" : "Sepal length in cm",
-			"dataType" : "double",
-			"opType" : "continuous",
-			"values" : [ "[4.3, 7.9]" ]
-		},
-		{
-			"id" : "Sepal_Width",
-			"name" : "Sepal width in cm",
-			"dataType" : "double",
-			"opType" : "continuous",
-			"values" : [ "[2.0, 4.4]" ]
-		},
-		{
-			"id" : "Petal_Length",
-			"name" : "Petal length in cm",
-			"dataType" : "double",
-			"opType" : "continuous",
-			"values" : [ "[1.0, 6.9]" ]
-		},
-		{
-			"id" : "Petal_Width",
-			"name" : "Petal width in cm",
-			"dataType" : "double",
-			"opType" : "continuous",
-			"values" : [ "[0.1, 2.5]" ]
-		}
-	],
-	"targetFields" : [
-		{
-			"id" : "Species",
-			"dataType" : "string",
-			"opType" : "categorical",
-			"values" : [ "setosa", "versicolor", "virginica" ]
-		}
-	],
-	"outputFields" : [
-		{
-			"id" : "Predicted_Species",
-			"dataType" : "string",
-			"opType" : "categorical"
-		},
-		{
-			"id" : "Probability_setosa",
-			"dataType" : "double",
-			"opType" : "continuous"
-		},
-		{
-			"id" : "Probability_versicolor",
-			"dataType" : "double",
-			"opType" : "continuous"
-		},
-		{
-			"id" : "Probability_virginica",
-			"dataType" : "double",
-			"opType" : "continuous"
-		},
-		{
-			"id" : "Node_Id",
-			"dataType" : "string",
-			"opType" : "categorical"
-		}
-	]
-}
+curl -X GET http://localhost:8080/openscoring/model/DecisionTreeIris/pmml
 ```
 
 ### Model evaluation
@@ -343,11 +340,11 @@ curl -X POST --data-binary @BatchEvaluationRequest.json -H "Content-type: applic
 
 Evaluates a model in CSV mode.
 
-The request body is a CSV document (indicated by content-type header `text/plain`). The data table must contain a data column for every active and group field. The ordering of data columns is not significant. They are mapped to fields by name.
-
-The CSV document must conform to Tab-separated values (TSV) dialect or Microsoft Excel dialect.
+The request body is a CSV document (indicated by content-type header `text/plain`). The data table must contain a data column for every active and group field. The ordering of data columns is not significant, because they are mapped to fields by name.
 
 The response body is a CSV document. The data table contains a data column for every target and output field.
+
+The CSV document must conform to Tab-separated values (TSV) dialect or Microsoft Excel dialect.
 
 The first data column can be employed for row identification purposes. It will be copied over from the request data table to the response data table if its name equals to "Id" (the comparison is case insensitive) and the number of rows did not change during the evaluation.
 

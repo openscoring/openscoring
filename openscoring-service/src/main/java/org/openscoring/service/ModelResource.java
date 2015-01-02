@@ -78,11 +78,11 @@ import org.jpmml.evaluator.EvaluatorUtil;
 import org.jpmml.evaluator.ModelEvaluator;
 import org.jpmml.evaluator.OutputUtil;
 import org.jpmml.evaluator.TypeUtil;
+import org.openscoring.common.BatchModelResponse;
 import org.openscoring.common.EvaluationRequest;
 import org.openscoring.common.EvaluationResponse;
 import org.openscoring.common.Field;
 import org.openscoring.common.ModelResponse;
-import org.openscoring.common.SchemaResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.supercsv.prefs.CsvPreference;
@@ -107,12 +107,14 @@ public class ModelResource {
 
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
-	public List<ModelResponse> list(){
-		List<ModelResponse> result = Lists.newArrayList();
+	public BatchModelResponse queryBatch(){
+		BatchModelResponse response = new BatchModelResponse();
+
+		List<ModelResponse> responses = Lists.newArrayList();
 
 		Collection<Map.Entry<String, ModelEvaluator<?>>> entries = this.modelRegistry.entries();
 		for(Map.Entry<String, ModelEvaluator<?>> entry : entries){
-			result.add(createModelResponse(entry.getKey(), entry.getValue()));
+			responses.add(createModelResponse(entry.getKey(), false, entry.getValue()));
 		}
 
 		Comparator<ModelResponse> comparator = new Comparator<ModelResponse>(){
@@ -122,9 +124,23 @@ public class ModelResource {
 				return (left.getId()).compareToIgnoreCase(right.getId());
 			}
 		};
-		Collections.sort(result, comparator);
+		Collections.sort(responses, comparator);
 
-		return result;
+		response.setResponses(responses);
+
+		return response;
+	}
+
+	@GET
+	@Path("{id:" + ModelRegistry.ID_REGEX + "}")
+	@Produces(MediaType.APPLICATION_JSON)
+	public ModelResponse query(@PathParam("id") String id){
+		ModelEvaluator<?> evaluator = this.modelRegistry.get(id);
+		if(evaluator == null){
+			throw new NotFoundException();
+		}
+
+		return createModelResponse(id, true, evaluator);
 	}
 
 	@POST
@@ -190,7 +206,7 @@ public class ModelResource {
 			throw new InternalServerErrorException();
 		}
 
-		ModelResponse entity = createModelResponse(id, evaluator);
+		ModelResponse entity = createModelResponse(id, true, evaluator);
 
 		if(oldEvaluator != null){
 			return (Response.ok().entity(entity)).build();
@@ -206,7 +222,7 @@ public class ModelResource {
 	}
 
 	@GET
-	@Path("{id:" + ModelRegistry.ID_REGEX + "}")
+	@Path("{id:" + ModelRegistry.ID_REGEX + "}/pmml")
 	@RolesAllowed (
 		value = {"admin"}
 	)
@@ -233,18 +249,6 @@ public class ModelResource {
 		}
 
 		return (Response.ok()).build();
-	}
-
-	@GET
-	@Path("{id:" + ModelRegistry.ID_REGEX + "}/schema")
-	@Produces(MediaType.APPLICATION_JSON)
-	public SchemaResponse schema(@PathParam("id") String id){
-		ModelEvaluator<?> evaluator = this.modelRegistry.get(id);
-		if(evaluator == null){
-			throw new NotFoundException();
-		}
-
-		return createSchemaResponse(evaluator);
 	}
 
 	@GET
@@ -591,22 +595,27 @@ public class ModelResource {
 	}
 
 	static
-	private ModelResponse createModelResponse(String id, ModelEvaluator<?> evaluator){
+	private ModelResponse createModelResponse(String id, boolean expand, ModelEvaluator<?> evaluator){
 		ModelResponse response = new ModelResponse(id);
 		response.setSummary(evaluator.getSummary());
+
+		if(expand){
+			response.setSchema(encodeSchema(evaluator));
+		}
 
 		return response;
 	}
 
 	static
-	private SchemaResponse createSchemaResponse(ModelEvaluator<?> evaluator){
-		SchemaResponse response = new SchemaResponse();
-		response.setActiveFields(encodeMiningFields(evaluator.getActiveFields(), evaluator));
-		response.setGroupFields(encodeMiningFields(evaluator.getGroupFields(), evaluator));
-		response.setTargetFields(encodeMiningFields(evaluator.getTargetFields(), evaluator));
-		response.setOutputFields(encodeOutputFields(evaluator.getOutputFields(), evaluator));
+	private Map<String, List<Field>> encodeSchema(ModelEvaluator<?> evaluator){
+		Map<String, List<Field>> result = Maps.newLinkedHashMap();
 
-		return response;
+		result.put("activeFields", encodeMiningFields(evaluator.getActiveFields(), evaluator));
+		result.put("groupFields", encodeMiningFields(evaluator.getGroupFields(), evaluator));
+		result.put("targetFields", encodeMiningFields(evaluator.getTargetFields(), evaluator));
+		result.put("outputFields", encodeOutputFields(evaluator.getOutputFields(), evaluator));
+
+		return result;
 	}
 
 	static

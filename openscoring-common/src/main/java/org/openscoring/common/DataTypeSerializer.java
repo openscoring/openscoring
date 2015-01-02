@@ -29,7 +29,7 @@ import org.dmg.pmml.DataType;
 public class DataTypeSerializer extends JsonSerializer<DataType> {
 
 	@Override
-	public void serialize(DataType dataType, JsonGenerator generator, SerializerProvider provider) throws IOException, JsonProcessingException{
+	public void serialize(DataType dataType, JsonGenerator generator, SerializerProvider provider) throws IOException, JsonProcessingException {
 		generator.writeString(dataType.value());
 	}
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014 Villu Ruusmann
+ * Copyright (c) 2015 Villu Ruusmann
  *
  * This file is part of Openscoring
  *
@@ -20,50 +20,25 @@ package org.openscoring.common;
 
 import java.io.Serializable;
 import java.util.List;
-import java.util.Map;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 
 @JsonInclude (
 	value = JsonInclude.Include.NON_EMPTY
 )
-public class ModelResponse implements Serializable {
+public class BatchModelResponse implements Serializable {
 
-	private String id = null;
-
-	private String summary = null;
-
-	private Map<String, List<Field>> schema = null;
+	private List<ModelResponse> responses = null;
 
 
-	public ModelResponse(){
+	public BatchModelResponse(){
 	}
 
-	public ModelResponse(String id){
-		setId(id);
+	public List<ModelResponse> getResponses(){
+		return this.responses;
 	}
 
-	public String getId(){
-		return this.id;
-	}
-
-	public void setId(String id){
-		this.id = id;
-	}
-
-	public String getSummary(){
-		return this.summary;
-	}
-
-	public void setSummary(String summary){
-		this.summary = summary;
-	}
-
-	public Map<String, List<Field>> getSchema(){
-		return this.schema;
-	}
-
-	public void setSchema(Map<String, List<Field>> schema){
-		this.schema = schema;
+	public void setResponses(List<ModelResponse> responses){
+		this.responses = responses;
 	}
 }

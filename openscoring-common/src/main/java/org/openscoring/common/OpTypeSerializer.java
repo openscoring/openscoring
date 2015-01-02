@@ -29,7 +29,7 @@ import org.dmg.pmml.OpType;
 public class OpTypeSerializer extends JsonSerializer<OpType> {
 
 	@Override
-	public void serialize(OpType opType, JsonGenerator generator, SerializerProvider provider) throws IOException, JsonProcessingException{
+	public void serialize(OpType opType, JsonGenerator generator, SerializerProvider provider) throws IOException, JsonProcessingException {
 		generator.writeString(opType.value());
 	}
 }
