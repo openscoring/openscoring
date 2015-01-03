@@ -20,5 +20,21 @@ package org.openscoring.common;
 
 import java.io.Serializable;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+
+@JsonInclude (
+	value = JsonInclude.Include.NON_EMPTY
+)
 public class SimpleResponse implements Serializable {
+
+	private String message = null;
+
+
+	public String getMessage(){
+		return this.message;
+	}
+
+	public void setMessage(String message){
+		this.message = message;
+	}
 }

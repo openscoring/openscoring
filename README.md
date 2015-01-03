@@ -26,6 +26,8 @@ Enter the project root directory and build using [Apache Maven] (http://maven.ap
 mvn clean install
 ```
 
+The example PMML file `DecisionTreeIris.pmml` along with example JSON and CSV files can be found in the `openscoring-service/src/etc` directory.
+
 ### Server side
 
 ##### Standalone application
@@ -91,7 +93,20 @@ Metric REST API endpoints:
 
 By default, the "admin" role is granted to all HTTP requests that originate from the local network address.
 
-The example PMML file `DecisionTreeIris.pmml` along with example JSON and CSV files is available in the `openscoring-service/src/etc` directory.
+In case of an error (ie. response status codes 4XX or 5XX), the response body is a JSON serialized form of an `org.openscoring.common.SimpleResponse` object.
+
+Java clients may use the following idiom to check if an operation succeeded or failed:
+```java
+ModelResponse response = ...;
+
+// The error condition is encoded by initializing the "message" field and leaving all other fields uninitialized
+String message = response.getMessage();
+if(message != null){
+	throw new RuntimeException(message);
+}
+
+// Proceed as usual
+```
 
 ### Model deployment
 

@@ -55,6 +55,7 @@ public class Openscoring extends ResourceConfig {
 		// JSON support
 		register(JacksonFeature.class);
 		register(ObjectMapperProvider.class);
+		register(WebApplicationExceptionMapper.class);
 
 		// File upload support
 		register(MultiPartFeature.class);

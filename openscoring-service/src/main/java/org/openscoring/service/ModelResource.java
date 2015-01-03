@@ -229,7 +229,7 @@ public class ModelResource {
 	@RolesAllowed (
 		value = {"admin"}
 	)
-	@Produces(MediaType.TEXT_XML)
+	@Produces({MediaType.APPLICATION_JSON, MediaType.TEXT_XML})
 	public Response download(@PathParam("id") String id, @Context HttpServletResponse response){
 		ModelEvaluator<?> evaluator = this.modelRegistry.get(id);
 		if(evaluator == null){
@@ -285,7 +285,7 @@ public class ModelResource {
 	@POST
 	@Path("{id:" + ModelRegistry.ID_REGEX + "}/csv")
 	@Consumes(MediaType.MULTIPART_FORM_DATA)
-	@Produces(MediaType.TEXT_PLAIN)
+	@Produces({MediaType.APPLICATION_JSON, MediaType.TEXT_PLAIN})
 	public Response evaluateCsv(@PathParam("id") String id, @FormDataParam("csv") InputStream is, @Context HttpServletResponse response){
 		return doEvaluateCsv(id, is, response);
 	}
@@ -293,7 +293,7 @@ public class ModelResource {
 	@POST
 	@Path("{id:" + ModelRegistry.ID_REGEX + "}/csv")
 	@Consumes(MediaType.TEXT_PLAIN)
-	@Produces(MediaType.TEXT_PLAIN)
+	@Produces({MediaType.APPLICATION_JSON, MediaType.TEXT_PLAIN})
 	public Response evaluateCsv(@PathParam("id") String id, @Context HttpServletRequest request, @Context HttpServletResponse response){
 
 		try {
@@ -418,6 +418,7 @@ public class ModelResource {
 	@RolesAllowed (
 		value = {"admin"}
 	)
+	@Produces(MediaType.APPLICATION_JSON)
 	public Response undeploy(@PathParam("id") String id){
 		ModelEvaluator<?> evaluator = this.modelRegistry.get(id);
 		if(evaluator == null){
