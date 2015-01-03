@@ -77,6 +77,7 @@ import org.jpmml.evaluator.Evaluator;
 import org.jpmml.evaluator.EvaluatorUtil;
 import org.jpmml.evaluator.ModelEvaluator;
 import org.jpmml.evaluator.OutputUtil;
+import org.jpmml.evaluator.TypeAnalysisException;
 import org.jpmml.evaluator.TypeUtil;
 import org.openscoring.common.BatchEvaluationRequest;
 import org.openscoring.common.BatchEvaluationResponse;
@@ -601,11 +602,19 @@ public class ModelResource {
 		for(FieldName name : names){
 			OutputField outputField = evaluator.getOutputField(name);
 
-			DataType dataType = OutputUtil.getDataType(outputField, evaluator);
+			DataType dataType = null;
 
-			OpType opType = outputField.getOptype();
-			if(opType == null){
-				opType = TypeUtil.getOpType(dataType);
+			OpType opType = null;
+
+			try {
+				dataType = OutputUtil.getDataType(outputField, evaluator);
+
+				opType = outputField.getOptype();
+				if(opType == null){
+					opType = TypeUtil.getOpType(dataType);
+				}
+			} catch(TypeAnalysisException tae){
+				// Ignored
 			}
 
 			Field field = new Field(name.getValue());
