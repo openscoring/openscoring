@@ -78,7 +78,7 @@ Model REST API endpoints:
 | POST | /model | admin | Deploy a model |
 | PUT | /model/${id} | admin | Deploy a model |
 | GET | /model/${id} | - | Get the summary of a model |
-| GET | /model/${id}/pmml | - | Download a model as a PMML document |
+| GET | /model/${id}/pmml | admin | Download a model as a PMML document |
 | POST | /model/${id} | - | Evaluate a model in "single prediction" mode |
 | POST | /model/${id}/batch | - | Evaluate a model in "batch prediction" mode |
 | POST | /model/${id}/csv | - | Evaluate a model is CSV prediction mode |
@@ -93,7 +93,7 @@ Metric REST API endpoints:
 
 By default, the "admin" role is granted to all HTTP requests that originate from the local network address.
 
-In case of an error (ie. response status codes 4XX or 5XX), the response body is a JSON serialized form of an `org.openscoring.common.SimpleResponse` object.
+In case of an error (ie. response status codes 4XX or 5XX), the response body is a JSON serialized form of an `org.openscoring.common.SimpleResponse`  [(source)] (https://github.com/jpmml/openscoring/blob/master/openscoring-common/src/main/java/org/openscoring/common/SimpleResponse.java) object.
 
 Java clients may use the following idiom to check if an operation succeeded or failed:
 ```java
@@ -116,7 +116,7 @@ Creates or updates a model.
 
 The request body is a PMML document (indicated by content-type header `text/xml` or `application/xml`).
 
-The response body is a JSON serialized form of an `org.openscoring.common.ModelResponse` object.
+The response body is a JSON serialized form of an `org.openscoring.common.ModelResponse` [(source)] (https://github.com/jpmml/openscoring/blob/master/openscoring-common/src/main/java/org/openscoring/common/ModelResponse.java) object.
 
 Response status codes:
 * 200 OK. The model was updated.
@@ -134,7 +134,7 @@ curl -X PUT --data-binary @DecisionTreeIris.pmml -H "Content-type: text/xml" htt
 
 Gets the summaries of all models.
 
-The response body is a JSON serialized form of an `org.openscoring.common.BatchModelResponse` object.
+The response body is a JSON serialized form of an `org.openscoring.common.BatchModelResponse` [(source)] (https://github.com/jpmml/openscoring/blob/master/openscoring-common/src/main/java/org/openscoring/common/BatchModelResponse.java) object.
 
 Sample cURL invocation:
 ```
@@ -145,7 +145,7 @@ curl -X GET http://localhost:8080/openscoring/model
 
 Gets the summary of a model.
 
-The response body is a JSON serialized form of an `org.openscoring.common.ModelResponse` object.
+The response body is a JSON serialized form of an `org.openscoring.common.ModelResponse` [(source)] (https://github.com/jpmml/openscoring/blob/master/openscoring-common/src/main/java/org/openscoring/common/ModelResponse.java) object.
 
 Sample cURL invocation:
 ```
@@ -247,9 +247,9 @@ curl -X GET http://localhost:8080/openscoring/model/DecisionTreeIris/pmml
 
 Evaluates a model in "single prediction" mode.
 
-The request body is a JSON serialized form of an `org.openscoring.common.EvaluationRequest` object.
+The request body is a JSON serialized form of an `org.openscoring.common.EvaluationRequest` [(source)] (https://github.com/jpmml/openscoring/blob/master/openscoring-common/src/main/java/org/openscoring/common/EvaluationRequest.java) object.
 
-The response body is a JSON serialized form of an `org.openscoring.common.EvaluationResponse` object.
+The response body is a JSON serialized form of an `org.openscoring.common.EvaluationResponse` [(source)] (https://github.com/jpmml/openscoring/blob/master/openscoring-common/src/main/java/org/openscoring/common/EvaluationResponse.java) object.
 
 Response status codes:
 * 200 OK. The evaluation was successful.
@@ -293,9 +293,9 @@ Sample response:
 
 Evaluates a model in "batch prediction" mode.
 
-The request body is a JSON serialized form of an `org.openscoring.common.BatchEvaluationRequest` object.
+The request body is a JSON serialized form of an `org.openscoring.common.BatchEvaluationRequest` [(source)] (https://github.com/jpmml/openscoring/blob/master/openscoring-common/src/main/java/org/openscoring/common/BatchEvaluationRequest.java) object.
 
-The response body is a JSON serialized form of an `org.openscoring.common.BatchEvaluationResponse` object.
+The response body is a JSON serialized form of an `org.openscoring.common.BatchEvaluationResponse` [(source)] (https://github.com/jpmml/openscoring/blob/master/openscoring-common/src/main/java/org/openscoring/common/BatchEvaluationResponse.java) object.
 
 Sample cURL invocation:
 ```
