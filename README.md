@@ -88,8 +88,8 @@ Metric REST API endpoints:
 
 | HTTP method | Endpoint | Required role(s) | Description |
 | ----------- | -------- | ---------------- | ----------- |
-| GET | /metric | admin | Get the metrics of all models |
-| GET | /metric/${id} | admin | Get the metrics of a model |
+| GET | /metric/model | admin | Get the metrics of all models |
+| GET | /metric/model/${id} | admin | Get the metrics of a model |
 
 By default, the "admin" role is granted to all HTTP requests that originate from the local network address.
 
@@ -358,7 +358,7 @@ curl -X DELETE http://localhost:8080/openscoring/model/DecisionTreeIris
 
 ### Metric querying
 
-##### GET /metric/${id}
+##### GET /metric/model/${id}
 
 Gets the snapshot of the metrics of a model.
 
@@ -370,7 +370,7 @@ Response status codes:
 
 Sample cURL invocation:
 ```
-curl -X GET http://localhost:8080/openscoring/metric/DecisionTreeIris
+curl -X GET http://localhost:8080/openscoring/metric/model/DecisionTreeIris
 ```
 
 Sample response:

@@ -52,23 +52,24 @@ public class MetricResource {
 	}
 
 	@GET
+	@Path("model")
 	@RolesAllowed (
 		value = {"admin"}
 	)
 	@Produces(MediaType.APPLICATION_JSON)
-	public MetricRegistry metrics(){
+	public MetricRegistry queryModelBatch(){
 		String prefix = ModelResource.createName() + ".";
 
 		return doMetrics(prefix);
 	}
 
 	@GET
-	@Path("{id:" + ModelRegistry.ID_REGEX + "}")
+	@Path("model/{id:" + ModelRegistry.ID_REGEX + "}")
 	@RolesAllowed (
 		value = {"admin"}
 	)
 	@Produces(MediaType.APPLICATION_JSON)
-	public MetricRegistry metrics(@PathParam("id") String id){
+	public MetricRegistry queryModel(@PathParam("id") String id){
 		ModelEvaluator<?> evaluator = this.modelRegistry.get(id);
 		if(evaluator == null){
 			throw new NotFoundException();
