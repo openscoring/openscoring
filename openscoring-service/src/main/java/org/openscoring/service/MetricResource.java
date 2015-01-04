@@ -72,7 +72,7 @@ public class MetricResource {
 	public MetricRegistry queryModel(@PathParam("id") String id){
 		ModelEvaluator<?> evaluator = this.modelRegistry.get(id);
 		if(evaluator == null){
-			throw new NotFoundException();
+			throw new NotFoundException("Model \"" + id + "\" not found");
 		}
 
 		String prefix = ModelResource.createName(id) + ".";

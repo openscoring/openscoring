@@ -140,7 +140,7 @@ public class ModelResource {
 	public ModelResponse query(@PathParam("id") String id){
 		ModelEvaluator<?> evaluator = this.modelRegistry.get(id);
 		if(evaluator == null){
-			throw new NotFoundException();
+			throw new NotFoundException("Model \"" + id + "\" not found");
 		}
 
 		return createModelResponse(id, true, evaluator);
@@ -154,8 +154,8 @@ public class ModelResource {
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response deploy(@FormDataParam("id") String id, @FormDataParam("pmml") InputStream is){
 
-		if(id == null || ("").equals(id.trim())){
-			throw new BadRequestException();
+		if(!ModelRegistry.validateId(id)){
+			throw new BadRequestException("Invalid identifier");
 		}
 
 		return doDeploy(id, is);
@@ -206,7 +206,7 @@ public class ModelResource {
 		} // End if
 
 		if(!success){
-			throw new InternalServerErrorException();
+			throw new InternalServerErrorException("Concurrent modification");
 		}
 
 		ModelResponse entity = createModelResponse(id, true, evaluator);
@@ -233,7 +233,7 @@ public class ModelResource {
 	public Response download(@PathParam("id") String id, @Context HttpServletResponse response){
 		ModelEvaluator<?> evaluator = this.modelRegistry.get(id);
 		if(evaluator == null){
-			throw new NotFoundException();
+			throw new NotFoundException("Model \"" + id + "\" not found");
 		}
 
 		try {
@@ -374,7 +374,7 @@ public class ModelResource {
 	private List<EvaluationResponse> doEvaluate(String id, List<EvaluationRequest> requests, String method){
 		ModelEvaluator<?> evaluator = this.modelRegistry.get(id);
 		if(evaluator == null){
-			throw new NotFoundException();
+			throw new NotFoundException("Model \"" + id + "\" not found");
 		}
 
 		List<EvaluationResponse> responses = Lists.newArrayList();
@@ -392,7 +392,7 @@ public class ModelResource {
 			} else
 
 			if(groupFields.size() > 1){
-				throw new EvaluationException();
+				throw new EvaluationException("Too many group fields");
 			}
 
 			for(EvaluationRequest request : requests){
@@ -422,12 +422,12 @@ public class ModelResource {
 	public Response undeploy(@PathParam("id") String id){
 		ModelEvaluator<?> evaluator = this.modelRegistry.get(id);
 		if(evaluator == null){
-			throw new NotFoundException();
+			throw new NotFoundException("Model \"" + id + "\" not found");
 		}
 
 		boolean success = this.modelRegistry.remove(id, evaluator);
 		if(!success){
-			throw new InternalServerErrorException();
+			throw new InternalServerErrorException("Concurrent modification");
 		}
 
 		final
