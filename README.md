@@ -44,6 +44,22 @@ The working directory contains a sample Java logging configuration file `logging
 java -Djava.util.logging.config.file=logging.properties -jar target/server-executable-1.2-SNAPSHOT.jar
 ```
 
+Additionally, the working directory contains a sample Typesafe's Config configuration file `application.conf.sample` that should be copied over to a new file `application.conf` and customized to current needs. This local configuration file can be imposed on the JVM by defining the `config.file` system property:
+```
+java -Dconfig.file=application.conf -jar target/server-executable-1.2-SNAPSHOT.jar
+```
+
+The local configuration file overrides the default configuration that is defined in the reference REST web service configuration file `openscoring-service/src/main/reference.conf`. For example, the following configuration file selectively overrides the list-valued `modelRegistry.visitorClasses` property:
+```json
+{
+	"modelRegistry" : {
+		"visitorClasses" : [ "org.jpmml.model.SourceLocationNullifier" ]
+	}
+}
+```
+
+Visitor class `org.jpmml.model.SourceLocationNullifier` erases SAX Locator information from the JPMML class model, which will considerably reduce the memory footprint of deployed models.
+
 ##### Web application
 
 The build produces a WAR file `openscoring-webapp/target/openscoring-webapp-1.2-SNAPSHOT.war`. This WAR file can be deployed using any Java web container.
