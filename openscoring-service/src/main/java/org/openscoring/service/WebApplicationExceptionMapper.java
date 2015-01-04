@@ -41,8 +41,13 @@ public class WebApplicationExceptionMapper implements ExceptionMapper<WebApplica
 
 		String message = throwable.getMessage();
 		if(message == null || ("").equals(message)){
-			message = "(no message)";
-		}
+			Response.Status status = (Response.Status)response.getStatusInfo();
+
+			message = status.getReasonPhrase();
+		} // End if
+
+		// Strip the HTTP status code prefix
+		message = message.replaceFirst("HTTP\\s(\\d)+\\s", "");
 
 		SimpleResponse entity = new SimpleResponse();
 		entity.setMessage(message);
