@@ -39,6 +39,11 @@ java -jar target/server-executable-1.2-SNAPSHOT.jar
 
 By default, the REST web service is started at [http://localhost:8080/openscoring] (http://localhost:8080/openscoring/). The main class `org.openscoring.server.Main` accepts a number of configuration options for URI customization and other purposes. Please specify `--help` for more information.
 
+The working directory contains a sample Java logging configuration file `logging.properties.sample` that should be copied over to a new file `logging.properties` and customized to current needs. A Java logging configuration file can be imposed on the JVM by defining the `java.util.logging.config.file` system property:
+```
+java -Djava.util.logging.config.file=logging.properties -jar target/server-executable-1.2-SNAPSHOT.jar
+```
+
 ##### Web application
 
 The build produces a WAR file `openscoring-webapp/target/openscoring-webapp-1.2-SNAPSHOT.war`. This WAR file can be deployed using any Java web container.

@@ -191,6 +191,8 @@ public class ModelResource {
 		try {
 			evaluator = this.modelRegistry.load(is);
 		} catch(Exception e){
+			logger.error("Failed to load PMML document", e);
+
 			throw new BadRequestException(e);
 		}
 
@@ -244,6 +246,10 @@ public class ModelResource {
 
 			try {
 				this.modelRegistry.store(evaluator, os);
+			} catch(Exception e){
+				logger.error("Failed to store PMML document", e);
+
+				throw e;
 			} finally {
 				os.close();
 			}
@@ -333,6 +339,8 @@ public class ModelResource {
 				reader.close();
 			}
 		} catch(Exception e){
+			logger.error("Failed to load CSV document", e);
+
 			throw new BadRequestException(e);
 		}
 
@@ -355,6 +363,10 @@ public class ModelResource {
 
 				try {
 					CsvUtil.writeTable(writer, format, responseTable);
+				} catch(Exception e){
+					logger.error("Failed to store CSV document", e);
+
+					throw e;
 				} finally {
 					writer.close();
 				}
@@ -401,6 +413,8 @@ public class ModelResource {
 				responses.add(response);
 			}
 		} catch(Exception e){
+			logger.error("Failed to evaluate", e);
+
 			throw new BadRequestException(e);
 		}
 

@@ -1,0 +1,14 @@
+handlers=java.util.logging.ConsoleHandler
+
+# Settings for ConsoleHandler
+java.util.logging.ConsoleHandler.level=ALL
+java.util.logging.ConsoleHandler.formatter=java.util.logging.SimpleFormatter
+
+# Global logging level
+.level=ALL
+
+# Limit the logging level of selected packages
+com.sun.xml.bind.level=CONFIG
+javax.xml.bind.level=CONFIG
+org.eclipse.jetty.level=CONFIG
+org.glassfish.jersey.level=CONFIG
