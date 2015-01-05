@@ -21,6 +21,8 @@ package org.openscoring.common;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.google.common.base.MoreObjects;
+import com.google.common.base.MoreObjects.ToStringHelper;
 
 @JsonInclude (
 	value = JsonInclude.Include.NON_EMPTY
@@ -37,6 +39,20 @@ public class BatchEvaluationResponse extends SimpleResponse {
 
 	public BatchEvaluationResponse(String id){
 		setId(id);
+	}
+
+	@Override
+	public String toString(){
+		String message = getMessage();
+		if(message != null){
+			return super.toString();
+		}
+
+		ToStringHelper stringHelper = MoreObjects.toStringHelper(getClass())
+			.add("id", getId())
+			.add("responses", getResponses());
+
+		return stringHelper.toString();
 	}
 
 	public String getId(){

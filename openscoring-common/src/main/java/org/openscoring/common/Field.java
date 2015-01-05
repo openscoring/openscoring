@@ -24,6 +24,8 @@ import java.util.List;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.google.common.base.MoreObjects;
+import com.google.common.base.MoreObjects.ToStringHelper;
 import org.dmg.pmml.DataType;
 import org.dmg.pmml.OpType;
 
@@ -60,6 +62,18 @@ public class Field implements Serializable {
 
 	public Field(String id){
 		setId(id);
+	}
+
+	@Override
+	public String toString(){
+		ToStringHelper stringHelper = MoreObjects.toStringHelper(getClass())
+			.add("id", getId())
+			.add("name", getName())
+			.add("dataType", getDataType())
+			.add("opType", getOpType())
+			.add("values", getValues());
+
+		return stringHelper.toString();
 	}
 
 	public String getId(){

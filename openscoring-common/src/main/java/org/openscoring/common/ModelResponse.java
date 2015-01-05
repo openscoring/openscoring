@@ -22,6 +22,8 @@ import java.util.List;
 import java.util.Map;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.google.common.base.MoreObjects;
+import com.google.common.base.MoreObjects.ToStringHelper;
 
 @JsonInclude (
 	value = JsonInclude.Include.NON_EMPTY
@@ -40,6 +42,21 @@ public class ModelResponse extends SimpleResponse {
 
 	public ModelResponse(String id){
 		setId(id);
+	}
+
+	@Override
+	public String toString(){
+		String message = getMessage();
+		if(message != null){
+			return super.toString();
+		}
+
+		ToStringHelper stringHelper = MoreObjects.toStringHelper(getClass())
+			.add("id", getId())
+			.add("summary", getSummary())
+			.add("schema", getSchema());
+
+		return stringHelper.toString();
 	}
 
 	public String getId(){

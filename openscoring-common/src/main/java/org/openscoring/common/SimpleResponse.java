@@ -21,6 +21,8 @@ package org.openscoring.common;
 import java.io.Serializable;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.google.common.base.MoreObjects;
+import com.google.common.base.MoreObjects.ToStringHelper;
 
 @JsonInclude (
 	value = JsonInclude.Include.NON_EMPTY
@@ -29,6 +31,14 @@ public class SimpleResponse implements Serializable {
 
 	private String message = null;
 
+
+	@Override
+	public String toString(){
+		ToStringHelper stringHelper = MoreObjects.toStringHelper(getClass())
+			.add("message", getMessage());
+
+		return stringHelper.toString();
+	}
 
 	public String getMessage(){
 		return this.message;

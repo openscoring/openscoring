@@ -43,6 +43,11 @@ public class EvaluationResponse extends SimpleResponse {
 
 	@Override
 	public String toString(){
+		String message = getMessage();
+		if(message != null){
+			return super.toString();
+		}
+
 		ToStringHelper stringHelper = MoreObjects.toStringHelper(getClass())
 			.add("id", getId())
 			.add("result", getResult());
