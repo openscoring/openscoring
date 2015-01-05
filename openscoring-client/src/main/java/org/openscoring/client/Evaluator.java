@@ -20,17 +20,13 @@ package org.openscoring.client;
 
 import java.util.Map;
 
-import javax.ws.rs.client.Client;
-import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.Invocation;
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.MediaType;
 
 import com.beust.jcommander.DynamicParameter;
-import com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider;
 import com.google.common.collect.Maps;
-import org.glassfish.jersey.client.ClientConfig;
 import org.openscoring.common.EvaluationRequest;
 import org.openscoring.common.EvaluationResponse;
 
@@ -49,24 +45,25 @@ public class Evaluator extends ModelApplication {
 	}
 
 	@Override
-	public void run(){
-		ClientConfig config = new ClientConfig();
-		config.register(JacksonJsonProvider.class);
+	public void run() throws Exception {
+		System.out.println(evaluate());
+	}
 
-		Client client = ClientBuilder.newClient(config);
+	public EvaluationResponse evaluate() throws Exception {
+		Operation<EvaluationResponse> operation = new Operation<EvaluationResponse>(){
 
-		WebTarget target = client.target(getModel());
+			@Override
+			public EvaluationResponse perform(WebTarget target) throws Exception {
+				EvaluationRequest request = new EvaluationRequest();
+				request.setArguments(getArguments());
 
-		EvaluationRequest request = new EvaluationRequest();
-		request.setArguments(getArguments());
+				Invocation invocation = target.request(MediaType.APPLICATION_JSON).buildPost(Entity.json(request));
 
-		Invocation invocation = target.request(MediaType.APPLICATION_JSON_TYPE).buildPost(Entity.json(request));
+				return invocation.invoke(EvaluationResponse.class);
+			}
+		};
 
-		EvaluationResponse response = invocation.invoke(EvaluationResponse.class);
-
-		System.out.println(response.getResult());
-
-		client.close();
+		return execute(operation);
 	}
 
 	public Map<String, String> getArguments(){

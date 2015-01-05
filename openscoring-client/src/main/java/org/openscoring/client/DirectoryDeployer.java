@@ -19,7 +19,6 @@
 package org.openscoring.client;
 
 import java.io.File;
-import java.io.IOException;
 import java.nio.file.DirectoryStream;
 import java.nio.file.FileSystem;
 import java.nio.file.Files;
@@ -55,7 +54,7 @@ public class DirectoryDeployer extends Application {
 	}
 
 	@Override
-	public void run() throws IOException {
+	public void run() throws Exception {
 		Path root = getRoot();
 
 		DirectoryStream<Path> children = Files.newDirectoryStream(root);
@@ -99,7 +98,7 @@ public class DirectoryDeployer extends Application {
 		}
 	}
 
-	private void processKey(WatchKey key, Path root) throws IOException {
+	private void processKey(WatchKey key, Path root) throws Exception {
 
 		List<WatchEvent<?>> events = key.pollEvents();
 		for(WatchEvent<?> event : events){
@@ -109,7 +108,7 @@ public class DirectoryDeployer extends Application {
 		}
 	}
 
-	private void process(WatchEvent.Kind<Path> kind, Path path) throws IOException {
+	private void process(WatchEvent.Kind<Path> kind, Path path) throws Exception {
 		String id = (path.getFileName()).toString();
 
 		// Remove file name extension

@@ -18,7 +18,13 @@
  */
 package org.openscoring.client;
 
+import javax.ws.rs.client.Client;
+import javax.ws.rs.client.ClientBuilder;
+import javax.ws.rs.client.WebTarget;
+
 import com.beust.jcommander.Parameter;
+import com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider;
+import org.glassfish.jersey.client.ClientConfig;
 
 abstract
 public class ModelApplication extends Application {
@@ -30,6 +36,25 @@ public class ModelApplication extends Application {
 	)
 	private String model = null;
 
+
+	public <V> V execute(Operation<V> operation) throws Exception {
+		ClientConfig config = new ClientConfig();
+		config.register(JacksonJsonProvider.class);
+
+		Client client = ClientBuilder.newClient(config);
+
+		try {
+			WebTarget target = client.target(getURI());
+
+			return operation.perform(target);
+		} finally {
+			client.close();
+		}
+	}
+
+	public String getURI(){
+		return getModel();
+	}
 
 	public String getModel(){
 		return this.model;

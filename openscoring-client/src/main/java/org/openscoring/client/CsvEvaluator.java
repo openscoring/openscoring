@@ -25,14 +25,13 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
-import javax.ws.rs.client.Client;
-import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.Invocation;
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.MediaType;
 
 import com.beust.jcommander.Parameter;
+import org.openscoring.common.SimpleResponse;
 
 public class CsvEvaluator extends ModelApplication {
 
@@ -57,34 +56,47 @@ public class CsvEvaluator extends ModelApplication {
 	}
 
 	@Override
-	public void run() throws IOException {
-		Client client = ClientBuilder.newClient();
+	public void run() throws Exception {
+		System.out.println(evaluate());
+	}
 
-		WebTarget target = client.target(ensureSuffix(getModel(), "/csv"));
+	public SimpleResponse evaluate() throws Exception {
+		Operation<SimpleResponse> operation = new Operation<SimpleResponse>(){
 
-		InputStream is = new FileInputStream(getInput());
-
-		try {
-			OutputStream os = new FileOutputStream(getOutput());
-
-			try {
-				Invocation invocation = target.request(MediaType.TEXT_PLAIN).buildPost(Entity.text(is));
-
-				InputStream result = invocation.invoke(InputStream.class);
+			@Override
+			public SimpleResponse perform(WebTarget target) throws Exception {
+				InputStream is = new FileInputStream(getInput());
 
 				try {
-					copy(result, os);
-				} finally {
-					result.close();
-				}
-			} finally {
-				os.close();
-			}
-		} finally {
-			is.close();
-		}
+					OutputStream os = new FileOutputStream(getOutput());
 
-		client.close();
+					try {
+						Invocation invocation = target.request(MediaType.APPLICATION_JSON, MediaType.TEXT_PLAIN).buildPost(Entity.text(is));
+
+						InputStream result = invocation.invoke(InputStream.class);
+
+						try {
+							copy(result, os);
+
+							return null;
+						} finally {
+							result.close();
+						}
+					} finally {
+						os.close();
+					}
+				} finally {
+					is.close();
+				}
+			}
+		};
+
+		return execute(operation);
+	}
+
+	@Override
+	public String getURI(){
+		return ensureSuffix(getModel(), "/csv");
 	}
 
 	public File getInput(){

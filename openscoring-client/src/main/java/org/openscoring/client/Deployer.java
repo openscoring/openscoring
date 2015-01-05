@@ -23,14 +23,13 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
-import javax.ws.rs.client.Client;
-import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.Invocation;
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.MediaType;
 
 import com.beust.jcommander.Parameter;
+import org.openscoring.common.ModelResponse;
 
 public class Deployer extends ModelApplication {
 
@@ -48,24 +47,28 @@ public class Deployer extends ModelApplication {
 	}
 
 	@Override
-	public void run() throws IOException {
-		Client client = ClientBuilder.newClient();
+	public void run() throws Exception {
+		System.out.println(deploy());
+	}
 
-		WebTarget target = client.target(getModel());
+	public ModelResponse deploy() throws Exception {
+		Operation<ModelResponse> operation = new Operation<ModelResponse>(){
 
-		InputStream is = new FileInputStream(getFile());
+			@Override
+			public ModelResponse perform(WebTarget target) throws IOException {
+				InputStream is = new FileInputStream(getFile());
 
-		try {
-			Invocation invocation = target.request(MediaType.APPLICATION_JSON_TYPE).buildPut(Entity.xml(is));
+				try {
+					Invocation invocation = target.request(MediaType.APPLICATION_JSON).buildPut(Entity.xml(is));
 
-			String result = invocation.invoke(String.class);
+					return invocation.invoke(ModelResponse.class);
+				} finally {
+					is.close();
+				}
+			}
+		};
 
-			System.out.println(result);
-		} finally {
-			is.close();
-		}
-
-		client.close();
+		return execute(operation);
 	}
 
 	public File getFile(){

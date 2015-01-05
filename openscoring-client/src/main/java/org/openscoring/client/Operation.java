@@ -18,35 +18,9 @@
  */
 package org.openscoring.client;
 
-import javax.ws.rs.client.Invocation;
 import javax.ws.rs.client.WebTarget;
-import javax.ws.rs.core.MediaType;
 
-import org.openscoring.common.SimpleResponse;
+public interface Operation<V> {
 
-public class Undeployer extends ModelApplication {
-
-	static
-	public void main(String... args) throws Exception {
-		run(Undeployer.class, args);
-	}
-
-	@Override
-	public void run() throws Exception {
-		System.out.println(undeploy());
-	}
-
-	public SimpleResponse undeploy() throws Exception {
-		Operation<SimpleResponse> operation = new Operation<SimpleResponse>(){
-
-			@Override
-			public SimpleResponse perform(WebTarget target){
-				Invocation invocation = target.request(MediaType.APPLICATION_JSON).buildDelete();
-
-				return invocation.invoke(SimpleResponse.class);
-			}
-		};
-
-		return execute(operation);
-	}
+	V perform(WebTarget target) throws Exception;
 }
