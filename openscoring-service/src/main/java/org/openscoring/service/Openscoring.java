@@ -30,6 +30,7 @@ import org.glassfish.hk2.utilities.binding.AbstractBinder;
 import org.glassfish.jersey.jackson.JacksonFeature;
 import org.glassfish.jersey.media.multipart.MultiPartFeature;
 import org.glassfish.jersey.server.ResourceConfig;
+import org.glassfish.jersey.server.filter.HttpMethodOverrideFilter;
 import org.glassfish.jersey.server.filter.RolesAllowedDynamicFeature;
 
 public class Openscoring extends ResourceConfig {
@@ -55,7 +56,12 @@ public class Openscoring extends ResourceConfig {
 		// JSON support
 		register(JacksonFeature.class);
 		register(ObjectMapperProvider.class);
+
+		// Convert exceptions to JSON objects
 		register(WebApplicationExceptionMapper.class);
+
+		// Permit the HTTP POST method to be changed to HTTP PUT or DELETE methods
+		register(HttpMethodOverrideFilter.class);
 
 		// File upload support
 		register(MultiPartFeature.class);

@@ -400,6 +400,18 @@ Sample cURL invocation:
 curl -X DELETE http://localhost:8080/openscoring/model/DecisionTreeIris
 ```
 
+An HTTP PUT or DELETE method can be masked as an HTTP POST method by using the [HTTP method override mechanism] (https://jersey.java.net/apidocs/latest/jersey/org/glassfish/jersey/server/filter/HttpMethodOverrideFilter.html).
+
+Sample cURL invocation that employs the `X-HTTP-Method-Override` request header:
+```
+curl -X POST -H "X-HTTP-Method-Override: DELETE" http://localhost:8080/openscoring/model/DecisionTreeIris
+```
+
+Sample cURL invocation that employs the `_method` query parameter:
+```
+curl -X POST http://localhost:8080/openscoring/model/DecisionTreeIris?_method=DELETE
+```
+
 ### Metric querying
 
 ##### GET /metric/model/${id}
