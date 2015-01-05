@@ -29,6 +29,7 @@ import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.Invocation;
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 
 import com.beust.jcommander.Parameter;
 import org.openscoring.common.SimpleResponse;
@@ -60,6 +61,9 @@ public class CsvEvaluator extends ModelApplication {
 		System.out.println(evaluate());
 	}
 
+	/**
+	 * @return <code>null</code> If the operation was successful.
+	 */
 	public SimpleResponse evaluate() throws Exception {
 		Operation<SimpleResponse> operation = new Operation<SimpleResponse>(){
 
@@ -73,7 +77,18 @@ public class CsvEvaluator extends ModelApplication {
 					try {
 						Invocation invocation = target.request(MediaType.APPLICATION_JSON, MediaType.TEXT_PLAIN).buildPost(Entity.text(is));
 
-						InputStream result = invocation.invoke(InputStream.class);
+						Response response = invocation.invoke();
+
+						Response.StatusType status = response.getStatusInfo();
+						switch(status.getFamily()){
+							case CLIENT_ERROR:
+							case SERVER_ERROR:
+								return response.readEntity(SimpleResponse.class);
+							default:
+								break;
+						}
+
+						InputStream result = response.readEntity(InputStream.class);
 
 						try {
 							copy(result, os);

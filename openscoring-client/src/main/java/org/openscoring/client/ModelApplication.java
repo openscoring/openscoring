@@ -25,6 +25,7 @@ import javax.ws.rs.client.WebTarget;
 import com.beust.jcommander.Parameter;
 import com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider;
 import org.glassfish.jersey.client.ClientConfig;
+import org.openscoring.common.SimpleResponse;
 
 abstract
 public class ModelApplication extends Application {
@@ -37,7 +38,7 @@ public class ModelApplication extends Application {
 	private String model = null;
 
 
-	public <V> V execute(Operation<V> operation) throws Exception {
+	public <V extends SimpleResponse> V execute(Operation<V> operation) throws Exception {
 		ClientConfig config = new ClientConfig();
 		config.register(JacksonJsonProvider.class);
 

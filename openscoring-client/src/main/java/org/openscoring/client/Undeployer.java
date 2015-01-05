@@ -21,6 +21,7 @@ package org.openscoring.client;
 import javax.ws.rs.client.Invocation;
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 
 import org.openscoring.common.SimpleResponse;
 
@@ -36,6 +37,9 @@ public class Undeployer extends ModelApplication {
 		System.out.println(undeploy());
 	}
 
+	/**
+	 * @return <code>null</code> If the operation was successful.
+	 */
 	public SimpleResponse undeploy() throws Exception {
 		Operation<SimpleResponse> operation = new Operation<SimpleResponse>(){
 
@@ -43,7 +47,9 @@ public class Undeployer extends ModelApplication {
 			public SimpleResponse perform(WebTarget target){
 				Invocation invocation = target.request(MediaType.APPLICATION_JSON).buildDelete();
 
-				return invocation.invoke(SimpleResponse.class);
+				Response response = invocation.invoke();
+
+				return response.readEntity(SimpleResponse.class);
 			}
 		};
 

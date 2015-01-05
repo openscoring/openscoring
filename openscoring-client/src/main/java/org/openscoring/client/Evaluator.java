@@ -24,6 +24,7 @@ import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.Invocation;
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 
 import com.beust.jcommander.DynamicParameter;
 import com.google.common.collect.Maps;
@@ -59,7 +60,9 @@ public class Evaluator extends ModelApplication {
 
 				Invocation invocation = target.request(MediaType.APPLICATION_JSON).buildPost(Entity.json(request));
 
-				return invocation.invoke(EvaluationResponse.class);
+				Response response = invocation.invoke();
+
+				return response.readEntity(EvaluationResponse.class);
 			}
 		};
 

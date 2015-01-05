@@ -27,6 +27,7 @@ import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.Invocation;
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 
 import com.beust.jcommander.Parameter;
 import org.openscoring.common.ModelResponse;
@@ -61,7 +62,9 @@ public class Deployer extends ModelApplication {
 				try {
 					Invocation invocation = target.request(MediaType.APPLICATION_JSON).buildPut(Entity.xml(is));
 
-					return invocation.invoke(ModelResponse.class);
+					Response response = invocation.invoke();
+
+					return response.readEntity(ModelResponse.class);
 				} finally {
 					is.close();
 				}
