@@ -142,7 +142,9 @@ The response body is a JSON serialized form of an `org.openscoring.common.ModelR
 Response status codes:
 * 200 OK. The model was updated.
 * 201 Created. A new model was created.
-* 400 Bad Request. The request body is not a valid and/or supported PMML document.
+* 400 Bad Request. The deployment failed permanently. The request body is not a valid and/or supported PMML document.
+* 403 Forbidden. The acting user does not have an "admin" role.
+* 500 Internal Server Error. The deployment failed temporarily.
 
 Sample cURL invocation:
 ```
@@ -157,6 +159,9 @@ Gets the summaries of all models.
 
 The response body is a JSON serialized form of an `org.openscoring.common.BatchModelResponse` [(source)] (https://github.com/jpmml/openscoring/blob/master/openscoring-common/src/main/java/org/openscoring/common/BatchModelResponse.java) object.
 
+Response status codes:
+* 200 OK. The model collection was queried.
+
 Sample cURL invocation:
 ```
 curl -X GET http://localhost:8080/openscoring/model
@@ -167,6 +172,10 @@ curl -X GET http://localhost:8080/openscoring/model
 Gets the summary of a model.
 
 The response body is a JSON serialized form of an `org.openscoring.common.ModelResponse` [(source)] (https://github.com/jpmml/openscoring/blob/master/openscoring-common/src/main/java/org/openscoring/common/ModelResponse.java) object.
+
+Response status codes:
+* 200 OK. The model was queried.
+* 404 Not Found. The requested model was not found.
 
 Sample cURL invocation:
 ```
@@ -257,6 +266,11 @@ Downloads a model.
 
 The response body is a PMML document.
 
+Response status codes:
+* 200 OK. The model was downloaded.
+* 403 Forbidden. The acting user does not have an "admin" role.
+* 404 Not Found. The requested model was not found.
+
 Sample cURL invocation:
 ```
 curl -X GET http://localhost:8080/openscoring/model/DecisionTreeIris/pmml
@@ -274,8 +288,9 @@ The response body is a JSON serialized form of an `org.openscoring.common.Evalua
 
 Response status codes:
 * 200 OK. The evaluation was successful.
+* 400 Bad Request. The evaluation failed permanently due to missing or invalid input data.
 * 404 Not Found. The requested model was not found.
-* 500 Internal Server Error. The evaluation failed. This is most likely caused by missing or invalid input data.
+* 500 Internal Server Error. The evaluation failed temporarily.
 
 Sample cURL invocation:
 ```
@@ -318,6 +333,12 @@ The request body is a JSON serialized form of an `org.openscoring.common.BatchEv
 
 The response body is a JSON serialized form of an `org.openscoring.common.BatchEvaluationResponse` [(source)] (https://github.com/jpmml/openscoring/blob/master/openscoring-common/src/main/java/org/openscoring/common/BatchEvaluationResponse.java) object.
 
+Response status codes:
+* 200 OK. The evaluation was successful.
+* 400 Bad Request. The evaluation failed permanently due to missing or invalid input data.
+* 404 Not Found. The requested model was not found.
+* 500 Internal Server Error. The evaluation failed temporarily.
+
 Sample cURL invocation:
 ```
 curl -X POST --data-binary @BatchEvaluationRequest.json -H "Content-type: application/json" http://localhost:8080/openscoring/model/DecisionTreeIris/batch
@@ -337,9 +358,9 @@ The first data column can be employed for row identification purposes. It will b
 
 Response status codes:
 * 200 OK. The evaluation was successful.
-* 400 Bad request. The request body is not a valid and/or supported CSV document.
+* 400 Bad request. The evaluation failed permanently. The request body is not a valid and/or supported CSV document, or it contains cells with missing or invalid input data.
 * 404 Not Found. The requested model was not found.
-* 500 Internal Server Error. The evaluation failed. This is most likely caused by missing or invalid input data.
+* 500 Internal Server Error. The evaluation failed temporarily.
 
 Sample cURL invocation:
 ```
@@ -370,7 +391,9 @@ Deletes a model.
 
 Response status codes:
 * 204 No Content. The model was deleted.
+* 403 Forbidden. The acting user does not have an "admin" role.
 * 404 Not Found. The requested model was not found.
+* 500 Internal Server Error. The undeployment failed temporarily.
 
 Sample cURL invocation:
 ```
@@ -387,6 +410,7 @@ The response body is a JSON serialized form of a `com.codahale.metrics.MetricReg
 
 Response status codes:
 * 200 OK. The evaluation was successful.
+* 403 Forbidden. The acting user does not have an "admin" role.
 * 404 Not Found. The requested model was not found.
 
 Sample cURL invocation:
