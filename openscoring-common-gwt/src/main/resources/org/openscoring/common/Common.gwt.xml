@@ -1,0 +1,14 @@
+<?xml version="1.0" ?>
+<module>
+	<source
+		path=""
+	/>
+
+	<inherits 
+		name="com.google.common.base.Base"
+	/>
+
+	<inherits 
+		name="org.dmg.pmml.PMML"
+	/>
+</module>

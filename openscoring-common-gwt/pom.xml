@@ -1,0 +1,88 @@
+<?xml version="1.0" ?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<parent>
+		<groupId>org.openscoring</groupId>
+		<artifactId>openscoring</artifactId>
+		<version>1.2-SNAPSHOT</version>
+	</parent>
+
+	<groupId>org.openscoring</groupId>
+	<artifactId>openscoring-common-gwt</artifactId>
+	<packaging>jar</packaging>
+
+	<name>Openscoring Common GWT</name>
+	<description>GWT compatible data model</description>
+
+	<licenses>
+		<license>
+			<name>GNU Affero General Public License (AGPL) version 3.0</name>
+			<url>http://www.gnu.org/licenses/agpl-3.0.html</url>
+			<distribution>repo</distribution>
+		</license>
+	</licenses>
+
+	<dependencies>
+		<dependency>
+			<groupId>org.openscoring</groupId>
+			<artifactId>openscoring-common</artifactId>
+			<exclusions>
+				<exclusion>
+					<groupId>com.google.guava</groupId>
+					<artifactId>guava</artifactId>
+				</exclusion>
+
+				<exclusion>
+					<groupId>org.jpmml</groupId>
+					<artifactId>pmml-model</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+
+		<dependency>
+			<groupId>com.google.guava</groupId>
+			<artifactId>guava-gwt</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>org.jpmml</groupId>
+			<artifactId>pmml-model-gwt</artifactId>
+		</dependency>
+	</dependencies>
+
+	<build>
+		<resources>
+			<resource>
+				<directory>src/main/resources</directory>
+			</resource>
+			<resource>
+				<directory>${project.build.directory}/openscoring-common-sources</directory>
+			</resource>
+		</resources>
+
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-dependency-plugin</artifactId>
+				<version>2.9</version>
+				<executions>
+					<execution>
+						<phase>generate-sources</phase>
+						<goals>
+							<goal>unpack-dependencies</goal>
+						</goals>
+					</execution>
+				</executions>
+				<configuration>
+					<classifier>sources</classifier>
+					<includes>org/openscoring/common/**</includes>
+					<excludes>META-INF/MANIFEST.MF</excludes>
+					<excludeTransitive>true</excludeTransitive>
+					<outputDirectory>${project.build.directory}/openscoring-common-sources</outputDirectory>
+					<type>java-source</type>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
+</project>

@@ -35,6 +35,7 @@
 	<modules>
 		<module>openscoring-client</module>
 		<module>openscoring-common</module>
+		<module>openscoring-common-gwt</module>
 		<module>openscoring-server</module>
 		<module>openscoring-service</module>
 		<module>openscoring-webapp</module>
@@ -61,6 +62,11 @@
 			<dependency>
 				<groupId>org.openscoring</groupId>
 				<artifactId>openscoring-common</artifactId>
+				<version>1.2-SNAPSHOT</version>
+			</dependency>
+			<dependency>
+				<groupId>org.openscoring</groupId>
+				<artifactId>openscoring-common-gwt</artifactId>
 				<version>1.2-SNAPSHOT</version>
 			</dependency>
 			<dependency>
@@ -99,6 +105,11 @@
 			<dependency>
 				<groupId>com.google.guava</groupId>
 				<artifactId>guava</artifactId>
+				<version>18.0</version>
+			</dependency>
+			<dependency>
+				<groupId>com.google.guava</groupId>
+				<artifactId>guava-gwt</artifactId>
 				<version>18.0</version>
 			</dependency>
 
@@ -170,12 +181,12 @@
 			<dependency>
 				<groupId>org.jpmml</groupId>
 				<artifactId>pmml-model</artifactId>
-				<version>1.1.9</version>
+				<version>1.1.10</version>
 			</dependency>
 			<dependency>
 				<groupId>org.jpmml</groupId>
-				<artifactId>pmml-schema</artifactId>
-				<version>1.1.9</version>
+				<artifactId>pmml-model-gwt</artifactId>
+				<version>1.1.10</version>
 			</dependency>
 
 			<dependency>
