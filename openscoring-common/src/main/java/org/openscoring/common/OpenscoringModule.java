@@ -19,9 +19,13 @@
 package org.openscoring.common;
 
 import com.fasterxml.jackson.databind.module.SimpleModule;
+import com.google.common.annotations.GwtIncompatible;
 import org.dmg.pmml.DataType;
 import org.dmg.pmml.OpType;
 
+@GwtIncompatible (
+	value = ""
+)
 public class OpenscoringModule extends SimpleModule {
 
 	public OpenscoringModule(){

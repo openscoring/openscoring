@@ -24,8 +24,12 @@ import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.SerializerProvider;
+import com.google.common.annotations.GwtIncompatible;
 import org.dmg.pmml.OpType;
 
+@GwtIncompatible (
+	value = ""
+)
 public class OpTypeSerializer extends JsonSerializer<OpType> {
 
 	@Override

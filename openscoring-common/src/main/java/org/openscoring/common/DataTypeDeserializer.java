@@ -24,8 +24,12 @@ import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonDeserializer;
+import com.google.common.annotations.GwtIncompatible;
 import org.dmg.pmml.DataType;
 
+@GwtIncompatible (
+	value = ""
+)
 public class DataTypeDeserializer extends JsonDeserializer<DataType> {
 
 	@Override
