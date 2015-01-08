@@ -23,11 +23,11 @@ import java.util.List;
 import javax.inject.Singleton;
 
 import com.codahale.metrics.MetricRegistry;
+import com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider;
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
 import org.glassfish.hk2.utilities.Binder;
 import org.glassfish.hk2.utilities.binding.AbstractBinder;
-import org.glassfish.jersey.jackson.JacksonFeature;
 import org.glassfish.jersey.media.multipart.MultiPartFeature;
 import org.glassfish.jersey.server.ResourceConfig;
 import org.glassfish.jersey.server.filter.HttpMethodOverrideFilter;
@@ -54,7 +54,7 @@ public class Openscoring extends ResourceConfig {
 		register(binder);
 
 		// JSON support
-		register(JacksonFeature.class);
+		register(JacksonJsonProvider.class);
 		register(ObjectMapperProvider.class);
 
 		// Convert exceptions to JSON objects

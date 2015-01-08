@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014 Villu Ruusmann
+ * Copyright (c) 2015 Villu Ruusmann
  *
  * This file is part of Openscoring
  *
@@ -16,14 +16,11 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with Openscoring.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.openscoring.service;
-
-import java.util.concurrent.TimeUnit;
+package org.openscoring.client;
 
 import javax.ws.rs.ext.ContextResolver;
 import javax.ws.rs.ext.Provider;
 
-import com.codahale.metrics.json.MetricsModule;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import org.openscoring.common.OpenscoringModule;
@@ -37,7 +34,6 @@ public class ObjectMapperProvider implements ContextResolver<ObjectMapper> {
 	public ObjectMapperProvider(){
 		ObjectMapper mapper = new ObjectMapper();
 		mapper.registerModule(new OpenscoringModule());
-		mapper.registerModule(new MetricsModule(TimeUnit.SECONDS, TimeUnit.SECONDS, false));
 		mapper.enable(SerializationFeature.INDENT_OUTPUT);
 
 		setMapper(mapper);

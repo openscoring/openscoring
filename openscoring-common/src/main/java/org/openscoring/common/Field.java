@@ -22,8 +22,6 @@ import java.io.Serializable;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.google.common.base.MoreObjects;
 import com.google.common.base.MoreObjects.ToStringHelper;
 import org.dmg.pmml.DataType;
@@ -38,20 +36,8 @@ public class Field implements Serializable {
 
 	private String name = null;
 
-	@JsonSerialize (
-		using = DataTypeSerializer.class
-	)
-	@JsonDeserialize (
-		using = DataTypeDeserializer.class
-	)
 	private DataType dataType = null;
 
-	@JsonSerialize (
-		using = OpTypeSerializer.class
-	)
-	@JsonDeserialize (
-		using = OpTypeDeserializer.class
-	)
 	private OpType opType = null;
 
 	private List<String> values = null;
