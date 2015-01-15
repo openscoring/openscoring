@@ -190,7 +190,7 @@ public class ModelResourceTest {
 
 		PMML pmml = evaluator.getPMML();
 
-		assertNull(pmml.sourceLocation());
+		assertNull(pmml.getLocator());
 
 		modelRegistry.put(id, evaluator);
 
