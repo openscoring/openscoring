@@ -28,7 +28,7 @@ import com.google.common.annotations.GwtIncompatible;
 import org.dmg.pmml.OpType;
 
 @GwtIncompatible (
-	value = ""
+	value = "OpTypeSerializer"
 )
 public class OpTypeSerializer extends JsonSerializer<OpType> {
 

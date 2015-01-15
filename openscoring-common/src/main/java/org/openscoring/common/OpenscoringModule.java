@@ -24,7 +24,7 @@ import org.dmg.pmml.DataType;
 import org.dmg.pmml.OpType;
 
 @GwtIncompatible (
-	value = ""
+	value = "OpenscoringModule"
 )
 public class OpenscoringModule extends SimpleModule {
 

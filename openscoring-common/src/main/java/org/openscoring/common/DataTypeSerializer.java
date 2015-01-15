@@ -28,7 +28,7 @@ import com.google.common.annotations.GwtIncompatible;
 import org.dmg.pmml.DataType;
 
 @GwtIncompatible (
-	value = ""
+	value = "DataTypeSerializer"
 )
 public class DataTypeSerializer extends JsonSerializer<DataType> {
 
