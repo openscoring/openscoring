@@ -69,10 +69,15 @@ public class Main {
 
 	static
 	public void main(String... args) throws Exception {
-		Main main = new Main();
+		execute(Main.class, args);
+	}
+
+	static
+	public void execute(Class<? extends Main> clazz, String... args) throws Exception {
+		Main main = clazz.newInstance();
 
 		JCommander commander = new JCommander(main);
-		commander.setProgramName(Main.class.getName());
+		commander.setProgramName(clazz.getName());
 
 		try {
 			commander.parse(args);
@@ -91,7 +96,14 @@ public class Main {
 		main.run();
 	}
 
-	private void run() throws Exception {
+	public void run() throws Exception {
+		Server server = createServer();
+
+		server.start();
+		server.join();
+	}
+
+	protected Server createServer(){
 		InetSocketAddress address;
 
 		if(this.host != null){
@@ -127,7 +139,6 @@ public class Main {
 
 		server.setHandler(handlerCollection);
 
-		server.start();
-		server.join();
+		return server;
 	}
 }
