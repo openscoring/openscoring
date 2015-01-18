@@ -549,6 +549,9 @@ public class ModelResource {
 
 		Map<FieldName, ?> result = evaluator.evaluate(arguments);
 
+		// Jackson does not support the JSON serialization of <code>null</code> map keys
+		result = replaceNullKey(result);
+
 		logger.debug("Evaluation response {} has result: {}", response.getId(), result);
 
 		response.setResult(EvaluatorUtil.decode(result));
@@ -556,6 +559,16 @@ public class ModelResource {
 		logger.info("Returned {}", response);
 
 		return response;
+	}
+
+	static
+	private <V> Map<FieldName, V> replaceNullKey(Map<FieldName, V> result){
+
+		if(result.containsKey(null)){
+			result.put(ModelResource.DEFAULT_NAME, result.remove(null));
+		}
+
+		return result;
 	}
 
 	static
@@ -574,10 +587,21 @@ public class ModelResource {
 	private Map<String, List<Field>> encodeSchema(ModelEvaluator<?> evaluator){
 		Map<String, List<Field>> result = Maps.newLinkedHashMap();
 
-		result.put("activeFields", encodeMiningFields(evaluator.getActiveFields(), evaluator));
-		result.put("groupFields", encodeMiningFields(evaluator.getGroupFields(), evaluator));
-		result.put("targetFields", encodeMiningFields(evaluator.getTargetFields(), evaluator));
-		result.put("outputFields", encodeOutputFields(evaluator.getOutputFields(), evaluator));
+		List<FieldName> activeFields = evaluator.getActiveFields();
+		List<FieldName> groupFields = evaluator.getGroupFields();
+		List<FieldName> targetFields = evaluator.getTargetFields();
+
+		if(targetFields.isEmpty()){
+			targetFields = Collections.singletonList(evaluator.getTargetField());
+		}
+
+		result.put("activeFields", encodeMiningFields(activeFields, evaluator));
+		result.put("groupFields", encodeMiningFields(groupFields, evaluator));
+		result.put("targetFields", encodeMiningFields(targetFields, evaluator));
+
+		List<FieldName> outputFields = evaluator.getOutputFields();
+
+		result.put("outputFields", encodeOutputFields(outputFields, evaluator));
 
 		return result;
 	}
@@ -587,14 +611,28 @@ public class ModelResource {
 		List<Field> fields = Lists.newArrayList();
 
 		for(FieldName name : names){
-			MiningField miningField = evaluator.getMiningField(name);
 			DataField dataField = evaluator.getDataField(name);
+
+			// A "phantom" default target field
+			if(dataField == null){
+				continue;
+			}
 
 			DataType dataType = dataField.getDataType();
 
-			OpType opType = miningField.getOptype();
+			OpType opType = null;
+
+			MiningField miningField = evaluator.getMiningField(name);
+			if(miningField != null){
+				opType = miningField.getOptype();
+			} // End if
+
 			if(opType == null){
 				opType = dataField.getOptype();
+			} // End if
+
+			if(name == null){
+				name = ModelResource.DEFAULT_NAME;
 			}
 
 			Field field = new Field(name.getValue());
@@ -694,6 +732,8 @@ public class ModelResource {
 
 		return result;
 	}
+
+	private static final FieldName DEFAULT_NAME = FieldName.create("_default");
 
 	private static final Logger logger = LoggerFactory.getLogger(ModelResource.class);
 }
