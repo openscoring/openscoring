@@ -95,7 +95,7 @@ public class ModelRegistry {
 		for(Class<? extends Visitor> visitorClazz : this.visitorClazzes){
 			Visitor visitor = visitorClazz.newInstance();
 
-			pmml.accept(visitor);
+			visitor.applyTo(pmml);
 		}
 
 		evaluator.verify();

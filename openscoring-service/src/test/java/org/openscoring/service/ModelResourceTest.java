@@ -37,7 +37,7 @@ import org.dmg.pmml.PMML;
 import org.jpmml.evaluator.ModelEvaluator;
 import org.jpmml.evaluator.TypeUtil;
 import org.jpmml.evaluator.VerificationUtil;
-import org.jpmml.model.SourceLocationNullifier;
+import org.jpmml.model.visitors.LocatorNullifier;
 import org.junit.Test;
 import org.openscoring.common.BatchEvaluationRequest;
 import org.openscoring.common.BatchEvaluationResponse;
@@ -172,7 +172,7 @@ public class ModelResourceTest {
 
 	static
 	private ModelResource createService(String id) throws Exception {
-		Config config = ConfigFactory.parseMap(Collections.singletonMap("modelRegistry.visitorClasses", Collections.singletonList(SourceLocationNullifier.class.getName())));
+		Config config = ConfigFactory.parseMap(Collections.singletonMap("modelRegistry.visitorClasses", Collections.singletonList(LocatorNullifier.class.getName())));
 
 		ModelRegistry modelRegistry = new ModelRegistry(config);
 

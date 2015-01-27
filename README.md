@@ -53,12 +53,12 @@ The local configuration file overrides the default configuration that is defined
 ```json
 {
 	"modelRegistry" : {
-		"visitorClasses" : [ "org.jpmml.model.SourceLocationNullifier" ]
+		"visitorClasses" : [ "org.jpmml.model.visitors.LocatorNullifier" ]
 	}
 }
 ```
 
-Visitor class `org.jpmml.model.SourceLocationNullifier` erases SAX Locator information from the JPMML class model, which will considerably reduce the memory footprint of deployed models.
+Visitor class `org.jpmml.model.visitors.LocatorNullifier` erases SAX Locator information from the JPMML class model, which will considerably reduce the memory footprint of deployed models.
 
 ##### Web application
 
