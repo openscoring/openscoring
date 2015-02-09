@@ -1,7 +1,5 @@
-{
-	"application" : {
-	},
+application {
+}
 
-	"modelRegistry" : {
-	}
-} 
+modelRegistry {
+}

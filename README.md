@@ -51,14 +51,12 @@ java -Dconfig.file=application.conf -jar target/server-executable-1.2-SNAPSHOT.j
 
 The local configuration file overrides the default configuration that is defined in the reference REST web service configuration file `openscoring-service/src/main/reference.conf`. For example, the following configuration file selectively overrides the list-valued `modelRegistry.visitorClasses` property:
 ```json
-{
-	"modelRegistry" : {
-		"visitorClasses" : [ "org.jpmml.model.visitors.LocatorNullifier" ]
-	}
+modelRegistry {
+	visitorClasses = [
+		"org.jpmml.model.visitors.LocatorNullifier" // Erases SAX Locator information from the PMML class model object, which will considerable reduce the memory consumption of deployed models
+	]
 }
 ```
-
-Visitor class `org.jpmml.model.visitors.LocatorNullifier` erases SAX Locator information from the JPMML class model, which will considerably reduce the memory footprint of deployed models.
 
 ##### Web application
 
