@@ -31,6 +31,7 @@ import javax.inject.Singleton;
 import javax.xml.bind.JAXBException;
 import javax.xml.transform.Result;
 import javax.xml.transform.Source;
+import javax.xml.transform.sax.SAXSource;
 import javax.xml.transform.stream.StreamResult;
 
 import com.google.common.base.Preconditions;
@@ -47,6 +48,8 @@ import org.jpmml.model.JAXBUtil;
 import org.jvnet.hk2.annotations.Service;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
+import org.xml.sax.XMLReader;
+import org.xml.sax.helpers.XMLReaderFactory;
 
 @Service
 @Singleton
@@ -132,7 +135,12 @@ public class ModelRegistry {
 
 	static
 	private ModelEvaluator<?> unmarshal(InputStream is) throws SAXException, JAXBException {
-		Source source = ImportFilter.apply(new InputSource(is));
+		XMLReader reader = XMLReaderFactory.createXMLReader();
+		reader.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
+
+		ImportFilter filter = new ImportFilter(reader);
+
+		Source source = new SAXSource(filter, new InputSource(is));
 
 		PMML pmml = JAXBUtil.unmarshalPMML(source);
 
