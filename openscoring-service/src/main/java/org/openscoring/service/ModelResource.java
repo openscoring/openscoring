@@ -624,11 +624,11 @@ public class ModelResource {
 
 			MiningField miningField = evaluator.getMiningField(name);
 			if(miningField != null){
-				opType = miningField.getOptype();
+				opType = miningField.getOpType();
 			} // End if
 
 			if(opType == null){
-				opType = dataField.getOptype();
+				opType = dataField.getOpType();
 			} // End if
 
 			if(name == null){
@@ -661,7 +661,7 @@ public class ModelResource {
 			try {
 				dataType = OutputUtil.getDataType(outputField, evaluator);
 
-				opType = outputField.getOptype();
+				opType = outputField.getOpType();
 				if(opType == null){
 					opType = TypeUtil.getOpType(dataType);
 				}

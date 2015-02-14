@@ -3,6 +3,10 @@ Openscoring [![Build Status](https://travis-ci.org/jpmml/openscoring.png?branch=
 
 REST web service for scoring PMML models.
 
+# IMPORTANT #
+
+![](https://github.com/jpmml/openscoring/blob/master/bulb.png) Are you happy with our solution to your model deployment problem? Please show your support to this exciting technology **by voting** for our Hadoop Summit 2015 talk ["Rapid deployment of predictive models across Big Data platforms"] (https://hadoopsummit.uservoice.com/forums/283261-data-science-and-hadoop/suggestions/7074084). Thank you!
+
 # Features #
 
 * Full support for PMML specification versions 3.0 through 4.2. The evaluation is handled by the [JPMML-Evaluator] (https://github.com/jpmml/jpmml-evaluator) library.
