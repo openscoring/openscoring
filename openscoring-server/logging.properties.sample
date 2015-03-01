@@ -12,3 +12,4 @@ com.sun.xml.bind.level=CONFIG
 javax.xml.bind.level=CONFIG
 org.eclipse.jetty.level=CONFIG
 org.glassfish.jersey.level=CONFIG
+org.jvnet.mimepull.level=CONFIG
