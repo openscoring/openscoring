@@ -98,17 +98,17 @@ Model REST API endpoints:
 | PUT | /model/${id} | admin | Deploy a model |
 | GET | /model/${id} | - | Get the summary of a model |
 | GET | /model/${id}/pmml | admin | Download a model as a PMML document |
-| POST | /model/${id} | - | Evaluate a model in "single prediction" mode |
-| POST | /model/${id}/batch | - | Evaluate a model in "batch prediction" mode |
-| POST | /model/${id}/csv | - | Evaluate a model is CSV prediction mode |
+| POST | /model/${id} | - | Evaluate data in "single prediction" mode |
+| POST | /model/${id}/batch | - | Evaluate data in "batch prediction" mode |
+| POST | /model/${id}/csv | - | Evaluate data in "CSV prediction" mode |
 | DELETE | /model/${id} | admin | Undeploy a model |
 
 Metric REST API endpoints:
 
 | HTTP method | Endpoint | Required role(s) | Description |
 | ----------- | -------- | ---------------- | ----------- |
-| GET | /metric/model | admin | Get the metrics of all models |
-| GET | /metric/model/${id} | admin | Get the metrics of a model |
+| GET | /metric/model | admin | Get the metric sets of all models |
+| GET | /metric/model/${id} | admin | Get the metric set of a model |
 
 By default, the "admin" role is granted to all HTTP requests that originate from the local network address.
 
@@ -278,7 +278,7 @@ curl -X GET http://localhost:8080/openscoring/model/DecisionTreeIris/pmml
 
 ##### POST /model/${id}
 
-Evaluates a model in "single prediction" mode.
+Evaluates data in "single prediction" mode.
 
 The request body is a JSON serialized form of an `org.openscoring.common.EvaluationRequest` [(source)] (https://github.com/jpmml/openscoring/blob/master/openscoring-common/src/main/java/org/openscoring/common/EvaluationRequest.java) object.
 
@@ -325,7 +325,7 @@ Sample response:
 
 ##### POST /model/${id}/batch
 
-Evaluates a model in "batch prediction" mode.
+Evaluates data in "batch prediction" mode.
 
 The request body is a JSON serialized form of an `org.openscoring.common.BatchEvaluationRequest` [(source)] (https://github.com/jpmml/openscoring/blob/master/openscoring-common/src/main/java/org/openscoring/common/BatchEvaluationRequest.java) object.
 
@@ -344,7 +344,7 @@ curl -X POST --data-binary @BatchEvaluationRequest.json -H "Content-type: applic
 
 ##### POST /model/${id}/csv
 
-Evaluates a model in CSV mode.
+Evaluates data in "CSV prediction" mode.
 
 The request body is a CSV document (indicated by content-type header `text/plain`). The data table must contain a data column for every active and group field. The ordering of data columns is not significant, because they are mapped to fields by name.
 
@@ -414,7 +414,7 @@ curl -X POST http://localhost:8080/openscoring/model/DecisionTreeIris?_method=DE
 
 ##### GET /metric/model/${id}
 
-Gets the snapshot of the metrics of a model.
+Gets the snapshot of the metric set of a model.
 
 The response body is a JSON serialized form of a `com.codahale.metrics.MetricRegistry` object.
 
