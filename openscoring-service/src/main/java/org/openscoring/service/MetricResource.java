@@ -58,7 +58,7 @@ public class MetricResource {
 	)
 	@Produces(MediaType.APPLICATION_JSON)
 	public MetricRegistry queryModelBatch(){
-		String prefix = ModelResource.createName() + ".";
+		String prefix = ModelResource.createNamePrefix();
 
 		return doMetrics(prefix);
 	}
@@ -75,7 +75,7 @@ public class MetricResource {
 			throw new NotFoundException("Model \"" + id + "\" not found");
 		}
 
-		String prefix = ModelResource.createName(id) + ".";
+		String prefix = ModelResource.createNamePrefix(id);
 
 		return doMetrics(prefix);
 	}

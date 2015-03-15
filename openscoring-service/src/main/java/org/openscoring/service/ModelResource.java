@@ -280,7 +280,7 @@ public class ModelResource {
 
 		List<EvaluationRequest> requests = request.getRequests();
 
-		List<EvaluationResponse> responses = doEvaluate(id, requests, "evaluateBatch");
+		List<EvaluationResponse> responses = doEvaluate(id, requests, "evaluate.batch");
 
 		response.setResponses(responses);
 
@@ -345,7 +345,7 @@ public class ModelResource {
 
 		List<EvaluationRequest> requests = requestTable.getRows();
 
-		List<EvaluationResponse> responses = doEvaluate(id, requests, "evaluateCsv");
+		List<EvaluationResponse> responses = doEvaluate(id, requests, "evaluate.csv");
 
 		CsvUtil.Table<EvaluationResponse> responseTable = new CsvUtil.Table<EvaluationResponse>();
 		responseTable.setId(requestTable.getId());
@@ -419,7 +419,7 @@ public class ModelResource {
 
 		context.stop();
 
-		Counter counter = this.metricRegistry.counter(createName(id, "records"));
+		Counter counter = this.metricRegistry.counter(createName(id, "evaluate"));
 
 		counter.inc(responses.size());
 
@@ -444,7 +444,7 @@ public class ModelResource {
 		}
 
 		final
-		String prefix = createName(id) + ".";
+		String prefix = createNamePrefix(id);
 
 		MetricFilter filter = new MetricFilter(){
 
@@ -468,8 +468,13 @@ public class ModelResource {
 	}
 
 	static
-	String createName(String... names){
-		return MetricRegistry.name(ModelResource.class, names);
+	String createName(String... strings){
+		return MetricRegistry.name(ModelResource.class, strings);
+	}
+
+	static
+	String createNamePrefix(String... strings){
+		return createName(strings) + ".";
 	}
 
 	static

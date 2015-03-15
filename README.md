@@ -432,12 +432,12 @@ Sample response:
 ```json
 {
 	"version" : "3.0.0",
-	"gauges" : { },
 	"counters" : {
-		"records" : {
+		"evaluate" : {
 			"count" : 1
 		}
 	},
+	"gauges" : { },
 	"histograms" : { },
 	"meters" : { },
 	"timers" : {
