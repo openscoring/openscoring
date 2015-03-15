@@ -416,7 +416,7 @@ curl -X POST http://localhost:8080/openscoring/model/DecisionTreeIris?_method=DE
 
 Gets the snapshot of the metric set of a model.
 
-The response body is a JSON serialized form of a `com.codahale.metrics.MetricRegistry` object.
+The response body is a JSON serialized form of an `org.openscoring.common.MetricSetResponse` [(source)] (https://github.com/jpmml/openscoring/blob/master/openscoring-common/src/main/java/org/openscoring/common/MetricSetResponse.java) object.
 
 Response status codes:
 * 200 OK. The evaluation was successful.
