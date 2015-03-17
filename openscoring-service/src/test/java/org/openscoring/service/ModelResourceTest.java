@@ -176,23 +176,25 @@ public class ModelResourceTest {
 
 		ModelRegistry modelRegistry = new ModelRegistry(config);
 
-		MetricRegistry metricRegistry = new MetricRegistry();
-
-		ModelEvaluator<?> evaluator;
+		Model model;
 
 		InputStream is = ModelResourceTest.class.getResourceAsStream("/pmml/" + id + ".pmml");
 
 		try {
-			evaluator = modelRegistry.load(is);
+			model = modelRegistry.load(is);
 		} finally {
 			is.close();
 		}
+
+		ModelEvaluator<?> evaluator = model.getEvaluator();
 
 		PMML pmml = evaluator.getPMML();
 
 		assertNull(pmml.getLocator());
 
-		modelRegistry.put(id, evaluator);
+		modelRegistry.put(id, model);
+
+		MetricRegistry metricRegistry = new MetricRegistry();
 
 		return new ModelResource(modelRegistry, metricRegistry);
 	}

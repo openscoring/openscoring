@@ -57,7 +57,7 @@ public class ModelRegistry {
 
 	private List<Class<? extends Visitor>> visitorClazzes = Lists.newArrayList();
 
-	private ConcurrentMap<String, ModelEvaluator<?>> models = Maps.newConcurrentMap();
+	private ConcurrentMap<String, Model> models = Maps.newConcurrentMap();
 
 
 	@Inject
@@ -86,11 +86,11 @@ public class ModelRegistry {
 		}
 	}
 
-	public Collection<Map.Entry<String, ModelEvaluator<?>>> entries(){
+	public Collection<Map.Entry<String, Model>> entries(){
 		return this.models.entrySet();
 	}
 
-	public ModelEvaluator<?> load(InputStream is) throws Exception {
+	public Model load(InputStream is) throws Exception {
 		ModelEvaluator<?> evaluator = unmarshal(is);
 
 		PMML pmml = evaluator.getPMML();
@@ -103,29 +103,33 @@ public class ModelRegistry {
 
 		evaluator.verify();
 
-		return evaluator;
+		Model model = new Model(evaluator);
+
+		return model;
 	}
 
-	public void store(ModelEvaluator<?> evaluator, OutputStream os) throws Exception {
+	public void store(Model model, OutputStream os) throws Exception {
+		ModelEvaluator<?> evaluator = model.getEvaluator();
+
 		marshal(evaluator, os);
 	}
 
-	public ModelEvaluator<?> get(String id){
+	public Model get(String id){
 		return this.models.get(id);
 	}
 
-	public boolean put(String id, ModelEvaluator<?> evaluator){
-		ModelEvaluator<?> oldEvaluator = this.models.putIfAbsent(id, Preconditions.checkNotNull(evaluator));
+	public boolean put(String id, Model model){
+		Model oldModel = this.models.putIfAbsent(id, Preconditions.checkNotNull(model));
 
-		return (oldEvaluator == null);
+		return (oldModel == null);
 	}
 
-	public boolean replace(String id, ModelEvaluator<?> oldEvaluator, ModelEvaluator<?> evaluator){
-		return this.models.replace(id, oldEvaluator, Preconditions.checkNotNull(evaluator));
+	public boolean replace(String id, Model oldModel, Model model){
+		return this.models.replace(id, oldModel, Preconditions.checkNotNull(model));
 	}
 
-	public boolean remove(String id, ModelEvaluator<?> evaluator){
-		return this.models.remove(id, evaluator);
+	public boolean remove(String id, Model model){
+		return this.models.remove(id, model);
 	}
 
 	static

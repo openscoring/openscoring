@@ -34,7 +34,6 @@ import javax.ws.rs.core.MediaType;
 import com.codahale.metrics.Metric;
 import com.codahale.metrics.MetricFilter;
 import com.codahale.metrics.MetricRegistry;
-import org.jpmml.evaluator.ModelEvaluator;
 
 @Path("metric")
 @PermitAll
@@ -70,8 +69,8 @@ public class MetricResource {
 	)
 	@Produces(MediaType.APPLICATION_JSON)
 	public MetricRegistry queryModel(@PathParam("id") String id){
-		ModelEvaluator<?> evaluator = this.modelRegistry.get(id);
-		if(evaluator == null){
+		Model model = this.modelRegistry.get(id);
+		if(model == null){
 			throw new NotFoundException("Model \"" + id + "\" not found");
 		}
 

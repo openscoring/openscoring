@@ -63,27 +63,17 @@ import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.ListMultimap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import org.dmg.pmml.DataField;
-import org.dmg.pmml.DataType;
 import org.dmg.pmml.FieldName;
-import org.dmg.pmml.Interval;
-import org.dmg.pmml.MiningField;
-import org.dmg.pmml.OpType;
-import org.dmg.pmml.OutputField;
-import org.dmg.pmml.Value;
 import org.glassfish.jersey.media.multipart.FormDataParam;
 import org.jpmml.evaluator.EvaluationException;
 import org.jpmml.evaluator.Evaluator;
 import org.jpmml.evaluator.EvaluatorUtil;
 import org.jpmml.evaluator.ModelEvaluator;
-import org.jpmml.evaluator.OutputUtil;
-import org.jpmml.evaluator.TypeUtil;
 import org.openscoring.common.BatchEvaluationRequest;
 import org.openscoring.common.BatchEvaluationResponse;
 import org.openscoring.common.BatchModelResponse;
 import org.openscoring.common.EvaluationRequest;
 import org.openscoring.common.EvaluationResponse;
-import org.openscoring.common.Field;
 import org.openscoring.common.ModelResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -114,9 +104,9 @@ public class ModelResource {
 
 		List<ModelResponse> responses = Lists.newArrayList();
 
-		Collection<Map.Entry<String, ModelEvaluator<?>>> entries = this.modelRegistry.entries();
-		for(Map.Entry<String, ModelEvaluator<?>> entry : entries){
-			responses.add(createModelResponse(entry.getKey(), false, entry.getValue()));
+		Collection<Map.Entry<String, Model>> entries = this.modelRegistry.entries();
+		for(Map.Entry<String, Model> entry : entries){
+			responses.add(createModelResponse(entry.getKey(), entry.getValue(), false));
 		}
 
 		Comparator<ModelResponse> comparator = new Comparator<ModelResponse>(){
@@ -137,12 +127,12 @@ public class ModelResource {
 	@Path("{id:" + ModelRegistry.ID_REGEX + "}")
 	@Produces(MediaType.APPLICATION_JSON)
 	public ModelResponse query(@PathParam("id") String id){
-		ModelEvaluator<?> evaluator = this.modelRegistry.get(id);
-		if(evaluator == null){
+		Model model = this.modelRegistry.get(id);
+		if(model == null){
 			throw new NotFoundException("Model \"" + id + "\" not found");
 		}
 
-		return createModelResponse(id, true, evaluator);
+		return createModelResponse(id, model, true);
 	}
 
 	@POST
@@ -185,10 +175,10 @@ public class ModelResource {
 	}
 
 	private Response doDeploy(String id, InputStream is){
-		ModelEvaluator<?> evaluator;
+		Model model;
 
 		try {
-			evaluator = this.modelRegistry.load(is);
+			model = this.modelRegistry.load(is);
 		} catch(Exception e){
 			logger.error("Failed to load PMML document", e);
 
@@ -197,22 +187,22 @@ public class ModelResource {
 
 		boolean success;
 
-		ModelEvaluator<?> oldEvaluator = this.modelRegistry.get(id);
-		if(oldEvaluator != null){
-			success = this.modelRegistry.replace(id, oldEvaluator, evaluator);
+		Model oldModel = this.modelRegistry.get(id);
+		if(oldModel != null){
+			success = this.modelRegistry.replace(id, oldModel, model);
 		} else
 
 		{
-			success = this.modelRegistry.put(id, evaluator);
+			success = this.modelRegistry.put(id, model);
 		} // End if
 
 		if(!success){
 			throw new InternalServerErrorException("Concurrent modification");
 		}
 
-		ModelResponse entity = createModelResponse(id, true, evaluator);
+		ModelResponse entity = createModelResponse(id, model, true);
 
-		if(oldEvaluator != null){
+		if(oldModel != null){
 			return (Response.ok().entity(entity)).build();
 		} else
 
@@ -232,8 +222,8 @@ public class ModelResource {
 	)
 	@Produces({MediaType.APPLICATION_JSON, MediaType.TEXT_XML})
 	public Response download(@PathParam("id") String id, @Context HttpServletResponse response){
-		ModelEvaluator<?> evaluator = this.modelRegistry.get(id);
-		if(evaluator == null){
+		Model model = this.modelRegistry.get(id);
+		if(model == null){
 			throw new NotFoundException("Model \"" + id + "\" not found");
 		}
 
@@ -244,7 +234,7 @@ public class ModelResource {
 			OutputStream os = response.getOutputStream();
 
 			try {
-				this.modelRegistry.store(evaluator, os);
+				this.modelRegistry.store(model, os);
 			} catch(Exception e){
 				logger.error("Failed to store PMML document", e);
 
@@ -383,8 +373,8 @@ public class ModelResource {
 		value = "resource"
 	)
 	private List<EvaluationResponse> doEvaluate(String id, List<EvaluationRequest> requests, String method){
-		ModelEvaluator<?> evaluator = this.modelRegistry.get(id);
-		if(evaluator == null){
+		Model model = this.modelRegistry.get(id);
+		if(model == null){
 			throw new NotFoundException("Model \"" + id + "\" not found");
 		}
 
@@ -395,6 +385,8 @@ public class ModelResource {
 		Timer.Context context = timer.time();
 
 		try {
+			ModelEvaluator<?> evaluator = model.getEvaluator();
+
 			List<FieldName> groupFields = evaluator.getGroupFields();
 			if(groupFields.size() == 1){
 				FieldName groupField = groupFields.get(0);
@@ -433,12 +425,12 @@ public class ModelResource {
 	)
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response undeploy(@PathParam("id") String id){
-		ModelEvaluator<?> evaluator = this.modelRegistry.get(id);
-		if(evaluator == null){
+		Model model = this.modelRegistry.get(id);
+		if(model == null){
 			throw new NotFoundException("Model \"" + id + "\" not found");
 		}
 
-		boolean success = this.modelRegistry.remove(id, evaluator);
+		boolean success = this.modelRegistry.remove(id, model);
 		if(!success){
 			throw new InternalServerErrorException("Concurrent modification");
 		}
@@ -478,7 +470,7 @@ public class ModelResource {
 	}
 
 	static
-	protected List<EvaluationRequest> aggregateRequests(FieldName groupField, List<EvaluationRequest> requests){
+	List<EvaluationRequest> aggregateRequests(FieldName groupField, List<EvaluationRequest> requests){
 		Map<Object, ListMultimap<String, Object>> groupedArguments = Maps.newLinkedHashMap();
 
 		String key = groupField.getValue();
@@ -529,7 +521,7 @@ public class ModelResource {
 	}
 
 	static
-	protected EvaluationResponse evaluate(Evaluator evaluator, EvaluationRequest request){
+	EvaluationResponse evaluate(Evaluator evaluator, EvaluationRequest request){
 		logger.info("Received {}", request);
 
 		Map<String, ?> requestArguments = request.getArguments();
@@ -577,168 +569,18 @@ public class ModelResource {
 	}
 
 	static
-	private ModelResponse createModelResponse(String id, boolean expand, ModelEvaluator<?> evaluator){
+	private ModelResponse createModelResponse(String id, Model model, boolean expand){
 		ModelResponse response = new ModelResponse(id);
-		response.setSummary(evaluator.getSummary());
+		response.setSummary(model.getSummary());
 
 		if(expand){
-			response.setSchema(encodeSchema(evaluator));
+			response.setSchema(model.getSchema());
 		}
 
 		return response;
 	}
 
-	static
-	private Map<String, List<Field>> encodeSchema(ModelEvaluator<?> evaluator){
-		Map<String, List<Field>> result = Maps.newLinkedHashMap();
-
-		List<FieldName> activeFields = evaluator.getActiveFields();
-		List<FieldName> groupFields = evaluator.getGroupFields();
-		List<FieldName> targetFields = evaluator.getTargetFields();
-
-		if(targetFields.isEmpty()){
-			targetFields = Collections.singletonList(evaluator.getTargetField());
-		}
-
-		result.put("activeFields", encodeMiningFields(activeFields, evaluator));
-		result.put("groupFields", encodeMiningFields(groupFields, evaluator));
-		result.put("targetFields", encodeMiningFields(targetFields, evaluator));
-
-		List<FieldName> outputFields = evaluator.getOutputFields();
-
-		result.put("outputFields", encodeOutputFields(outputFields, evaluator));
-
-		return result;
-	}
-
-	static
-	private List<Field> encodeMiningFields(List<FieldName> names, ModelEvaluator<?> evaluator){
-		List<Field> fields = Lists.newArrayList();
-
-		for(FieldName name : names){
-			DataField dataField = evaluator.getDataField(name);
-
-			// A "phantom" default target field
-			if(dataField == null){
-				continue;
-			}
-
-			DataType dataType = dataField.getDataType();
-
-			OpType opType = null;
-
-			MiningField miningField = evaluator.getMiningField(name);
-			if(miningField != null){
-				opType = miningField.getOpType();
-			} // End if
-
-			if(opType == null){
-				opType = dataField.getOpType();
-			} // End if
-
-			if(name == null){
-				name = ModelResource.DEFAULT_NAME;
-			}
-
-			Field field = new Field(name.getValue());
-			field.setName(dataField.getDisplayName());
-			field.setDataType(dataType);
-			field.setOpType(opType);
-			field.setValues(encodeValues(dataField));
-
-			fields.add(field);
-		}
-
-		return fields;
-	}
-
-	static
-	private List<Field> encodeOutputFields(List<FieldName> names, ModelEvaluator<?> evaluator){
-		List<Field> fields = Lists.newArrayList();
-
-		for(FieldName name : names){
-			OutputField outputField = evaluator.getOutputField(name);
-
-			DataType dataType = null;
-
-			OpType opType = null;
-
-			try {
-				dataType = OutputUtil.getDataType(outputField, evaluator);
-
-				opType = outputField.getOpType();
-				if(opType == null){
-					opType = TypeUtil.getOpType(dataType);
-				}
-			} catch(Exception e){
-				// Ignored
-			}
-
-			Field field = new Field(name.getValue());
-			field.setName(outputField.getDisplayName());
-			field.setDataType(dataType);
-			field.setOpType(opType);
-
-			fields.add(field);
-		}
-
-		return fields;
-	}
-
-	static
-	private List<String> encodeValues(DataField dataField){
-		List<String> result = Lists.newArrayList();
-
-		List<Interval> intervals = dataField.getIntervals();
-		for(Interval interval : intervals){
-			StringBuffer sb = new StringBuffer();
-
-			Double leftMargin = interval.getLeftMargin();
-			sb.append(leftMargin != null ? leftMargin : "-\u221e");
-
-			sb.append(", ");
-
-			Double rightMargin = interval.getRightMargin();
-			sb.append(rightMargin != null ? rightMargin : "\u221e");
-
-			String value = sb.toString();
-
-			Interval.Closure closure = interval.getClosure();
-			switch(closure){
-				case OPEN_OPEN:
-					result.add("(" + value + ")");
-					break;
-				case OPEN_CLOSED:
-					result.add("(" + value + "]");
-					break;
-				case CLOSED_OPEN:
-					result.add("[" + value + ")");
-					break;
-				case CLOSED_CLOSED:
-					result.add("[" + value + "]");
-					break;
-				default:
-					break;
-			}
-		}
-
-		List<Value> values = dataField.getValues();
-		for(Value value : values){
-			Value.Property property = value.getProperty();
-
-			switch(property){
-				case VALID:
-					result.add(value.getValue());
-					break;
-				default:
-					break;
-			}
-		}
-
-		return result;
-	}
-
-	private static final FieldName DEFAULT_NAME = FieldName.create("_default");
+	public static final FieldName DEFAULT_NAME = FieldName.create("_default");
 
 	private static final Logger logger = LoggerFactory.getLogger(ModelResource.class);
 }
