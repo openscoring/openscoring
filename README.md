@@ -185,6 +185,9 @@ Sample response:
 {
 	"id" : "DecisionTreeIris",
 	"summary" : "Tree model",
+	"properties" : {
+		"created" : "2015-03-17T12:41:35.933+0000"
+	},
 	"schema" : {
 		"activeFields" : [
 			{

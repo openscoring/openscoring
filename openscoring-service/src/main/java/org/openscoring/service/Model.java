@@ -18,9 +18,11 @@
  */
 package org.openscoring.service;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
+import com.google.common.collect.Maps;
 import org.jpmml.evaluator.ModelEvaluator;
 import org.openscoring.common.Field;
 
@@ -28,11 +30,19 @@ public class Model {
 
 	private ModelEvaluator<?> evaluator = null;
 
+	private Map<String, Object> properties = null;
+
 	private Map<String, List<Field>> schema = null;
 
 
 	public Model(ModelEvaluator<?> evaluator){
 		setEvaluator(evaluator);
+
+		Map<String, Object> properties = Maps.newLinkedHashMap();
+		properties.put(PROPERTY_CREATED, new Date());
+
+		setProperties(properties);
+
 		setSchema(ModelUtil.encodeSchema(evaluator));
 	}
 
@@ -50,6 +60,14 @@ public class Model {
 		return evaluator.getSummary();
 	}
 
+	public Map<String, Object> getProperties(){
+		return this.properties;
+	}
+
+	private void setProperties(Map<String, Object> properties){
+		this.properties = properties;
+	}
+
 	public Map<String, List<Field>> getSchema(){
 		return this.schema;
 	}
@@ -57,4 +75,6 @@ public class Model {
 	private void setSchema(Map<String, List<Field>> schema){
 		this.schema = schema;
 	}
+
+	public static final String PROPERTY_CREATED = "created";
 }

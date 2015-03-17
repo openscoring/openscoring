@@ -572,6 +572,7 @@ public class ModelResource {
 	private ModelResponse createModelResponse(String id, Model model, boolean expand){
 		ModelResponse response = new ModelResponse(id);
 		response.setSummary(model.getSummary());
+		response.setProperties(model.getProperties());
 
 		if(expand){
 			response.setSchema(model.getSchema());

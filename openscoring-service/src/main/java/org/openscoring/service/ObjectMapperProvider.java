@@ -39,6 +39,7 @@ public class ObjectMapperProvider implements ContextResolver<ObjectMapper> {
 		mapper.registerModule(new OpenscoringModule());
 		mapper.registerModule(new MetricsModule(TimeUnit.SECONDS, TimeUnit.SECONDS, false));
 		mapper.enable(SerializationFeature.INDENT_OUTPUT);
+		mapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
 
 		setMapper(mapper);
 	}

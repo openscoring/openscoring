@@ -34,6 +34,8 @@ public class ModelResponse extends SimpleResponse {
 
 	private String summary = null;
 
+	private Map<String, Object> properties = null;
+
 	private Map<String, List<Field>> schema = null;
 
 
@@ -54,6 +56,7 @@ public class ModelResponse extends SimpleResponse {
 		ToStringHelper stringHelper = MoreObjects.toStringHelper(getClass())
 			.add("id", getId())
 			.add("summary", getSummary())
+			.add("properties", getProperties())
 			.add("schema", getSchema());
 
 		return stringHelper.toString();
@@ -73,6 +76,14 @@ public class ModelResponse extends SimpleResponse {
 
 	public void setSummary(String summary){
 		this.summary = summary;
+	}
+
+	public Map<String, Object> getProperties(){
+		return this.properties;
+	}
+
+	public void setProperties(Map<String, Object> properties){
+		this.properties = properties;
 	}
 
 	public Map<String, List<Field>> getSchema(){
