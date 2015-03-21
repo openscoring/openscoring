@@ -11,10 +11,18 @@
    <Value value="versicolor"/>
    <Value value="virginica"/>
   </DataField>
-  <DataField name="Sepal_Length" optype="continuous" dataType="double"/>
-  <DataField name="Sepal_Width" optype="continuous" dataType="double"/>
-  <DataField name="Petal_Length" optype="continuous" dataType="double"/>
-  <DataField name="Petal_Width" optype="continuous" dataType="double"/>
+  <DataField name="Sepal_Length" displayName="Sepal length in cm" optype="continuous" dataType="double">
+   <Interval closure="closedClosed" leftMargin="4.3" rightMargin="7.9"/>
+  </DataField>
+  <DataField name="Sepal_Width" displayName="Sepal width in cm" optype="continuous" dataType="double">
+   <Interval closure="closedClosed" leftMargin="2" rightMargin="4.4"/>
+  </DataField>
+  <DataField name="Petal_Length" displayName="Petal length in cm" optype="continuous" dataType="double">
+   <Interval closure="closedClosed" leftMargin="1" rightMargin="6.9"/>
+  </DataField>
+  <DataField name="Petal_Width" displayName="Petal width in cm" optype="continuous" dataType="double">
+   <Interval closure="closedClosed" leftMargin="0.1" rightMargin="2.5"/>
+  </DataField>
  </DataDictionary>
  <TreeModel modelName="RPart_Model" functionName="classification" algorithmName="rpart" splitCharacteristic="binarySplit" missingValueStrategy="defaultChild">
   <MiningSchema>
