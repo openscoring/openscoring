@@ -222,7 +222,7 @@ public class ModelResource {
 	)
 	@Produces({MediaType.APPLICATION_JSON, MediaType.TEXT_XML})
 	public Response download(@PathParam("id") String id, @Context HttpServletResponse response){
-		Model model = this.modelRegistry.get(id);
+		Model model = this.modelRegistry.get(id, true);
 		if(model == null){
 			throw new NotFoundException("Model \"" + id + "\" not found");
 		}
@@ -373,7 +373,7 @@ public class ModelResource {
 		value = "resource"
 	)
 	private List<EvaluationResponse> doEvaluate(String id, List<EvaluationRequest> requests, String method){
-		Model model = this.modelRegistry.get(id);
+		Model model = this.modelRegistry.get(id, true);
 		if(model == null){
 			throw new NotFoundException("Model \"" + id + "\" not found");
 		}

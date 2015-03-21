@@ -39,7 +39,8 @@ public class Model {
 		setEvaluator(evaluator);
 
 		Map<String, Object> properties = Maps.newLinkedHashMap();
-		properties.put(PROPERTY_CREATED, new Date());
+		properties.put(Model.PROPERTY_CREATED, new Date());
+		properties.put(Model.PROPERTY_ACCESSED, null);
 
 		setProperties(properties);
 
@@ -77,4 +78,5 @@ public class Model {
 	}
 
 	public static final String PROPERTY_CREATED = "created";
+	public static final String PROPERTY_ACCESSED = "accessed";
 }

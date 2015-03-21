@@ -21,6 +21,7 @@ package org.openscoring.service;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Collection;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentMap;
@@ -115,7 +116,19 @@ public class ModelRegistry {
 	}
 
 	public Model get(String id){
-		return this.models.get(id);
+		return get(id, false);
+	}
+
+	public Model get(String id, boolean touch){
+		Model model = this.models.get(id);
+
+		if(model != null && touch){
+			Map<String, Object> properties = model.getProperties();
+
+			properties.put(Model.PROPERTY_ACCESSED, new Date());
+		}
+
+		return model;
 	}
 
 	public boolean put(String id, Model model){
