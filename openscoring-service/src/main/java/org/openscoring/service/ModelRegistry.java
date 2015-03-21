@@ -37,6 +37,9 @@ import javax.xml.transform.stream.StreamResult;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Maps;
+import com.google.common.hash.Hashing;
+import com.google.common.hash.HashingInputStream;
+import com.google.common.io.CountingInputStream;
 import com.typesafe.config.Config;
 import jersey.repackaged.com.google.common.collect.Lists;
 import org.dmg.pmml.PMML;
@@ -91,8 +94,15 @@ public class ModelRegistry {
 		return this.models.entrySet();
 	}
 
+	@SuppressWarnings (
+		value = {"resource"}
+	)
 	public Model load(InputStream is) throws Exception {
-		ModelEvaluator<?> evaluator = unmarshal(is);
+		CountingInputStream countingIs = new CountingInputStream(is);
+
+		HashingInputStream hashingIs = new HashingInputStream(Hashing.md5(), countingIs);
+
+		ModelEvaluator<?> evaluator = unmarshal(hashingIs);
 
 		PMML pmml = evaluator.getPMML();
 
@@ -105,6 +115,8 @@ public class ModelRegistry {
 		evaluator.verify();
 
 		Model model = new Model(evaluator);
+		model.putProperty(Model.PROPERTY_FILE_SIZE, countingIs.getCount());
+		model.putProperty(Model.PROPERTY_FILE_MD5SUM, (hashingIs.hash()).toString());
 
 		return model;
 	}
@@ -123,9 +135,7 @@ public class ModelRegistry {
 		Model model = this.models.get(id);
 
 		if(model != null && touch){
-			Map<String, Object> properties = model.getProperties();
-
-			properties.put(Model.PROPERTY_ACCESSED_TIMESTAMP, new Date());
+			model.putProperty(Model.PROPERTY_ACCESSED_TIMESTAMP, new Date());
 		}
 
 		return model;

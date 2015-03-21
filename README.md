@@ -187,7 +187,9 @@ Sample response:
 	"summary" : "Tree model",
 	"properties" : {
 		"created.timestamp" : "2015-03-17T12:41:35.933+0000",
-		"accessed.timestamp" : "2015-03-21T09:35:58.582+0000"
+		"accessed.timestamp" : "2015-03-21T09:35:58.582+0000",
+		"file.size" : 5749,
+		"file.md5sum" : "c0dcb90bc7b42e7bddf1bc7d922635a3"
 	},
 	"schema" : {
 		"activeFields" : [

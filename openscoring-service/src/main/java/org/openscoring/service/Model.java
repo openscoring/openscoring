@@ -61,6 +61,12 @@ public class Model {
 		return evaluator.getSummary();
 	}
 
+	public Object putProperty(String key, Object value){
+		Map<String, Object> properties = getProperties();
+
+		return properties.put(key, value);
+	}
+
 	public Map<String, Object> getProperties(){
 		return this.properties;
 	}
@@ -79,4 +85,6 @@ public class Model {
 
 	public static final String PROPERTY_CREATED_TIMESTAMP = "created.timestamp";
 	public static final String PROPERTY_ACCESSED_TIMESTAMP = "accessed.timestamp";
+	public static final String PROPERTY_FILE_SIZE = "file.size";
+	public static final String PROPERTY_FILE_MD5SUM = "file.md5sum";
 }
