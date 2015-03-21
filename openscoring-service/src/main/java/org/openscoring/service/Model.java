@@ -39,8 +39,8 @@ public class Model {
 		setEvaluator(evaluator);
 
 		Map<String, Object> properties = Maps.newLinkedHashMap();
-		properties.put(Model.PROPERTY_CREATED, new Date());
-		properties.put(Model.PROPERTY_ACCESSED, null);
+		properties.put(Model.PROPERTY_CREATED_TIMESTAMP, new Date());
+		properties.put(Model.PROPERTY_ACCESSED_TIMESTAMP, null);
 
 		setProperties(properties);
 
@@ -77,6 +77,6 @@ public class Model {
 		this.schema = schema;
 	}
 
-	public static final String PROPERTY_CREATED = "created";
-	public static final String PROPERTY_ACCESSED = "accessed";
+	public static final String PROPERTY_CREATED_TIMESTAMP = "created.timestamp";
+	public static final String PROPERTY_ACCESSED_TIMESTAMP = "accessed.timestamp";
 }

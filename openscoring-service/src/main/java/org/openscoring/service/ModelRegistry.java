@@ -125,7 +125,7 @@ public class ModelRegistry {
 		if(model != null && touch){
 			Map<String, Object> properties = model.getProperties();
 
-			properties.put(Model.PROPERTY_ACCESSED, new Date());
+			properties.put(Model.PROPERTY_ACCESSED_TIMESTAMP, new Date());
 		}
 
 		return model;
