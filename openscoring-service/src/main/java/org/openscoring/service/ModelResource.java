@@ -398,7 +398,7 @@ public class ModelResource {
 
 		context.stop();
 
-		Counter counter = this.metricRegistry.counter(createName(id, "evaluate"));
+		Counter counter = this.metricRegistry.counter(createName(id, "records"));
 
 		counter.inc(responses.size());
 

@@ -450,7 +450,7 @@ Sample response:
 {
 	"version" : "3.0.0",
 	"counters" : {
-		"evaluate" : {
+		"records" : {
 			"count" : 1
 		}
 	},
