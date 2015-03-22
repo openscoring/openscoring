@@ -121,7 +121,7 @@ public class ModelRegistry {
 		return model;
 	}
 
-	public void store(Model model, OutputStream os) throws Exception {
+	public void store(Model model, OutputStream os) throws JAXBException {
 		ModelEvaluator<?> evaluator = model.getEvaluator();
 
 		marshal(evaluator, os);

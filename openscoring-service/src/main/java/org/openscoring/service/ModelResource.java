@@ -18,8 +18,10 @@
  */
 package org.openscoring.service;
 
+import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
@@ -35,7 +37,6 @@ import javax.annotation.security.PermitAll;
 import javax.annotation.security.RolesAllowed;
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.BadRequestException;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
@@ -49,10 +50,13 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Context;
+import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.StreamingOutput;
 import javax.ws.rs.core.UriBuilder;
 import javax.ws.rs.core.UriInfo;
+import javax.xml.bind.JAXBException;
 
 import com.codahale.metrics.Counter;
 import com.codahale.metrics.Metric;
@@ -221,32 +225,41 @@ public class ModelResource {
 		value = {"admin"}
 	)
 	@Produces({MediaType.APPLICATION_JSON, MediaType.TEXT_XML})
-	public Response download(@PathParam("id") String id, @Context HttpServletResponse response){
+	public Response download(@PathParam("id") String id){
+		final
 		Model model = this.modelRegistry.get(id, true);
 		if(model == null){
 			throw new NotFoundException("Model \"" + id + "\" not found");
 		}
 
-		try {
-			response.setContentType(MediaType.TEXT_XML);
-			response.setHeader("Content-Disposition", "attachment; filename=" + id + ".pmml.xml"); // XXX
+		StreamingOutput entity = new StreamingOutput(){
 
-			OutputStream os = response.getOutputStream();
+			@Override
+			public void write(OutputStream os) throws IOException {
+				BufferedOutputStream bufferedOs = new BufferedOutputStream(os, 2048){
 
-			try {
-				this.modelRegistry.store(model, os);
-			} catch(Exception e){
-				logger.error("Failed to store PMML document", e);
+					@Override
+					public void close() throws IOException {
+						flush();
 
-				throw e;
-			} finally {
-				os.close();
+						// The closing of the underlying java.io.OutputStream is handled elsewhere
+					}
+				};
+
+				try {
+					ModelResource.this.modelRegistry.store(model, bufferedOs);
+				} catch(JAXBException je){
+					throw new InternalServerErrorException(je);
+				} finally {
+					bufferedOs.close();
+				}
 			}
-		} catch(Exception e){
-			throw new InternalServerErrorException(e);
-		}
+		};
 
-		return (Response.ok()).build();
+		return (Response.ok().entity(entity))
+			.type(MediaType.APPLICATION_XML_TYPE)
+			.header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + id + ".pmml.xml") // XXX
+			.build();
 	}
 
 	@POST
@@ -281,21 +294,21 @@ public class ModelResource {
 	@Path("{id:" + ModelRegistry.ID_REGEX + "}/csv")
 	@Consumes(MediaType.MULTIPART_FORM_DATA)
 	@Produces({MediaType.APPLICATION_JSON, MediaType.TEXT_PLAIN})
-	public Response evaluateCsv(@PathParam("id") String id, @FormDataParam("csv") InputStream is, @Context HttpServletResponse response){
-		return doEvaluateCsv(id, is, response);
+	public Response evaluateCsv(@PathParam("id") String id, @FormDataParam("csv") InputStream is){
+		return doEvaluateCsv(id, is);
 	}
 
 	@POST
 	@Path("{id:" + ModelRegistry.ID_REGEX + "}/csv")
 	@Consumes(MediaType.TEXT_PLAIN)
 	@Produces({MediaType.APPLICATION_JSON, MediaType.TEXT_PLAIN})
-	public Response evaluateCsv(@PathParam("id") String id, @Context HttpServletRequest request, @Context HttpServletResponse response){
+	public Response evaluateCsv(@PathParam("id") String id, @Context HttpServletRequest request){
 
 		try {
 			InputStream is = request.getInputStream();
 
 			try {
-				return doEvaluateCsv(id, is, response);
+				return doEvaluateCsv(id, is);
 			} finally {
 				is.close();
 			}
@@ -306,7 +319,8 @@ public class ModelResource {
 		}
 	}
 
-	private Response doEvaluateCsv(String id, InputStream is, HttpServletResponse response){
+	private Response doEvaluateCsv(String id, InputStream is){
+		final
 		CsvPreference format;
 
 		CsvUtil.Table<EvaluationRequest> requestTable;
@@ -337,36 +351,37 @@ public class ModelResource {
 
 		List<EvaluationResponse> responses = doEvaluate(id, requests, "evaluate.csv");
 
+		final
 		CsvUtil.Table<EvaluationResponse> responseTable = new CsvUtil.Table<EvaluationResponse>();
 		responseTable.setId(requestTable.getId());
 		responseTable.setRows(responses);
 
-		try {
-			response.setContentType(MediaType.TEXT_PLAIN);
-			response.setHeader("Content-Disposition", "attachment; filename=" + id + ".csv"); // XXX
+		StreamingOutput entity = new StreamingOutput(){
 
-			OutputStream os = response.getOutputStream();
+			@Override
+			public void write(OutputStream os) throws IOException {
+				BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(os, "UTF-8")){ // XXX
 
-			try {
-				BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(os, "UTF-8")); // XXX
+					@Override
+					public void close() throws IOException {
+						flush();
+
+						// The closing of the underlying java.io.OutputStream is handled elsewhere
+					}
+				};
 
 				try {
 					CsvUtil.writeTable(writer, format, responseTable);
-				} catch(Exception e){
-					logger.error("Failed to store CSV document", e);
-
-					throw e;
 				} finally {
 					writer.close();
 				}
-			} finally {
-				os.close();
 			}
-		} catch(Exception e){
-			throw new InternalServerErrorException(e);
-		}
+		};
 
-		return (Response.ok()).build();
+		return (Response.ok().entity(entity))
+			.type(MediaType.TEXT_PLAIN_TYPE)
+			.header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + id + ".csv") // XXX
+			.build();
 	}
 
 	@SuppressWarnings (
