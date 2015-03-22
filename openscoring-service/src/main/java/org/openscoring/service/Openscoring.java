@@ -29,7 +29,10 @@ import com.typesafe.config.ConfigFactory;
 import org.glassfish.hk2.utilities.Binder;
 import org.glassfish.hk2.utilities.binding.AbstractBinder;
 import org.glassfish.jersey.media.multipart.MultiPartFeature;
+import org.glassfish.jersey.message.DeflateEncoder;
+import org.glassfish.jersey.message.GZipEncoder;
 import org.glassfish.jersey.server.ResourceConfig;
+import org.glassfish.jersey.server.filter.EncodingFilter;
 import org.glassfish.jersey.server.filter.HttpMethodOverrideFilter;
 import org.glassfish.jersey.server.filter.RolesAllowedDynamicFeature;
 
@@ -68,6 +71,11 @@ public class Openscoring extends ResourceConfig {
 
 		// Security support
 		register(RolesAllowedDynamicFeature.class);
+
+		// GZip and Deflate encoding support
+		register(EncodingFilter.class);
+		register(GZipEncoder.class);
+		register(DeflateEncoder.class);
 
 		Config applicationConfig = config.getConfig("application");
 

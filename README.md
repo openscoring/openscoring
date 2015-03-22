@@ -12,6 +12,7 @@ REST web service for scoring PMML models.
   * Model metrics.
 * High performance and high throughput:
   * Sub-millisecond response times.
+  * Request and response compression using `gzip` and `deflate` encodings.
   * Thread safe.
 * Open, extensible architecture for easy integration with proprietary systems and services:
   * User authentication and authorization.
@@ -147,6 +148,11 @@ Response status codes:
 Sample cURL invocation:
 ```
 curl -X PUT --data-binary @DecisionTreeIris.pmml -H "Content-type: text/xml" http://localhost:8080/openscoring/model/DecisionTreeIris
+```
+
+The same, using the `gzip` encoding:
+```
+curl -X PUT --data-binary @DecisionTreeIris.pmml.gz -H "Content-encoding: gzip" -H "Content-type: text/xml" http://localhost:8080/openscoring/model/DecisionTreeIris
 ```
 
 ### Model querying
@@ -368,7 +374,12 @@ Response status codes:
 
 Sample cURL invocation:
 ```
-curl -X POST --data-binary @input.csv -H "Content-type: text/plain" http://localhost:8080/openscoring/model/DecisionTreeIris/csv
+curl -X POST --data-binary @input.csv -H "Content-type: text/plain" http://localhost:8080/openscoring/model/DecisionTreeIris/csv > output.csv
+```
+
+The same, using the `gzip` encoding:
+```
+curl -X POST --data-binary @input.csv.gz -H "Content-encoding: gzip" -H "Content-type: text/plain" -H "Accept-encoding: gzip" http://localhost:8080/openscoring/model/DecisionTreeIris/csv > output.csv.gz
 ```
 
 Sample request:
