@@ -36,7 +36,6 @@ import java.util.Map;
 import javax.annotation.security.PermitAll;
 import javax.annotation.security.RolesAllowed;
 import javax.inject.Inject;
-import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.BadRequestException;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
@@ -48,7 +47,6 @@ import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
-import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
@@ -145,7 +143,7 @@ public class ModelResource {
 	)
 	@Consumes(MediaType.MULTIPART_FORM_DATA)
 	@Produces(MediaType.APPLICATION_JSON)
-	public Response deploy(@FormDataParam("id") String id, @FormDataParam("pmml") InputStream is){
+	public Response deployForm(@FormDataParam("id") String id, @FormDataParam("pmml") InputStream is){
 
 		if(!ModelRegistry.validateId(id)){
 			throw new BadRequestException("Invalid identifier");
@@ -161,21 +159,8 @@ public class ModelResource {
 	)
 	@Consumes({MediaType.APPLICATION_XML, MediaType.TEXT_XML})
 	@Produces(MediaType.APPLICATION_JSON)
-	public Response deploy(@PathParam("id") String id, @Context HttpServletRequest request){
-
-		try {
-			InputStream is = request.getInputStream();
-
-			try {
-				return doDeploy(id, is);
-			} finally {
-				is.close();
-			}
-		} catch(WebApplicationException wae){
-			throw wae;
-		} catch(Exception e){
-			throw new InternalServerErrorException(e);
-		}
+	public Response deploy(@PathParam("id") String id, InputStream is){
+		return doDeploy(id, is);
 	}
 
 	private Response doDeploy(String id, InputStream is){
@@ -294,7 +279,7 @@ public class ModelResource {
 	@Path("{id:" + ModelRegistry.ID_REGEX + "}/csv")
 	@Consumes(MediaType.MULTIPART_FORM_DATA)
 	@Produces({MediaType.APPLICATION_JSON, MediaType.TEXT_PLAIN})
-	public Response evaluateCsv(@PathParam("id") String id, @FormDataParam("csv") InputStream is){
+	public Response evaluateCsvForm(@PathParam("id") String id, @FormDataParam("csv") InputStream is){
 		return doEvaluateCsv(id, is);
 	}
 
@@ -302,21 +287,8 @@ public class ModelResource {
 	@Path("{id:" + ModelRegistry.ID_REGEX + "}/csv")
 	@Consumes(MediaType.TEXT_PLAIN)
 	@Produces({MediaType.APPLICATION_JSON, MediaType.TEXT_PLAIN})
-	public Response evaluateCsv(@PathParam("id") String id, @Context HttpServletRequest request){
-
-		try {
-			InputStream is = request.getInputStream();
-
-			try {
-				return doEvaluateCsv(id, is);
-			} finally {
-				is.close();
-			}
-		} catch(WebApplicationException wae){
-			throw wae;
-		} catch(Exception e){
-			throw new InternalServerErrorException(e);
-		}
+	public Response evaluateCsv(@PathParam("id") String id, InputStream is){
+		return doEvaluateCsv(id, is);
 	}
 
 	private Response doEvaluateCsv(String id, InputStream is){
