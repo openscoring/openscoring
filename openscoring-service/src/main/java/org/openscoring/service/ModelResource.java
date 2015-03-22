@@ -137,6 +137,17 @@ public class ModelResource {
 		return createModelResponse(id, model, true);
 	}
 
+	@PUT
+	@Path("{id:" + ModelRegistry.ID_REGEX + "}")
+	@RolesAllowed (
+		value = {"admin"}
+	)
+	@Consumes({MediaType.APPLICATION_XML, MediaType.TEXT_XML})
+	@Produces(MediaType.APPLICATION_JSON)
+	public Response deploy(@PathParam("id") String id, InputStream is){
+		return doDeploy(id, is);
+	}
+
 	@POST
 	@RolesAllowed (
 		value = {"admin"}
@@ -149,17 +160,6 @@ public class ModelResource {
 			throw new BadRequestException("Invalid identifier");
 		}
 
-		return doDeploy(id, is);
-	}
-
-	@PUT
-	@Path("{id:" + ModelRegistry.ID_REGEX + "}")
-	@RolesAllowed (
-		value = {"admin"}
-	)
-	@Consumes({MediaType.APPLICATION_XML, MediaType.TEXT_XML})
-	@Produces(MediaType.APPLICATION_JSON)
-	public Response deploy(@PathParam("id") String id, InputStream is){
 		return doDeploy(id, is);
 	}
 
@@ -277,17 +277,17 @@ public class ModelResource {
 
 	@POST
 	@Path("{id:" + ModelRegistry.ID_REGEX + "}/csv")
-	@Consumes(MediaType.MULTIPART_FORM_DATA)
+	@Consumes(MediaType.TEXT_PLAIN)
 	@Produces({MediaType.APPLICATION_JSON, MediaType.TEXT_PLAIN})
-	public Response evaluateCsvForm(@PathParam("id") String id, @FormDataParam("csv") InputStream is){
+	public Response evaluateCsv(@PathParam("id") String id, InputStream is){
 		return doEvaluateCsv(id, is);
 	}
 
 	@POST
 	@Path("{id:" + ModelRegistry.ID_REGEX + "}/csv")
-	@Consumes(MediaType.TEXT_PLAIN)
+	@Consumes(MediaType.MULTIPART_FORM_DATA)
 	@Produces({MediaType.APPLICATION_JSON, MediaType.TEXT_PLAIN})
-	public Response evaluateCsv(@PathParam("id") String id, InputStream is){
+	public Response evaluateCsvForm(@PathParam("id") String id, @FormDataParam("csv") InputStream is){
 		return doEvaluateCsv(id, is);
 	}
 
