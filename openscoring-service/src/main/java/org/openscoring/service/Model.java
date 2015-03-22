@@ -35,6 +35,9 @@ public class Model {
 	private Map<String, List<Field>> schema = null;
 
 
+	protected Model(){
+	}
+
 	public Model(ModelEvaluator<?> evaluator){
 		setEvaluator(evaluator);
 

@@ -19,6 +19,7 @@
 package org.openscoring.service;
 
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.Arrays;
@@ -28,6 +29,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import com.codahale.metrics.Metric;
 import com.codahale.metrics.MetricRegistry;
 import com.google.common.collect.Lists;
 import com.typesafe.config.Config;
@@ -47,6 +49,7 @@ import org.supercsv.prefs.CsvPreference;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
@@ -55,53 +58,174 @@ public class ModelResourceTest {
 
 	@Test
 	public void decisionTreeIris() throws Exception {
-		ModelResource service = createService("DecisionTreeIris");
+		ModelResource service = createService();
 
-		MetricRegistry metricRegistry = service.getMetricRegistry();
-
-		assertTrue((metricRegistry.getMetrics()).isEmpty());
+		deploy(service, "DecisionTreeIris");
 
 		List<EvaluationRequest> requests = loadRequest("Iris");
-		List<EvaluationResponse> result = doBatch(service, "DecisionTreeIris", requests);
+		List<EvaluationResponse> responses = evaluateBatch(service, "DecisionTreeIris", requests);
 
-		assertFalse((metricRegistry.getMetrics()).isEmpty());
+		assertEquals(150, requests.size());
+		assertEquals(150, responses.size());
 
-		List<EvaluationResponse> responses = loadResponse("DecisionTreeIris");
+		List<EvaluationResponse> expectedResponses = loadResponse("DecisionTreeIris");
 
-		compare(responses, result);
+		compare(expectedResponses, responses);
 
-		service.undeploy("DecisionTreeIris");
-
-		assertTrue((metricRegistry.getMetrics()).isEmpty());
+		undeploy(service, "DecisionTreeIris");
 	}
 
 	@Test
 	public void associationRulesShopping() throws Exception {
-		ModelResource service = createService("AssociationRulesShopping");
+		ModelResource service = createService();
+
+		deploy(service, "AssociationRulesShopping");
 
 		List<EvaluationRequest> requests = loadRequest("Shopping");
-		List<EvaluationResponse> result = doBatch(service, "AssociationRulesShopping", requests);
+		List<EvaluationResponse> responses = evaluateBatch(service, "AssociationRulesShopping", requests);
 
-		List<EvaluationResponse> responses = loadResponse("AssociationRulesShopping");
+		assertEquals(13, requests.size());
+		assertEquals(5, responses.size());
 
-		compare(responses, result);
+		List<EvaluationResponse> expectedResponses = loadResponse("AssociationRulesShopping");
 
-		List<EvaluationRequest> aggregatedRequests = ModelResource.aggregateRequests(new FieldName("transaction"), requests);
-		List<EvaluationResponse> aggregatedResult = doBatch(service, "AssociationRulesShopping", aggregatedRequests);
+		compare(expectedResponses, responses);
 
-		assertTrue(aggregatedRequests.size() < requests.size());
+		List<EvaluationRequest> aggregatedRequests = ModelResource.aggregateRequests(FieldName.create("transaction"), requests);
+		List<EvaluationResponse> aggregatedResponses = evaluateBatch(service, "AssociationRulesShopping", aggregatedRequests);
 
-		compare(responses, aggregatedResult);
+		assertEquals(5, aggregatedRequests.size());
+		assertEquals(5, aggregatedResponses.size());
+
+		compare(expectedResponses, aggregatedResponses);
+
+		undeploy(service, "AssociationRulesShopping");
 	}
 
 	static
-	private List<EvaluationResponse> doBatch(ModelResource service, String id, List<EvaluationRequest> requests){
+	private ModelResource createService(){
+		Config config = ConfigFactory.parseMap(Collections.singletonMap("modelRegistry.visitorClasses", Collections.singletonList(LocatorNullifier.class.getName())));
+
+		ModelRegistry modelRegistry = new ModelRegistry(config);
+
+		MetricRegistry metricRegistry = new MetricRegistry();
+
+		ModelResource service = new ModelResource(modelRegistry, metricRegistry);
+
+		return service;
+	}
+
+	static
+	private void deploy(ModelResource service, String id) throws IOException {
+		ModelRegistry modelRegistry = service.getModelRegistry();
+		MetricRegistry metricRegistry = service.getMetricRegistry();
+
+		// XXX
+		modelRegistry.put(id, new Model());
+
+		InputStream is = openPMML(id);
+
+		try {
+			service.deploy(id, is);
+		} finally {
+			is.close();
+		}
+
+		Model model = modelRegistry.get(id);
+
+		assertNotNull(model);
+
+		ModelEvaluator<?> evaluator = model.getEvaluator();
+
+		PMML pmml = evaluator.getPMML();
+
+		assertNull(pmml.getLocator());
+
+		Map<String, Metric> metrics = metricRegistry.getMetrics();
+
+		assertTrue(metrics.isEmpty());
+	}
+
+	static
+	private List<EvaluationResponse> evaluateBatch(ModelResource service, String id, List<EvaluationRequest> requests){
+		MetricRegistry metricRegistry = service.getMetricRegistry();
+
 		BatchEvaluationRequest request = new BatchEvaluationRequest();
 		request.setRequests(requests);
 
 		BatchEvaluationResponse response = service.evaluateBatch(id, request);
 
+		Map<String, Metric> metrics = metricRegistry.getMetrics();
+
+		assertFalse(metrics.isEmpty());
+
 		return response.getResponses();
+	}
+
+	static
+	private void undeploy(ModelResource service, String id){
+		ModelRegistry modelRegistry = service.getModelRegistry();
+		MetricRegistry metricRegistry = service.getMetricRegistry();
+
+		service.undeploy(id);
+
+		Model model = modelRegistry.get(id);
+
+		assertNull(model);
+
+		Map<String, Metric> metrics = metricRegistry.getMetrics();
+
+		assertTrue(metrics.isEmpty());
+	}
+
+	static
+	private InputStream openPMML(String id){
+		return ModelResourceTest.class.getResourceAsStream("/pmml/" + id + ".pmml");
+	}
+
+	static
+	private InputStream openCSV(String id){
+		return ModelResourceTest.class.getResourceAsStream("/csv/" + id + ".csv");
+	}
+
+	static
+	private List<EvaluationRequest> loadRequest(String id) throws Exception {
+		InputStream is = openCSV(id);
+
+		try {
+			CsvUtil.Table<EvaluationRequest> table;
+
+			BufferedReader reader = new BufferedReader(new InputStreamReader(is, "UTF-8"));
+
+			try {
+				table = CsvUtil.readTable(reader, CsvPreference.TAB_PREFERENCE);
+			} finally {
+				reader.close();
+			}
+
+			return table.getRows();
+		} finally {
+			is.close();
+		}
+	}
+
+	static
+	private List<EvaluationResponse> loadResponse(String id) throws Exception {
+		return convert(loadRequest(id));
+	}
+
+	static
+	private List<EvaluationResponse> convert(List<EvaluationRequest> requests){
+		List<EvaluationResponse> responses = Lists.newArrayList();
+
+		for(EvaluationRequest request : requests){
+			EvaluationResponse response = new EvaluationResponse(request.getId());
+			response.setResult(request.getArguments());
+
+			responses.add(response);
+		}
+
+		return responses;
 	}
 
 	static
@@ -168,75 +292,6 @@ public class ModelResourceTest {
 	static
 	private boolean acceptable(String expectedValue, Object actualValue){
 		return VerificationUtil.acceptable(TypeUtil.parse(TypeUtil.getDataType(actualValue), expectedValue), actualValue, ModelResourceTest.precision, ModelResourceTest.zeroThreshold);
-	}
-
-	static
-	private ModelResource createService(String id) throws Exception {
-		Config config = ConfigFactory.parseMap(Collections.singletonMap("modelRegistry.visitorClasses", Collections.singletonList(LocatorNullifier.class.getName())));
-
-		ModelRegistry modelRegistry = new ModelRegistry(config);
-
-		Model model;
-
-		InputStream is = ModelResourceTest.class.getResourceAsStream("/pmml/" + id + ".pmml");
-
-		try {
-			model = modelRegistry.load(is);
-		} finally {
-			is.close();
-		}
-
-		ModelEvaluator<?> evaluator = model.getEvaluator();
-
-		PMML pmml = evaluator.getPMML();
-
-		assertNull(pmml.getLocator());
-
-		modelRegistry.put(id, model);
-
-		MetricRegistry metricRegistry = new MetricRegistry();
-
-		return new ModelResource(modelRegistry, metricRegistry);
-	}
-
-	static
-	private List<EvaluationRequest> loadRequest(String id) throws Exception {
-		InputStream is = ModelResourceTest.class.getResourceAsStream("/csv/" + id + ".csv");
-
-		try {
-			CsvUtil.Table<EvaluationRequest> table;
-
-			BufferedReader reader = new BufferedReader(new InputStreamReader(is, "UTF-8"));
-
-			try {
-				table = CsvUtil.readTable(reader, CsvPreference.TAB_PREFERENCE);
-			} finally {
-				reader.close();
-			}
-
-			return table.getRows();
-		} finally {
-			is.close();
-		}
-	}
-
-	static
-	private List<EvaluationResponse> loadResponse(String id) throws Exception {
-		return convert(loadRequest(id));
-	}
-
-	static
-	private List<EvaluationResponse> convert(List<EvaluationRequest> requests){
-		List<EvaluationResponse> responses = Lists.newArrayList();
-
-		for(EvaluationRequest request : requests){
-			EvaluationResponse response = new EvaluationResponse(request.getId());
-			response.setResult(request.getArguments());
-
-			responses.add(response);
-		}
-
-		return responses;
 	}
 
 	private static final double precision = 1d / (1000 * 1000);

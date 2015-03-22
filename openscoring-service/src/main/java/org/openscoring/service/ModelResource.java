@@ -438,26 +438,26 @@ public class ModelResource {
 		return (Response.noContent()).build();
 	}
 
-	ModelRegistry getModelRegistry(){
+	protected ModelRegistry getModelRegistry(){
 		return this.modelRegistry;
 	}
 
-	MetricRegistry getMetricRegistry(){
+	protected MetricRegistry getMetricRegistry(){
 		return this.metricRegistry;
 	}
 
 	static
-	String createName(String... strings){
+	protected String createName(String... strings){
 		return MetricRegistry.name(ModelResource.class, strings);
 	}
 
 	static
-	String createNamePrefix(String... strings){
+	protected String createNamePrefix(String... strings){
 		return createName(strings) + ".";
 	}
 
 	static
-	List<EvaluationRequest> aggregateRequests(FieldName groupField, List<EvaluationRequest> requests){
+	protected List<EvaluationRequest> aggregateRequests(FieldName groupField, List<EvaluationRequest> requests){
 		Map<Object, ListMultimap<String, Object>> groupedArguments = Maps.newLinkedHashMap();
 
 		String key = groupField.getValue();
@@ -508,7 +508,7 @@ public class ModelResource {
 	}
 
 	static
-	EvaluationResponse evaluate(Evaluator evaluator, EvaluationRequest request){
+	protected EvaluationResponse evaluate(Evaluator evaluator, EvaluationRequest request){
 		logger.info("Received {}", request);
 
 		Map<String, ?> requestArguments = request.getArguments();
