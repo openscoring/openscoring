@@ -21,13 +21,17 @@ package org.openscoring.client;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStream;
+import java.io.PushbackInputStream;
+import java.util.Arrays;
+import java.util.Locale;
+import java.util.zip.GZIPInputStream;
 
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.Invocation;
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Variant;
 
 import com.beust.jcommander.Parameter;
 import org.openscoring.common.ModelResponse;
@@ -68,10 +72,14 @@ public class Deployer extends ModelApplication {
 
 			@Override
 			public ModelResponse perform(WebTarget target) throws IOException {
-				InputStream is = new FileInputStream(getFile());
+				PushbackInputStream is = new PushbackInputStream(new FileInputStream(getFile()), 16);
 
 				try {
-					Invocation invocation = target.request(MediaType.APPLICATION_JSON).buildPut(Entity.xml(is));
+					String encoding = getContentEncoding(is);
+
+					Variant variant = new Variant(MediaType.APPLICATION_XML_TYPE, (Locale)null, encoding);
+
+					Invocation invocation = target.request(MediaType.APPLICATION_JSON).buildPut(Entity.entity(is, variant));
 
 					Response response = invocation.invoke();
 
@@ -92,6 +100,28 @@ public class Deployer extends ModelApplication {
 	public void setFile(File file){
 		this.file = file;
 	}
+
+	static
+	private String getContentEncoding(PushbackInputStream is) throws IOException {
+		byte[] signature = new byte[2];
+
+		int count = is.read(signature);
+
+		try {
+			if(Arrays.equals(Deployer.GZIP_SIGNATURE, signature)){
+				return "gzip";
+			}
+
+			return null;
+		} finally {
+			is.unread(signature, 0, count);
+		}
+	}
+
+	private static final byte[] GZIP_SIGNATURE = {
+		(byte)(GZIPInputStream.GZIP_MAGIC),
+		(byte)(GZIPInputStream.GZIP_MAGIC >> 8),
+	};
 
 	private static final Logger logger = LoggerFactory.getLogger(Deployer.class);
 }
