@@ -27,7 +27,9 @@ import java.nio.file.StandardWatchEventKinds;
 import java.nio.file.WatchEvent;
 import java.nio.file.WatchKey;
 import java.nio.file.WatchService;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 
 import com.beust.jcommander.Parameter;
 import org.slf4j.Logger;
@@ -49,6 +51,11 @@ public class DirectoryDeployer extends Application {
 	)
 	private File dir = null;
 
+	/**
+	 * A set of "managed" model identifiers.
+	 */
+	private Set<String> identifiers = new LinkedHashSet<String>();
+
 
 	static
 	public void main(String... args) throws Exception {
@@ -57,7 +64,7 @@ public class DirectoryDeployer extends Application {
 
 	@Override
 	public void run() throws Exception {
-		Path root = getRoot();
+		Path root = (getDir()).toPath();
 
 		DirectoryStream<Path> children = Files.newDirectoryStream(root);
 
@@ -113,35 +120,44 @@ public class DirectoryDeployer extends Application {
 	private void process(WatchEvent.Kind<Path> kind, Path path) throws Exception {
 		String id = (path.getFileName()).toString();
 
-		// Remove file name extension
-		// Start the search from the beginning of the file name, in case there are multiple extensions (eg. ".pmml.xml")
+		// Use the name part of the file name (ie. everything to the left of the first dot character) as the model identifier
 		int dot = id.indexOf('.');
 		if(dot > -1){
 			id = id.substring(0, dot);
 		} // End if
 
+		if(("").equals(id)){
+			return;
+		} // End if
+
 		if((StandardWatchEventKinds.ENTRY_CREATE).equals(kind)){
+
+			if(!Files.isRegularFile(path)){
+				return;
+			}
+
 			logger.info("Deploying model {}", id);
 
 			Deployer deployer = new Deployer();
 			deployer.setModel(getModelCollection() + "/" + id);
 			deployer.setFile(path.toFile());
 			deployer.run();
+
+			this.identifiers.add(id);
 		} else
 
 		if((StandardWatchEventKinds.ENTRY_DELETE).equals(kind)){
+			boolean status = this.identifiers.remove(id);
+			if(!status){
+				return;
+			}
+
 			logger.info("Undeploying model {}", id);
 
 			Undeployer undeployer = new Undeployer();
 			undeployer.setModel(getModelCollection() + "/" + id);
 			undeployer.run();
 		}
-	}
-
-	private Path getRoot(){
-		File dir = getDir();
-
-		return dir.toPath();
 	}
 
 	public String getModelCollection(){
