@@ -33,6 +33,8 @@ import javax.ws.rs.core.Response;
 
 import com.beust.jcommander.Parameter;
 import org.openscoring.common.SimpleResponse;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class CsvEvaluator extends ModelApplication {
 
@@ -58,7 +60,16 @@ public class CsvEvaluator extends ModelApplication {
 
 	@Override
 	public void run() throws Exception {
-		System.out.println(evaluate());
+		SimpleResponse response = evaluate();
+
+		String message = (response != null ? response.getMessage() : null);
+		if(message != null){
+			logger.warn("CSV evaluation failed: {}", message);
+
+			return;
+		}
+
+		logger.info("CSV evaluation succeeded");
 	}
 
 	/**
@@ -155,4 +166,6 @@ public class CsvEvaluator extends ModelApplication {
 
 		os.flush();
 	}
+
+	private static final Logger logger = LoggerFactory.getLogger(CsvEvaluator.class);
 }

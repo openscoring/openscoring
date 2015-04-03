@@ -30,6 +30,8 @@ import com.beust.jcommander.DynamicParameter;
 import com.google.common.collect.Maps;
 import org.openscoring.common.EvaluationRequest;
 import org.openscoring.common.EvaluationResponse;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class Evaluator extends ModelApplication {
 
@@ -47,7 +49,16 @@ public class Evaluator extends ModelApplication {
 
 	@Override
 	public void run() throws Exception {
-		System.out.println(evaluate());
+		EvaluationResponse response = evaluate();
+
+		String message = response.getMessage();
+		if(message != null){
+			logger.warn("Evaluation failed: {}", message);
+
+			return;
+		}
+
+		logger.info("Evaluation succeeded: {}", response);
 	}
 
 	public EvaluationResponse evaluate() throws Exception {
@@ -76,4 +87,6 @@ public class Evaluator extends ModelApplication {
 	public void setArguments(Map<String, String> arguments){
 		this.arguments = arguments;
 	}
+
+	private static final Logger logger = LoggerFactory.getLogger(Evaluator.class);
 }

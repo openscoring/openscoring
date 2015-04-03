@@ -31,6 +31,8 @@ import javax.ws.rs.core.Response;
 
 import com.beust.jcommander.Parameter;
 import org.openscoring.common.ModelResponse;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class Deployer extends ModelApplication {
 
@@ -49,7 +51,16 @@ public class Deployer extends ModelApplication {
 
 	@Override
 	public void run() throws Exception {
-		System.out.println(deploy());
+		ModelResponse response = deploy();
+
+		String message = response.getMessage();
+		if(message != null){
+			logger.warn("Deployment failed: {}", message);
+
+			return;
+		}
+
+		logger.info("Deployment succeeded: {}", response);
 	}
 
 	public ModelResponse deploy() throws Exception {
@@ -81,4 +92,6 @@ public class Deployer extends ModelApplication {
 	public void setFile(File file){
 		this.file = file;
 	}
+
+	private static final Logger logger = LoggerFactory.getLogger(Deployer.class);
 }

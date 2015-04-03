@@ -24,6 +24,8 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import org.openscoring.common.SimpleResponse;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class Undeployer extends ModelApplication {
 
@@ -34,7 +36,16 @@ public class Undeployer extends ModelApplication {
 
 	@Override
 	public void run() throws Exception {
-		System.out.println(undeploy());
+		SimpleResponse response = undeploy();
+
+		String message = (response != null ? response.getMessage() : null);
+		if(message != null){
+			logger.warn("Undeployment failed: {}", message);
+
+			return;
+		}
+
+		logger.info("Undeployment succeeded");
 	}
 
 	/**
@@ -55,4 +66,6 @@ public class Undeployer extends ModelApplication {
 
 		return execute(operation);
 	}
+
+	private static final Logger logger = LoggerFactory.getLogger(Undeployer.class);
 }

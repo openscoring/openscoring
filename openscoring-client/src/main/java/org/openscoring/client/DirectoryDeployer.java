@@ -30,6 +30,8 @@ import java.nio.file.WatchService;
 import java.util.List;
 
 import com.beust.jcommander.Parameter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class DirectoryDeployer extends Application {
 
@@ -119,6 +121,8 @@ public class DirectoryDeployer extends Application {
 		} // End if
 
 		if((StandardWatchEventKinds.ENTRY_CREATE).equals(kind)){
+			logger.info("Deploying model {}", id);
+
 			Deployer deployer = new Deployer();
 			deployer.setModel(getModelCollection() + "/" + id);
 			deployer.setFile(path.toFile());
@@ -126,6 +130,8 @@ public class DirectoryDeployer extends Application {
 		} else
 
 		if((StandardWatchEventKinds.ENTRY_DELETE).equals(kind)){
+			logger.info("Undeploying model {}", id);
+
 			Undeployer undeployer = new Undeployer();
 			undeployer.setModel(getModelCollection() + "/" + id);
 			undeployer.run();
@@ -153,4 +159,6 @@ public class DirectoryDeployer extends Application {
 	public void setDir(File dir){
 		this.dir = dir;
 	}
+
+	private static final Logger logger = LoggerFactory.getLogger(DirectoryDeployer.class);
 }
