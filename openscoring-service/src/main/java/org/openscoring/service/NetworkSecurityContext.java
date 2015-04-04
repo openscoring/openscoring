@@ -18,17 +18,15 @@
  */
 package org.openscoring.service;
 
-import java.io.IOException;
-import java.net.InetAddress;
 import java.security.Principal;
-import java.util.Set;
 
 import javax.servlet.ServletRequest;
 import javax.ws.rs.core.SecurityContext;
 
-import com.google.common.collect.ImmutableSet;
-import com.google.common.collect.Sets;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+abstract
 public class NetworkSecurityContext implements SecurityContext {
 
 	private ServletRequest request = null;
@@ -37,6 +35,9 @@ public class NetworkSecurityContext implements SecurityContext {
 	public NetworkSecurityContext(ServletRequest request){
 		setRequest(request);
 	}
+
+	abstract
+	public boolean isTrusted(String address);
 
 	@Override
 	public String getAuthenticationScheme(){
@@ -62,7 +63,11 @@ public class NetworkSecurityContext implements SecurityContext {
 		if(("admin").equals(role)){
 			String address = request.getRemoteAddr();
 
-			return (NetworkSecurityContext.addresses).contains(address);
+			boolean trusted = isTrusted(address);
+
+			logger.info("Admin role {} to network address {}", (trusted ? "granted" : "denied"), address);
+
+			return trusted;
 		}
 
 		return false;
@@ -74,32 +79,6 @@ public class NetworkSecurityContext implements SecurityContext {
 
 	private void setRequest(ServletRequest request){
 		this.request = request;
-	}
-
-	static
-	private Set<String> discoverLocalAddresses() throws IOException {
-		Set<String> result = Sets.newLinkedHashSet();
-
-		InetAddress address = InetAddress.getLocalHost();
-		result.add(address.getHostAddress());
-
-		InetAddress[] resolvedAddresses = InetAddress.getAllByName("localhost");
-		for(InetAddress resolvedAddress : resolvedAddresses){
-			result.add(resolvedAddress.getHostAddress());
-		}
-
-		return result;
-	}
-
-	private static final Set<String> addresses;
-
-	static {
-
-		try {
-			addresses = ImmutableSet.copyOf(discoverLocalAddresses());
-		} catch(IOException ioe){
-			throw new ExceptionInInitializerError(ioe);
-		}
 	}
 
 	static
@@ -115,4 +94,6 @@ public class NetworkSecurityContext implements SecurityContext {
 
 		private static final Anonymous INSTANCE = new Anonymous();
 	}
+
+	private static final Logger logger = LoggerFactory.getLogger(NetworkSecurityContext.class);
 }

@@ -18,14 +18,28 @@
  */
 package org.openscoring.service;
 
+import java.io.IOException;
+import java.net.InetAddress;
+import java.util.List;
+import java.util.Set;
+
 import javax.annotation.Priority;
+import javax.inject.Inject;
+import javax.inject.Named;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Priorities;
 import javax.ws.rs.container.ContainerRequestContext;
 import javax.ws.rs.container.ContainerRequestFilter;
 import javax.ws.rs.container.PreMatching;
 import javax.ws.rs.core.Context;
+import javax.ws.rs.core.SecurityContext;
 import javax.ws.rs.ext.Provider;
+
+import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.Sets;
+import com.typesafe.config.Config;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @Provider
 @PreMatching
@@ -37,9 +51,62 @@ public class NetworkSecurityContextFilter implements ContainerRequestFilter {
 	@Context
 	private HttpServletRequest request;
 
+	private Set<String> trustedAddresses = NetworkSecurityContextFilter.localAddresses;
+
+
+	@Inject
+	public NetworkSecurityContextFilter(@Named("openscoring") Config config){
+		Config networkConfig = config.getConfig("networkSecurityContextFilter");
+
+		List<String> trustedAddresses = networkConfig.getStringList("trustedAddresses");
+		if(trustedAddresses.size() > 0){
+			this.trustedAddresses = ImmutableSet.copyOf(trustedAddresses);
+		}
+	}
 
 	@Override
 	public void filter(ContainerRequestContext context){
-		context.setSecurityContext(new NetworkSecurityContext(this.request));
+		SecurityContext securityContext = new NetworkSecurityContext(this.request){
+
+			private Set<String> trustedAddresses = NetworkSecurityContextFilter.this.trustedAddresses;
+
+
+			@Override
+			public boolean isTrusted(String address){
+				return (this.trustedAddresses).contains(address);
+			}
+		};
+
+		context.setSecurityContext(securityContext);
+	}
+
+	static
+	private Set<String> discoverLocalAddresses() throws IOException {
+		Set<String> result = Sets.newLinkedHashSet();
+
+		InetAddress address = InetAddress.getLocalHost();
+		result.add(address.getHostAddress());
+
+		InetAddress[] resolvedAddresses = InetAddress.getAllByName("localhost");
+		for(InetAddress resolvedAddress : resolvedAddresses){
+			result.add(resolvedAddress.getHostAddress());
+		}
+
+		logger.info("Local network addresses: {}", result);
+
+		return result;
+	}
+
+	private static final Logger logger = LoggerFactory.getLogger(NetworkSecurityContextFilter.class);
+
+	private static final Set<String> localAddresses;
+
+	static {
+
+		try {
+			localAddresses = ImmutableSet.copyOf(discoverLocalAddresses());
+		} catch(IOException ioe){
+			throw new ExceptionInInitializerError(ioe);
+		}
 	}
 }
