@@ -54,7 +54,7 @@ public class DirectoryDeployer extends Application {
 	/**
 	 * A set of "managed" model identifiers.
 	 */
-	private Set<String> identifiers = new LinkedHashSet<String>();
+	private Set<String> identifiers = new LinkedHashSet<>();
 
 
 	static

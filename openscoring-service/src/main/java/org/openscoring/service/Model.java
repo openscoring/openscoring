@@ -19,10 +19,10 @@
 package org.openscoring.service;
 
 import java.util.Date;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.google.common.collect.Maps;
 import org.jpmml.evaluator.ModelEvaluator;
 import org.openscoring.common.Field;
 
@@ -41,7 +41,7 @@ public class Model {
 	public Model(ModelEvaluator<?> evaluator){
 		setEvaluator(evaluator);
 
-		Map<String, Object> properties = Maps.newLinkedHashMap();
+		Map<String, Object> properties = new LinkedHashMap<>();
 		properties.put(Model.PROPERTY_CREATED_TIMESTAMP, new Date());
 		properties.put(Model.PROPERTY_ACCESSED_TIMESTAMP, null);
 

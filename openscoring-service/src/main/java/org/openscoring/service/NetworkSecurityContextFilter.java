@@ -20,6 +20,7 @@ package org.openscoring.service;
 
 import java.io.IOException;
 import java.net.InetAddress;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -36,7 +37,6 @@ import javax.ws.rs.core.SecurityContext;
 import javax.ws.rs.ext.Provider;
 
 import com.google.common.collect.ImmutableSet;
-import com.google.common.collect.Sets;
 import com.typesafe.config.Config;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -82,7 +82,7 @@ public class NetworkSecurityContextFilter implements ContainerRequestFilter {
 
 	static
 	private Set<String> discoverLocalAddresses() throws IOException {
-		Set<String> result = Sets.newLinkedHashSet();
+		Set<String> result = new LinkedHashSet<>();
 
 		InetAddress address = InetAddress.getLocalHost();
 		result.add(address.getHostAddress());

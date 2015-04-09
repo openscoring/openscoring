@@ -20,10 +20,12 @@ package org.openscoring.service;
 
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
 import javax.inject.Inject;
@@ -36,12 +38,10 @@ import javax.xml.transform.sax.SAXSource;
 import javax.xml.transform.stream.StreamResult;
 
 import com.google.common.base.Preconditions;
-import com.google.common.collect.Maps;
 import com.google.common.hash.Hashing;
 import com.google.common.hash.HashingInputStream;
 import com.google.common.io.CountingInputStream;
 import com.typesafe.config.Config;
-import jersey.repackaged.com.google.common.collect.Lists;
 import org.dmg.pmml.PMML;
 import org.dmg.pmml.Visitor;
 import org.jpmml.evaluator.ModelEvaluator;
@@ -59,9 +59,9 @@ import org.xml.sax.helpers.XMLReaderFactory;
 @Singleton
 public class ModelRegistry {
 
-	private List<Class<? extends Visitor>> visitorClazzes = Lists.newArrayList();
+	private List<Class<? extends Visitor>> visitorClazzes = new ArrayList<>();
 
-	private ConcurrentMap<String, Model> models = Maps.newConcurrentMap();
+	private ConcurrentMap<String, Model> models = new ConcurrentHashMap<>();
 
 
 	@Inject

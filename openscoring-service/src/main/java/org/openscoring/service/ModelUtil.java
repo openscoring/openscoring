@@ -18,12 +18,12 @@
  */
 package org.openscoring.service;
 
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 import org.dmg.pmml.DataField;
 import org.dmg.pmml.DataType;
 import org.dmg.pmml.FieldName;
@@ -44,7 +44,7 @@ public class ModelUtil {
 
 	static
 	public Map<String, List<Field>> encodeSchema(ModelEvaluator<?> evaluator){
-		Map<String, List<Field>> result = Maps.newLinkedHashMap();
+		Map<String, List<Field>> result = new LinkedHashMap<>();
 
 		List<FieldName> activeFields = evaluator.getActiveFields();
 		List<FieldName> groupFields = evaluator.getGroupFields();
@@ -67,7 +67,7 @@ public class ModelUtil {
 
 	static
 	private List<Field> encodeMiningFields(List<FieldName> names, ModelEvaluator<?> evaluator){
-		List<Field> fields = Lists.newArrayList();
+		List<Field> fields = new ArrayList<>();
 
 		for(FieldName name : names){
 			DataField dataField = evaluator.getDataField(name);
@@ -108,7 +108,7 @@ public class ModelUtil {
 
 	static
 	private List<Field> encodeOutputFields(List<FieldName> names, ModelEvaluator<?> evaluator){
-		List<Field> fields = Lists.newArrayList();
+		List<Field> fields = new ArrayList<>();
 
 		for(FieldName name : names){
 			OutputField outputField = evaluator.getOutputField(name);
@@ -141,7 +141,7 @@ public class ModelUtil {
 
 	static
 	private List<String> encodeValues(DataField dataField){
-		List<String> result = Lists.newArrayList();
+		List<String> result = new ArrayList<>();
 
 		List<Interval> intervals = dataField.getIntervals();
 		for(Interval interval : intervals){

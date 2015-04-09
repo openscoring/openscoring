@@ -22,6 +22,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -31,7 +32,6 @@ import java.util.Set;
 
 import com.codahale.metrics.Metric;
 import com.codahale.metrics.MetricRegistry;
-import com.google.common.collect.Lists;
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
 import org.dmg.pmml.FieldName;
@@ -216,7 +216,7 @@ public class ModelResourceTest {
 
 	static
 	private List<EvaluationResponse> convert(List<EvaluationRequest> requests){
-		List<EvaluationResponse> responses = Lists.newArrayList();
+		List<EvaluationResponse> responses = new ArrayList<>();
 
 		for(EvaluationRequest request : requests){
 			EvaluationResponse response = new EvaluationResponse(request.getId());

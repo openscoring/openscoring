@@ -18,6 +18,7 @@
  */
 package org.openscoring.client;
 
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 import javax.ws.rs.client.Entity;
@@ -27,7 +28,6 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import com.beust.jcommander.DynamicParameter;
-import com.google.common.collect.Maps;
 import org.openscoring.common.EvaluationRequest;
 import org.openscoring.common.EvaluationResponse;
 import org.slf4j.Logger;
@@ -39,7 +39,7 @@ public class Evaluator extends ModelApplication {
 		names = {"-X"},
 		description = "Model arguments. For example, -Xkey=value"
 	)
-	private Map<String, String> arguments = Maps.newLinkedHashMap();
+	private Map<String, String> arguments = new LinkedHashMap<>();
 
 
 	static

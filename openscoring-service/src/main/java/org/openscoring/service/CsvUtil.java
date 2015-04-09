@@ -21,13 +21,13 @@ package org.openscoring.service;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 import org.openscoring.common.EvaluationRequest;
 import org.openscoring.common.EvaluationResponse;
 import org.supercsv.encoder.DefaultCsvEncoder;
@@ -71,7 +71,12 @@ public class CsvUtil {
 
 	static
 	private boolean checkFormat(BufferedReader reader, CsvPreference format) throws IOException {
-		CsvListReader parser = new CsvListReader(reader, format);
+		CsvListReader parser = new CsvListReader(reader, format){
+
+			@Override
+			public void close(){
+			}
+		};
 
 		int columns = 0;
 
@@ -91,12 +96,14 @@ public class CsvUtil {
 			}
 		}
 
+		parser.close();
+
 		return (columns > 1);
 	}
 
 	static
 	public Table<EvaluationRequest> readTable(BufferedReader reader, CsvPreference format) throws IOException {
-		Table<EvaluationRequest> table = new Table<EvaluationRequest>();
+		Table<EvaluationRequest> table = new Table<>();
 
 		CsvMapReader parser = new CsvMapReader(reader, format);
 
@@ -106,7 +113,7 @@ public class CsvUtil {
 			table.setId(header[0]);
 		}
 
-		List<EvaluationRequest> requests = Lists.newArrayList();
+		List<EvaluationRequest> requests = new ArrayList<>();
 
 		while(true){
 			Map<String, String> arguments = parser.read(header);
@@ -162,7 +169,7 @@ public class CsvUtil {
 
 	static
 	private Map<String, ?> join(Map<String, ?> left, Map<String, ?> right){
-		Map<String, Object> result = Maps.newLinkedHashMap(left);
+		Map<String, Object> result = new LinkedHashMap<>(left);
 		result.putAll(right);
 
 		return result;

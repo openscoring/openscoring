@@ -27,9 +27,11 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.net.URI;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -63,8 +65,6 @@ import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.Timer;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.ListMultimap;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 import org.dmg.pmml.FieldName;
 import org.glassfish.jersey.media.multipart.FormDataParam;
 import org.jpmml.evaluator.EvaluationException;
@@ -104,7 +104,7 @@ public class ModelResource {
 	public BatchModelResponse queryBatch(){
 		BatchModelResponse response = new BatchModelResponse();
 
-		List<ModelResponse> responses = Lists.newArrayList();
+		List<ModelResponse> responses = new ArrayList<>();
 
 		Collection<Map.Entry<String, Model>> entries = this.modelRegistry.entries();
 		for(Map.Entry<String, Model> entry : entries){
@@ -324,7 +324,7 @@ public class ModelResource {
 		List<EvaluationResponse> responses = doEvaluate(id, requests, "evaluate.csv");
 
 		final
-		CsvUtil.Table<EvaluationResponse> responseTable = new CsvUtil.Table<EvaluationResponse>();
+		CsvUtil.Table<EvaluationResponse> responseTable = new CsvUtil.Table<>();
 		responseTable.setId(requestTable.getId());
 		responseTable.setRows(responses);
 
@@ -365,7 +365,7 @@ public class ModelResource {
 			throw new NotFoundException("Model \"" + id + "\" not found");
 		}
 
-		List<EvaluationResponse> responses = Lists.newArrayList();
+		List<EvaluationResponse> responses = new ArrayList<>();
 
 		Timer timer = this.metricRegistry.timer(createName(id, method));
 
@@ -458,7 +458,7 @@ public class ModelResource {
 
 	static
 	protected List<EvaluationRequest> aggregateRequests(FieldName groupField, List<EvaluationRequest> requests){
-		Map<Object, ListMultimap<String, Object>> groupedArguments = Maps.newLinkedHashMap();
+		Map<Object, ListMultimap<String, Object>> groupedArguments = new LinkedHashMap<>();
 
 		String key = groupField.getValue();
 
@@ -488,11 +488,11 @@ public class ModelResource {
 			return requests;
 		}
 
-		List<EvaluationRequest> resultRequests = Lists.newArrayList();
+		List<EvaluationRequest> resultRequests = new ArrayList<>();
 
 		Collection<Map.Entry<Object, ListMultimap<String, Object>>> entries = groupedArguments.entrySet();
 		for(Map.Entry<Object, ListMultimap<String, Object>> entry : entries){
-			Map<String, Object> arguments = Maps.newLinkedHashMap();
+			Map<String, Object> arguments = new LinkedHashMap<>();
 			arguments.putAll((entry.getValue()).asMap());
 
 			// The value of the "group by" column is a single Object, not a Collection (ie. java.util.List) of Objects
@@ -515,7 +515,7 @@ public class ModelResource {
 
 		EvaluationResponse response = new EvaluationResponse(request.getId());
 
-		Map<FieldName, Object> arguments = Maps.newLinkedHashMap();
+		Map<FieldName, Object> arguments = new LinkedHashMap<>();
 
 		List<FieldName> activeFields = evaluator.getActiveFields();
 		for(FieldName activeField : activeFields){
