@@ -27,6 +27,7 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.net.URI;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -42,6 +43,7 @@ import javax.ws.rs.BadRequestException;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
+import javax.ws.rs.HeaderParam;
 import javax.ws.rs.InternalServerErrorException;
 import javax.ws.rs.NotFoundException;
 import javax.ws.rs.POST;
@@ -221,7 +223,7 @@ public class ModelResource {
 
 			@Override
 			public void write(OutputStream os) throws IOException {
-				BufferedOutputStream bufferedOs = new BufferedOutputStream(os, 2048){
+				BufferedOutputStream bufferedOs = new BufferedOutputStream(os){
 
 					@Override
 					public void close() throws IOException {
@@ -242,7 +244,7 @@ public class ModelResource {
 		};
 
 		return (Response.ok().entity(entity))
-			.type(MediaType.APPLICATION_XML_TYPE)
+			.type(MediaType.APPLICATION_XML_TYPE.withCharset(ModelResource.CHARSET_UTF8.name()))
 			.header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + id + ".pmml.xml") // XXX
 			.build();
 	}
@@ -279,8 +281,12 @@ public class ModelResource {
 	@Path("{id:" + ModelRegistry.ID_REGEX + "}/csv")
 	@Consumes(MediaType.TEXT_PLAIN)
 	@Produces({MediaType.APPLICATION_JSON, MediaType.TEXT_PLAIN})
-	public Response evaluateCsv(@PathParam("id") String id, InputStream is){
-		return doEvaluateCsv(id, is);
+	public Response evaluateCsv(@PathParam("id") String id, @HeaderParam(HttpHeaders.CONTENT_TYPE) String contentType, InputStream is){
+		com.google.common.net.MediaType mediaType = com.google.common.net.MediaType.parse(contentType);
+
+		Charset charset = (mediaType.charset()).or(ModelResource.CHARSET_UTF8);
+
+		return doEvaluateCsv(id, charset, is);
 	}
 
 	@POST
@@ -288,17 +294,20 @@ public class ModelResource {
 	@Consumes(MediaType.MULTIPART_FORM_DATA)
 	@Produces({MediaType.APPLICATION_JSON, MediaType.TEXT_PLAIN})
 	public Response evaluateCsvForm(@PathParam("id") String id, @FormDataParam("csv") InputStream is){
-		return doEvaluateCsv(id, is);
+		Charset charset = ModelResource.CHARSET_UTF8;
+
+		return doEvaluateCsv(id, charset, is);
 	}
 
-	private Response doEvaluateCsv(String id, InputStream is){
+	private Response doEvaluateCsv(String id, final Charset charset, InputStream is){
 		final
 		CsvPreference format;
 
+		final
 		CsvUtil.Table<EvaluationRequest> requestTable;
 
 		try {
-			BufferedReader reader = new BufferedReader(new InputStreamReader(is, "UTF-8")){ // XXX
+			BufferedReader reader = new BufferedReader(new InputStreamReader(is, charset)){
 
 				@Override
 				public void close(){
@@ -332,7 +341,7 @@ public class ModelResource {
 
 			@Override
 			public void write(OutputStream os) throws IOException {
-				BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(os, "UTF-8")){ // XXX
+				BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(os, charset)){
 
 					@Override
 					public void close() throws IOException {
@@ -351,7 +360,7 @@ public class ModelResource {
 		};
 
 		return (Response.ok().entity(entity))
-			.type(MediaType.TEXT_PLAIN_TYPE)
+			.type(MediaType.TEXT_PLAIN_TYPE.withCharset(charset.name()))
 			.header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + id + ".csv") // XXX
 			.build();
 	}
@@ -569,6 +578,8 @@ public class ModelResource {
 	}
 
 	public static final FieldName DEFAULT_NAME = FieldName.create("_default");
+
+	private static final Charset CHARSET_UTF8 = Charset.forName("UTF-8");
 
 	private static final Logger logger = LoggerFactory.getLogger(ModelResource.class);
 }

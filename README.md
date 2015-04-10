@@ -374,12 +374,12 @@ Response status codes:
 
 Sample cURL invocation:
 ```
-curl -X POST --data-binary @input.csv -H "Content-type: text/plain" http://localhost:8080/openscoring/model/DecisionTreeIris/csv > output.csv
+curl -X POST --data-binary @input.csv -H "Content-type: text/plain; charset=UTF-8" http://localhost:8080/openscoring/model/DecisionTreeIris/csv > output.csv
 ```
 
 The same, using the `gzip` encoding:
 ```
-curl -X POST --data-binary @input.csv.gz -H "Content-encoding: gzip" -H "Content-type: text/plain" -H "Accept-encoding: gzip" http://localhost:8080/openscoring/model/DecisionTreeIris/csv > output.csv.gz
+curl -X POST --data-binary @input.csv.gz -H "Content-encoding: gzip" -H "Content-type: text/plain; charset=UTF-8" -H "Accept-encoding: gzip" http://localhost:8080/openscoring/model/DecisionTreeIris/csv > output.csv.gz
 ```
 
 Sample request:
