@@ -193,17 +193,17 @@
 			<dependency>
 				<groupId>org.jpmml</groupId>
 				<artifactId>pmml-evaluator</artifactId>
-				<version>1.1.17</version>
+				<version>1.1.18</version>
 			</dependency>
 			<dependency>
 				<groupId>org.jpmml</groupId>
 				<artifactId>pmml-model</artifactId>
-				<version>1.1.14</version>
+				<version>1.1.15</version>
 			</dependency>
 			<dependency>
 				<groupId>org.jpmml</groupId>
 				<artifactId>pmml-model-gwt</artifactId>
-				<version>1.1.14</version>
+				<version>1.1.15</version>
 			</dependency>
 
 			<dependency>
