@@ -32,6 +32,10 @@ import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Singleton;
 import javax.xml.bind.JAXBException;
+import javax.xml.bind.Marshaller;
+import javax.xml.bind.Unmarshaller;
+import javax.xml.bind.ValidationEvent;
+import javax.xml.bind.ValidationEventHandler;
 import javax.xml.transform.Result;
 import javax.xml.transform.Source;
 import javax.xml.transform.sax.SAXSource;
@@ -169,7 +173,10 @@ public class ModelRegistry {
 
 		Source source = new SAXSource(filter, new InputSource(is));
 
-		PMML pmml = JAXBUtil.unmarshalPMML(source);
+		Unmarshaller unmarshaller = JAXBUtil.createUnmarshaller();
+		unmarshaller.setEventHandler(new SimpleValidationEventHandler());
+
+		PMML pmml = (PMML)unmarshaller.unmarshal(source);
 
 		PMMLManager pmmlManager = new PMMLManager(pmml);
 
@@ -182,7 +189,26 @@ public class ModelRegistry {
 
 		Result result = new StreamResult(os);
 
-		JAXBUtil.marshalPMML(pmml, result);
+		Marshaller marshaller = JAXBUtil.createMarshaller();
+
+		marshaller.marshal(pmml, result);
+	}
+
+	static
+	private class SimpleValidationEventHandler implements ValidationEventHandler {
+
+		@Override
+		public boolean handleEvent(ValidationEvent event){
+			int severity = event.getSeverity();
+
+			switch(severity){
+				case ValidationEvent.ERROR:
+				case ValidationEvent.FATAL_ERROR:
+					return false;
+				default:
+					return true;
+			}
+		}
 	}
 
 	public static final String ID_REGEX = "[a-zA-Z0-9][a-zA-Z0-9\\_\\-]*";
