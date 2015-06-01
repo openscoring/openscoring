@@ -54,7 +54,7 @@ The local configuration file overrides the default configuration that is defined
 ```
 modelRegistry {
 	visitorClasses = [
-		"org.jpmml.model.visitors.LocatorNullifier" // Erases SAX Locator information from the PMML class model object, which will considerable reduce the memory consumption of deployed models
+		"org.jpmml.model.visitors.LocatorNullifier" // Erases SAX Locator information from the PMML class model object, which will considerably reduce the memory consumption of deployed models
 	]
 }
 ```

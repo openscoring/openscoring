@@ -50,7 +50,6 @@ import org.dmg.pmml.PMML;
 import org.dmg.pmml.Visitor;
 import org.jpmml.evaluator.ModelEvaluator;
 import org.jpmml.evaluator.ModelEvaluatorFactory;
-import org.jpmml.manager.PMMLManager;
 import org.jpmml.model.ImportFilter;
 import org.jpmml.model.JAXBUtil;
 import org.jvnet.hk2.annotations.Service;
@@ -178,9 +177,9 @@ public class ModelRegistry {
 
 		PMML pmml = (PMML)unmarshaller.unmarshal(source);
 
-		PMMLManager pmmlManager = new PMMLManager(pmml);
+		ModelEvaluatorFactory modelEvaluatorFactory = ModelEvaluatorFactory.newInstance();
 
-		return (ModelEvaluator<?>)pmmlManager.getModelManager(ModelEvaluatorFactory.getInstance());
+		return modelEvaluatorFactory.newModelManager(pmml);
 	}
 
 	static
