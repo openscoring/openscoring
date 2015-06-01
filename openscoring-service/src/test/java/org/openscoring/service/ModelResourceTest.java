@@ -26,6 +26,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -104,7 +105,11 @@ public class ModelResourceTest {
 
 	static
 	private ModelResource createService(){
-		Config config = ConfigFactory.parseMap(Collections.singletonMap("modelRegistry.visitorClasses", Collections.singletonList(LocatorNullifier.class.getName())));
+		Map<String, Object> properties = new LinkedHashMap<>();
+		properties.put("modelRegistry.visitorClasses", Collections.singletonList(LocatorNullifier.class.getName()));
+		properties.put("modelRegistry.validate", Boolean.FALSE);
+
+		Config config = ConfigFactory.parseMap(properties);
 
 		ModelRegistry modelRegistry = new ModelRegistry(config);
 

@@ -18,6 +18,7 @@
  */
 package org.openscoring.service;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
@@ -40,6 +41,7 @@ import javax.xml.transform.Result;
 import javax.xml.transform.Source;
 import javax.xml.transform.sax.SAXSource;
 import javax.xml.transform.stream.StreamResult;
+import javax.xml.validation.Schema;
 
 import com.google.common.base.Preconditions;
 import com.google.common.hash.Hashing;
@@ -63,6 +65,8 @@ import org.xml.sax.helpers.XMLReaderFactory;
 public class ModelRegistry {
 
 	private List<Class<? extends Visitor>> visitorClazzes = new ArrayList<>();
+
+	private boolean validate = false;
 
 	private ConcurrentMap<String, Model> models = new ConcurrentHashMap<>();
 
@@ -91,6 +95,8 @@ public class ModelRegistry {
 
 			this.visitorClazzes.add(visitorClazz);
 		}
+
+		this.validate = modelRegistryConfig.getBoolean("validate");
 	}
 
 	public Collection<Map.Entry<String, Model>> entries(){
@@ -105,7 +111,7 @@ public class ModelRegistry {
 
 		HashingInputStream hashingIs = new HashingInputStream(Hashing.md5(), countingIs);
 
-		ModelEvaluator<?> evaluator = unmarshal(hashingIs);
+		ModelEvaluator<?> evaluator = unmarshal(hashingIs, this.validate);
 
 		PMML pmml = evaluator.getPMML();
 
@@ -164,7 +170,7 @@ public class ModelRegistry {
 	}
 
 	static
-	private ModelEvaluator<?> unmarshal(InputStream is) throws SAXException, JAXBException {
+	private ModelEvaluator<?> unmarshal(InputStream is, boolean validate) throws IOException, SAXException, JAXBException {
 		XMLReader reader = XMLReaderFactory.createXMLReader();
 		reader.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
 
@@ -174,6 +180,12 @@ public class ModelRegistry {
 
 		Unmarshaller unmarshaller = JAXBUtil.createUnmarshaller();
 		unmarshaller.setEventHandler(new SimpleValidationEventHandler());
+
+		if(validate){
+			Schema schema = JAXBUtil.getSchema();
+
+			unmarshaller.setSchema(schema);
+		}
 
 		PMML pmml = (PMML)unmarshaller.unmarshal(source);
 
