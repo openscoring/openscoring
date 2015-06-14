@@ -178,17 +178,17 @@
 			<dependency>
 				<groupId>org.eclipse.jetty</groupId>
 				<artifactId>jetty-server</artifactId>
-				<version>9.2.10.v20150310</version>
+				<version>9.2.11.v20150529</version>
 			</dependency>
 			<dependency>
 				<groupId>org.eclipse.jetty</groupId>
 				<artifactId>jetty-servlet</artifactId>
-				<version>9.2.10.v20150310</version>
+				<version>9.2.11.v20150529</version>
 			</dependency>
 			<dependency>
 				<groupId>org.eclipse.jetty</groupId>
 				<artifactId>jetty-webapp</artifactId>
-				<version>9.2.10.v20150310</version>
+				<version>9.2.11.v20150529</version>
 			</dependency>
 
 			<!-- Mirrors the one specified by the org.glassfish.jersey:project dependency -->
