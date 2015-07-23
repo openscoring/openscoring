@@ -555,13 +555,16 @@ public class ModelResource {
 	}
 
 	static
-	private <V> Map<FieldName, V> replaceNullKey(Map<FieldName, V> result){
+	private <V> Map<FieldName, V> replaceNullKey(Map<FieldName, V> map){
 
-		if(result.containsKey(null)){
+		if(map.containsKey(null)){
+			Map<FieldName, V> result = new LinkedHashMap<>(map);
 			result.put(ModelResource.DEFAULT_NAME, result.remove(null));
+
+			return result;
 		}
 
-		return result;
+		return map;
 	}
 
 	static
