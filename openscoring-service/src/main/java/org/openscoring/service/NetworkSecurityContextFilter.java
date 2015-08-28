@@ -73,7 +73,7 @@ public class NetworkSecurityContextFilter implements ContainerRequestFilter {
 
 			@Override
 			public boolean isTrusted(String address){
-				return (this.trustedAddresses).contains(address);
+				return ("(in-memory)").equals(address) || (this.trustedAddresses).contains(address);
 			}
 		};
 

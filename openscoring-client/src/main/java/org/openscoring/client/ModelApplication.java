@@ -39,11 +39,11 @@ public class ModelApplication extends Application {
 
 
 	public <V extends SimpleResponse> V execute(Operation<V> operation) throws Exception {
-		ClientConfig config = new ClientConfig();
-		config.register(JacksonJsonProvider.class);
-		config.register(ObjectMapperProvider.class);
+		ClientConfig clientConfig = new ClientConfig();
+		clientConfig.register(JacksonJsonProvider.class);
+		clientConfig.register(ObjectMapperProvider.class);
 
-		Client client = ClientBuilder.newClient(config);
+		Client client = ClientBuilder.newClient(clientConfig);
 
 		try {
 			WebTarget target = client.target(getURI());

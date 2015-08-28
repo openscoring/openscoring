@@ -447,14 +447,6 @@ public class ModelResource {
 		return (Response.noContent()).build();
 	}
 
-	protected ModelRegistry getModelRegistry(){
-		return this.modelRegistry;
-	}
-
-	protected MetricRegistry getMetricRegistry(){
-		return this.metricRegistry;
-	}
-
 	static
 	protected String createName(String... strings){
 		return MetricRegistry.name(ModelResource.class, strings);
