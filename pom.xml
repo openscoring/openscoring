@@ -137,9 +137,32 @@
 			</dependency>
 
 			<dependency>
+				<groupId>org.eclipse.jetty</groupId>
+				<artifactId>jetty-server</artifactId>
+				<version>9.2.13.v20150730</version>
+			</dependency>
+			<dependency>
+				<groupId>org.eclipse.jetty</groupId>
+				<artifactId>jetty-servlet</artifactId>
+				<version>9.2.13.v20150730</version>
+			</dependency>
+			<dependency>
+				<groupId>org.eclipse.jetty</groupId>
+				<artifactId>jetty-webapp</artifactId>
+				<version>9.2.13.v20150730</version>
+			</dependency>
+
+			<dependency>
 				<groupId>org.fusesource.restygwt</groupId>
 				<artifactId>restygwt</artifactId>
 				<version>2.0.2</version>
+			</dependency>
+
+			<!-- Mirrors the one specified by the org.glassfish.jersey:project dependency -->
+			<dependency>
+				<groupId>org.glassfish.hk2</groupId>
+				<artifactId>hk2-locator</artifactId>
+				<version>2.4.0-b31</version>
 			</dependency>
 
 			<!-- Mirrors the one specified by the org.jpmml:pmml-model dependency -->
@@ -173,29 +196,6 @@
 				<groupId>org.glassfish.jersey.media</groupId>
 				<artifactId>jersey-media-multipart</artifactId>
 				<version>2.21</version>
-			</dependency>
-
-			<dependency>
-				<groupId>org.eclipse.jetty</groupId>
-				<artifactId>jetty-server</artifactId>
-				<version>9.2.13.v20150730</version>
-			</dependency>
-			<dependency>
-				<groupId>org.eclipse.jetty</groupId>
-				<artifactId>jetty-servlet</artifactId>
-				<version>9.2.13.v20150730</version>
-			</dependency>
-			<dependency>
-				<groupId>org.eclipse.jetty</groupId>
-				<artifactId>jetty-webapp</artifactId>
-				<version>9.2.13.v20150730</version>
-			</dependency>
-
-			<!-- Mirrors the one specified by the org.glassfish.jersey:project dependency -->
-			<dependency>
-				<groupId>org.glassfish.hk2</groupId>
-				<artifactId>hk2-locator</artifactId>
-				<version>2.4.0-b31</version>
 			</dependency>
 
 			<dependency>
