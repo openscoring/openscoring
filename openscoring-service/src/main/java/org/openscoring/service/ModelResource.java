@@ -79,6 +79,7 @@ import org.openscoring.common.BatchModelResponse;
 import org.openscoring.common.EvaluationRequest;
 import org.openscoring.common.EvaluationResponse;
 import org.openscoring.common.ModelResponse;
+import org.openscoring.common.SimpleResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.supercsv.prefs.CsvPreference;
@@ -420,7 +421,7 @@ public class ModelResource {
 		value = {"admin"}
 	)
 	@Produces(MediaType.APPLICATION_JSON)
-	public Response undeploy(@PathParam("id") String id){
+	public SimpleResponse undeploy(@PathParam("id") String id){
 		Model model = this.modelRegistry.get(id);
 		if(model == null){
 			throw new NotFoundException("Model \"" + id + "\" not found");
@@ -444,7 +445,9 @@ public class ModelResource {
 
 		this.metricRegistry.removeMatching(filter);
 
-		return (Response.noContent()).build();
+		SimpleResponse response = new SimpleResponse();
+
+		return response;
 	}
 
 	static

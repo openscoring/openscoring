@@ -42,6 +42,7 @@ import org.openscoring.common.BatchEvaluationResponse;
 import org.openscoring.common.EvaluationRequest;
 import org.openscoring.common.EvaluationResponse;
 import org.openscoring.common.ModelResponse;
+import org.openscoring.common.SimpleResponse;
 import org.supercsv.prefs.CsvPreference;
 
 import static org.junit.Assert.assertEquals;
@@ -231,22 +232,20 @@ public class ModelResourceTest extends JerseyTest {
 		return response;
 	}
 
-	private Response undeploy(String id){
+	private SimpleResponse undeploy(String id){
 		Response response = target("model/" + id).request(MediaType.APPLICATION_JSON).delete();
 
-		assertEquals(204, response.getStatus());
-		assertEquals(null, response.getMediaType());
+		assertEquals(200, response.getStatus());
 
-		return response;
+		return response.readEntity(SimpleResponse.class);
 	}
 
-	private Response undeployForm(String id){
+	private SimpleResponse undeployForm(String id){
 		Response response = target("model/" + id).request(MediaType.APPLICATION_JSON).header("X-HTTP-Method-Override", "DELETE").post(null);
 
-		assertEquals(204, response.getStatus());
-		assertEquals(null, response.getMediaType());
+		assertEquals(200, response.getStatus());
 
-		return response;
+		return response.readEntity(SimpleResponse.class);
 	}
 
 	static

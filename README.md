@@ -404,8 +404,10 @@ record-003,virginica,virginica,0.0,0.021739130434782608,0.9782608695652174,7
 
 Deletes a model.
 
+The response body is a JSON serialized form of an `org.openscoring.common.SimpleResponse` [(source)] (https://github.com/jpmml/openscoring/blob/master/openscoring-common/src/main/java/org/openscoring/common/SimpleResponse.java) object.
+
 Response status codes:
-* 204 No Content. The model was deleted.
+* 200 OK. The model was deleted.
 * 403 Forbidden. The acting user does not have an "admin" role.
 * 404 Not Found. The requested model was not found.
 * 500 Internal Server Error. The undeployment failed temporarily.
