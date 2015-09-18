@@ -72,6 +72,7 @@ import org.glassfish.jersey.media.multipart.FormDataParam;
 import org.jpmml.evaluator.EvaluationException;
 import org.jpmml.evaluator.Evaluator;
 import org.jpmml.evaluator.EvaluatorUtil;
+import org.jpmml.evaluator.FieldValue;
 import org.jpmml.evaluator.ModelEvaluator;
 import org.openscoring.common.BatchEvaluationRequest;
 import org.openscoring.common.BatchEvaluationResponse;
@@ -105,13 +106,15 @@ public class ModelResource {
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
 	public BatchModelResponse queryBatch(){
-		BatchModelResponse response = new BatchModelResponse();
+		BatchModelResponse batchResponse = new BatchModelResponse();
 
 		List<ModelResponse> responses = new ArrayList<>();
 
 		Collection<Map.Entry<String, Model>> entries = this.modelRegistry.entries();
 		for(Map.Entry<String, Model> entry : entries){
-			responses.add(createModelResponse(entry.getKey(), entry.getValue(), false));
+			ModelResponse response = createModelResponse(entry.getKey(), entry.getValue(), false);
+
+			responses.add(response);
 		}
 
 		Comparator<ModelResponse> comparator = new Comparator<ModelResponse>(){
@@ -123,9 +126,9 @@ public class ModelResource {
 		};
 		Collections.sort(responses, comparator);
 
-		response.setResponses(responses);
+		batchResponse.setResponses(responses);
 
-		return response;
+		return batchResponse;
 	}
 
 	@GET
@@ -257,7 +260,7 @@ public class ModelResource {
 	public EvaluationResponse evaluate(@PathParam("id") String id, EvaluationRequest request){
 		List<EvaluationRequest> requests = Collections.singletonList(request);
 
-		List<EvaluationResponse> responses = doEvaluate(id, requests, "evaluate");
+		List<EvaluationResponse> responses = doEvaluate(id, requests, true, "evaluate");
 
 		return responses.get(0);
 	}
@@ -267,15 +270,15 @@ public class ModelResource {
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
 	public BatchEvaluationResponse evaluateBatch(@PathParam("id") String id, BatchEvaluationRequest request){
-		BatchEvaluationResponse response = new BatchEvaluationResponse(request.getId());
+		BatchEvaluationResponse batchResponse = new BatchEvaluationResponse(request.getId());
 
 		List<EvaluationRequest> requests = request.getRequests();
 
-		List<EvaluationResponse> responses = doEvaluate(id, requests, "evaluate.batch");
+		List<EvaluationResponse> responses = doEvaluate(id, requests, false, "evaluate.batch");
 
-		response.setResponses(responses);
+		batchResponse.setResponses(responses);
 
-		return response;
+		return batchResponse;
 	}
 
 	@POST
@@ -331,7 +334,7 @@ public class ModelResource {
 
 		List<EvaluationRequest> requests = requestTable.getRows();
 
-		List<EvaluationResponse> responses = doEvaluate(id, requests, "evaluate.csv");
+		List<EvaluationResponse> responses = doEvaluate(id, requests, true, "evaluate.csv");
 
 		final
 		CsvUtil.Table<EvaluationResponse> responseTable = new CsvUtil.Table<>();
@@ -369,7 +372,7 @@ public class ModelResource {
 	@SuppressWarnings (
 		value = "resource"
 	)
-	private List<EvaluationResponse> doEvaluate(String id, List<EvaluationRequest> requests, String method){
+	private List<EvaluationResponse> doEvaluate(String id, List<EvaluationRequest> requests, boolean allOrNothing, String method){
 		Model model = this.modelRegistry.get(id, true);
 		if(model == null){
 			throw new NotFoundException("Model \"" + id + "\" not found");
@@ -396,7 +399,19 @@ public class ModelResource {
 			}
 
 			for(EvaluationRequest request : requests){
-				EvaluationResponse response = evaluate(evaluator, request);
+				EvaluationResponse response;
+
+				try {
+					response = evaluate(evaluator, request);
+				} catch(Exception e){
+
+					if(allOrNothing){
+						throw e;
+					}
+
+					response = new EvaluationResponse(request.getId());
+					response.setMessage(e.toString());
+				}
 
 				responses.add(response);
 			}
@@ -519,7 +534,7 @@ public class ModelResource {
 
 		EvaluationResponse response = new EvaluationResponse(request.getId());
 
-		Map<FieldName, Object> arguments = new LinkedHashMap<>();
+		Map<FieldName, FieldValue> arguments = new LinkedHashMap<>();
 
 		List<FieldName> activeFields = evaluator.getActiveFields();
 		for(FieldName activeField : activeFields){
@@ -530,7 +545,9 @@ public class ModelResource {
 				logger.warn("Evaluation request {} does not specify an active field {}", request.getId(), key);
 			}
 
-			arguments.put(activeField, EvaluatorUtil.prepare(evaluator, activeField, value));
+			FieldValue activeValue = EvaluatorUtil.prepare(evaluator, activeField, value);
+
+			arguments.put(activeField, activeValue);
 		}
 
 		logger.debug("Evaluation request {} has prepared arguments: {}", request.getId(), arguments);

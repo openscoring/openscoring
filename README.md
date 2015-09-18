@@ -354,6 +354,8 @@ Sample cURL invocation:
 curl -X POST --data-binary @BatchEvaluationRequest.json -H "Content-type: application/json" http://localhost:8080/openscoring/model/DecisionTreeIris/batch
 ```
 
+The evaluation is performed at "record" isolation level. If the evaluation of some `org.openscoring.common.EvaluationRequest` object fails, then the corresponding `org.openscoring.common.EvaluationResponse` object encodes the error condition (see above).
+
 ##### POST /model/${id}/csv
 
 Evaluates data in "CSV prediction" mode.
@@ -397,6 +399,8 @@ record-001,setosa,setosa,1.0,0.0,0.0,2
 record-002,versicolor,versicolor,0.0,0.9074074074074074,0.09259259259259259,6
 record-003,virginica,virginica,0.0,0.021739130434782608,0.9782608695652174,7
 ```
+
+The evaluation is performed at "all-records-or-nothing" isolation level. If the evaluation of some row fails, then the whole CSV document fails.
 
 ### Model undeployment
 

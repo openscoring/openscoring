@@ -23,6 +23,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URI;
+import java.util.Arrays;
 import java.util.List;
 
 import javax.ws.rs.client.Entity;
@@ -30,6 +31,7 @@ import javax.ws.rs.core.Application;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import com.google.common.collect.Maps;
 import org.dmg.pmml.FieldName;
 import org.glassfish.jersey.client.ClientConfig;
 import org.glassfish.jersey.media.multipart.FormDataBodyPart;
@@ -46,6 +48,7 @@ import org.openscoring.common.SimpleResponse;
 import org.supercsv.prefs.CsvPreference;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 public class ModelResourceTest extends JerseyTest {
 
@@ -80,6 +83,25 @@ public class ModelResourceTest extends JerseyTest {
 
 		EvaluationResponse response = evaluate(id, request);
 
+		List<EvaluationRequest> requests = Arrays.asList(records.get(0), invalidate(records.get(50)), records.get(100));
+
+		BatchEvaluationRequest batchRequest = new BatchEvaluationRequest();
+		batchRequest.setRequests(requests);
+
+		BatchEvaluationResponse batchResponse = evaluateBatch(id, batchRequest);
+
+		assertEquals(batchRequest.getId(), batchResponse.getId());
+
+		List<EvaluationResponse> responses = batchResponse.getResponses();
+
+		assertEquals(requests.size(), responses.size());
+
+		EvaluationRequest invalidRequest = requests.get(1);
+		EvaluationResponse invalidResponse = responses.get(1);
+
+		assertEquals(invalidRequest.getId(), invalidResponse.getId());
+		assertNotNull(invalidResponse.getMessage());
+
 		undeploy(id);
 	}
 
@@ -93,19 +115,19 @@ public class ModelResourceTest extends JerseyTest {
 
 		List<EvaluationRequest> records = loadRecords(id);
 
-		BatchEvaluationRequest request = new BatchEvaluationRequest();
-		request.setRequests(records);
+		BatchEvaluationRequest batchRequest = new BatchEvaluationRequest();
+		batchRequest.setRequests(records);
 
-		BatchEvaluationResponse response = evaluateBatch(id, request);
+		BatchEvaluationResponse batchResponse = evaluateBatch(id, batchRequest);
 
 		List<EvaluationRequest> aggregatedRecords = ModelResource.aggregateRequests(FieldName.create("transaction"), records);
 
-		request = new BatchEvaluationRequest("aggregate");
-		request.setRequests(aggregatedRecords);
+		batchRequest = new BatchEvaluationRequest("aggregate");
+		batchRequest.setRequests(aggregatedRecords);
 
-		response = evaluateBatch(id, request);
+		batchResponse = evaluateBatch(id, batchRequest);
 
-		assertEquals(request.getId(), response.getId());
+		assertEquals(batchRequest.getId(), batchResponse.getId());
 
 		evaluateCsv(id);
 
@@ -179,8 +201,8 @@ public class ModelResourceTest extends JerseyTest {
 		return response.readEntity(EvaluationResponse.class);
 	}
 
-	private BatchEvaluationResponse evaluateBatch(String id, BatchEvaluationRequest request){
-		Entity<BatchEvaluationRequest> entity = Entity.json(request);
+	private BatchEvaluationResponse evaluateBatch(String id, BatchEvaluationRequest batchRequest){
+		Entity<BatchEvaluationRequest> entity = Entity.json(batchRequest);
 
 		Response response = target("model/" + id + "/batch").request(MediaType.APPLICATION_JSON).post(entity);
 
@@ -246,6 +268,25 @@ public class ModelResourceTest extends JerseyTest {
 		assertEquals(200, response.getStatus());
 
 		return response.readEntity(SimpleResponse.class);
+	}
+
+	static
+	private EvaluationRequest invalidate(EvaluationRequest record){
+		Maps.EntryTransformer<String, Object, String> transformer = new Maps.EntryTransformer<String, Object, String>(){
+
+			@Override
+			public String transformEntry(String key, Object value){
+				StringBuilder sb = new StringBuilder(key);
+				sb.reverse();
+
+				return sb.toString();
+			}
+		};
+
+		EvaluationRequest invalidRecord = new EvaluationRequest(record.getId());
+		invalidRecord.setArguments(Maps.transformEntries(record.getArguments(), transformer));
+
+		return invalidRecord;
 	}
 
 	static
