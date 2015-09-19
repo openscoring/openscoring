@@ -190,6 +190,7 @@ Sample response:
 ```json
 {
 	"id" : "DecisionTreeIris",
+	"miningFunction" : "classification",
 	"summary" : "Tree model",
 	"properties" : {
 		"created.timestamp" : "2015-03-17T12:41:35.933+0000",

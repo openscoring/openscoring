@@ -18,25 +18,22 @@
  */
 package org.openscoring.common;
 
-import com.fasterxml.jackson.databind.module.SimpleModule;
+import java.io.IOException;
+
+import com.fasterxml.jackson.core.JsonParser;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.DeserializationContext;
+import com.fasterxml.jackson.databind.JsonDeserializer;
 import com.google.common.annotations.GwtIncompatible;
-import org.dmg.pmml.DataType;
 import org.dmg.pmml.MiningFunctionType;
-import org.dmg.pmml.OpType;
 
 @GwtIncompatible (
-	value = "OpenscoringModule"
+	value = "MiningFunctionTypeDeserializer"
 )
-public class OpenscoringModule extends SimpleModule {
+public class MiningFunctionTypeDeserializer extends JsonDeserializer<MiningFunctionType> {
 
-	public OpenscoringModule(){
-		addSerializer(DataType.class, new DataTypeSerializer());
-		addDeserializer(DataType.class, new DataTypeDeserializer());
-
-		addSerializer(MiningFunctionType.class, new MiningFunctionTypeSerializer());
-		addDeserializer(MiningFunctionType.class, new MiningFunctionTypeDeserializer());
-
-		addSerializer(OpType.class, new OpTypeSerializer());
-		addDeserializer(OpType.class, new OpTypeDeserializer());
+	@Override
+	public MiningFunctionType deserialize(JsonParser parser, DeserializationContext context) throws IOException, JsonProcessingException {
+		return MiningFunctionType.fromValue(parser.getText());
 	}
 }

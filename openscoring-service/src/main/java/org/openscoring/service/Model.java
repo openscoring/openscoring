@@ -23,6 +23,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.dmg.pmml.MiningFunctionType;
 import org.jpmml.evaluator.ModelEvaluator;
 import org.openscoring.common.Field;
 
@@ -56,6 +57,12 @@ public class Model {
 
 	private void setEvaluator(ModelEvaluator<?> evaluator){
 		this.evaluator = evaluator;
+	}
+
+	public MiningFunctionType getMiningFunction(){
+		ModelEvaluator<?> evaluator = getEvaluator();
+
+		return evaluator.getMiningFunction();
 	}
 
 	public String getSummary(){

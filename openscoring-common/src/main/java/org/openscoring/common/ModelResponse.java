@@ -24,6 +24,7 @@ import java.util.Map;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.google.common.base.MoreObjects;
 import com.google.common.base.MoreObjects.ToStringHelper;
+import org.dmg.pmml.MiningFunctionType;
 
 @JsonInclude (
 	value = JsonInclude.Include.NON_EMPTY
@@ -31,6 +32,8 @@ import com.google.common.base.MoreObjects.ToStringHelper;
 public class ModelResponse extends SimpleResponse {
 
 	private String id = null;
+
+	private MiningFunctionType miningFunction = null;
 
 	private String summary = null;
 
@@ -55,6 +58,7 @@ public class ModelResponse extends SimpleResponse {
 
 		ToStringHelper stringHelper = MoreObjects.toStringHelper(getClass())
 			.add("id", getId())
+			.add("miningFunction", getMiningFunction())
 			.add("summary", getSummary())
 			.add("properties", getProperties())
 			.add("schema", getSchema());
@@ -68,6 +72,14 @@ public class ModelResponse extends SimpleResponse {
 
 	public void setId(String id){
 		this.id = id;
+	}
+
+	public MiningFunctionType getMiningFunction(){
+		return this.miningFunction;
+	}
+
+	public void setMiningFunction(MiningFunctionType miningFunction){
+		this.miningFunction = miningFunction;
 	}
 
 	public String getSummary(){

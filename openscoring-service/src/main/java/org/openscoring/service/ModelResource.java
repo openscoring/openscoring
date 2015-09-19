@@ -582,6 +582,7 @@ public class ModelResource {
 	static
 	private ModelResponse createModelResponse(String id, Model model, boolean expand){
 		ModelResponse response = new ModelResponse(id);
+		response.setMiningFunction(model.getMiningFunction());
 		response.setSummary(model.getSummary());
 		response.setProperties(model.getProperties());
 
