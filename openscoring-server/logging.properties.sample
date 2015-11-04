@@ -9,6 +9,7 @@ java.util.logging.ConsoleHandler.formatter=java.util.logging.SimpleFormatter
 
 # Limit the logging level of selected packages
 com.sun.xml.bind.level=CONFIG
+com.sun.xml.internal.bind.level=CONFIG
 javax.xml.bind.level=CONFIG
 org.eclipse.jetty.level=CONFIG
 org.glassfish.jersey.level=CONFIG
