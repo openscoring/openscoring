@@ -72,9 +72,8 @@ public class Deployer extends ModelApplication {
 
 			@Override
 			public ModelResponse perform(WebTarget target) throws IOException {
-				PushbackInputStream is = new PushbackInputStream(new FileInputStream(getFile()), 16);
 
-				try {
+				try(PushbackInputStream is = new PushbackInputStream(new FileInputStream(getFile()), 16)){
 					String encoding = getContentEncoding(is);
 
 					Variant variant = new Variant(MediaType.APPLICATION_XML_TYPE, (Locale)null, encoding);
@@ -84,8 +83,6 @@ public class Deployer extends ModelApplication {
 					Response response = invocation.invoke();
 
 					return response.readEntity(ModelResponse.class);
-				} finally {
-					is.close();
 				}
 			}
 		};
@@ -107,15 +104,13 @@ public class Deployer extends ModelApplication {
 
 		int count = is.read(signature);
 
-		try {
-			if(Arrays.equals(Deployer.GZIP_SIGNATURE, signature)){
-				return "gzip";
-			}
+		is.unread(signature, 0, count);
 
-			return null;
-		} finally {
-			is.unread(signature, 0, count);
+		if((count == signature.length) && Arrays.equals(Deployer.GZIP_SIGNATURE, signature)){
+			return "gzip";
 		}
+
+		return null;
 	}
 
 	private static final byte[] GZIP_SIGNATURE = {

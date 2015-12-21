@@ -66,23 +66,18 @@ public class DirectoryDeployer extends Application {
 	public void run() throws Exception {
 		Path root = (getDir()).toPath();
 
-		DirectoryStream<Path> children = Files.newDirectoryStream(root);
+		try(DirectoryStream<Path> children = Files.newDirectoryStream(root)){
 
-		try {
 			for(Path child : children){
 				process(StandardWatchEventKinds.ENTRY_CREATE, child);
 			}
-		} finally {
-			children.close();
 		}
 
-		FileSystem fileSystem = root.getFileSystem();
+		try(FileSystem fileSystem = root.getFileSystem()){
 
-		try {
-			WatchService watcher = fileSystem.newWatchService();
-
-			try {
+			try(WatchService watcher = fileSystem.newWatchService()){
 				WatchKey key = root.register(watcher, StandardWatchEventKinds.ENTRY_CREATE, StandardWatchEventKinds.ENTRY_DELETE);
+
 				if(key.isValid()){
 					processKey(key, root);
 				}
@@ -99,11 +94,7 @@ public class DirectoryDeployer extends Application {
 						processKey(key, root);
 					}
 				}
-			} finally {
-				watcher.close();
 			}
-		} finally {
-			fileSystem.close();
 		}
 	}
 

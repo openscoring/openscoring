@@ -38,13 +38,9 @@ public class CsvUtilTest {
 			"2\ttwo\n" +
 			"3\tthree";
 
-		BufferedReader reader = new BufferedReader(new StringReader(csv));
-
-		try {
+		try(BufferedReader reader = new BufferedReader(new StringReader(csv))){
 			first = CsvUtil.getFormat(reader);
 			second = CsvUtil.getFormat(reader);
-		} finally {
-			reader.close();
 		}
 
 		assertNotSame(first.getEncoder(), second.getEncoder());

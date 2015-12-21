@@ -21,7 +21,6 @@ package org.openscoring.client;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
@@ -32,6 +31,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import com.beust.jcommander.Parameter;
+import com.google.common.io.ByteStreams;
 import org.openscoring.common.SimpleResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -80,12 +80,10 @@ public class CsvEvaluator extends ModelApplication {
 
 			@Override
 			public SimpleResponse perform(WebTarget target) throws Exception {
-				InputStream is = new FileInputStream(getInput());
 
-				try {
-					OutputStream os = new FileOutputStream(getOutput());
+				try(InputStream is = new FileInputStream(getInput())){
 
-					try {
+					try(OutputStream os = new FileOutputStream(getOutput())){
 						Invocation invocation = target.request(MediaType.APPLICATION_JSON, MediaType.TEXT_PLAIN).buildPost(Entity.text(is));
 
 						Response response = invocation.invoke();
@@ -99,20 +97,12 @@ public class CsvEvaluator extends ModelApplication {
 								break;
 						}
 
-						InputStream result = response.readEntity(InputStream.class);
-
-						try {
-							copy(result, os);
+						try(InputStream result = response.readEntity(InputStream.class)){
+							ByteStreams.copy(result, os);
 
 							return null;
-						} finally {
-							result.close();
 						}
-					} finally {
-						os.close();
 					}
-				} finally {
-					is.close();
 				}
 			}
 		};
@@ -149,22 +139,6 @@ public class CsvEvaluator extends ModelApplication {
 		}
 
 		return string;
-	}
-
-	static
-	private void copy(InputStream is, OutputStream os) throws IOException {
-		byte[] buffer = new byte[512];
-
-		while(true){
-			int count = is.read(buffer);
-			if(count < 0){
-				break;
-			}
-
-			os.write(buffer, 0, count);
-		}
-
-		os.flush();
 	}
 
 	private static final Logger logger = LoggerFactory.getLogger(CsvEvaluator.class);

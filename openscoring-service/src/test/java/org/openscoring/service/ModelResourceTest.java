@@ -139,14 +139,10 @@ public class ModelResourceTest extends JerseyTest {
 	private ModelResponse deploy(String id) throws IOException {
 		Response response;
 
-		InputStream is = openPMML(id);
-
-		try {
+		try(InputStream is = openPMML(id)){
 			Entity<InputStream> entity = Entity.entity(is, MediaType.APPLICATION_XML);
 
 			response = target("model/" + id).request(MediaType.APPLICATION_JSON).put(entity);
-		} finally {
-			is.close();
 		}
 
 		assertEquals(201, response.getStatus());
@@ -157,9 +153,7 @@ public class ModelResourceTest extends JerseyTest {
 	private ModelResponse deployForm(String id) throws IOException {
 		Response response;
 
-		InputStream is = openPMML(id);
-
-		try {
+		try(InputStream is = openPMML(id)){
 			FormDataMultiPart formData = new FormDataMultiPart();
 			formData.field("id", id);
 			formData.bodyPart(new FormDataBodyPart("pmml", is, MediaType.APPLICATION_XML_TYPE));
@@ -169,8 +163,6 @@ public class ModelResourceTest extends JerseyTest {
 			response = target("model").request(MediaType.APPLICATION_JSON).post(entity);
 
 			formData.close();
-		} finally {
-			is.close();
 		}
 
 		assertEquals(201, response.getStatus());
@@ -214,14 +206,10 @@ public class ModelResourceTest extends JerseyTest {
 	private Response evaluateCsv(String id) throws IOException {
 		Response response;
 
-		InputStream is = openCSV(id);
-
-		try {
+		try(InputStream is = openCSV(id)){
 			Entity<InputStream> entity = Entity.entity(is, MediaType.TEXT_PLAIN_TYPE.withCharset(CHARSET_ISO_8859_1));
 
 			response = target("model/" + id + "/csv").request(MediaType.APPLICATION_JSON, MediaType.TEXT_PLAIN).post(entity);
-		} finally {
-			is.close();
 		}
 
 		assertEquals(200, response.getStatus());
@@ -233,9 +221,7 @@ public class ModelResourceTest extends JerseyTest {
 	private Response evaluateCsvForm(String id) throws IOException {
 		Response response;
 
-		InputStream is = openCSV(id);
-
-		try {
+		try(InputStream is = openCSV(id)){
 			FormDataMultiPart formData = new FormDataMultiPart();
 			formData.bodyPart(new FormDataBodyPart("csv", is, MediaType.TEXT_PLAIN_TYPE));
 
@@ -244,8 +230,6 @@ public class ModelResourceTest extends JerseyTest {
 			response = target("model/" + id + "/csv").request(MediaType.APPLICATION_JSON, MediaType.TEXT_PLAIN).post(entity);
 
 			formData.close();
-		} finally {
-			is.close();
 		}
 
 		assertEquals(200, response.getStatus());
@@ -291,22 +275,15 @@ public class ModelResourceTest extends JerseyTest {
 
 	static
 	private List<EvaluationRequest> loadRecords(String id) throws Exception {
-		InputStream is = openCSV(id);
 
-		try {
+		try(InputStream is = openCSV(id)){
 			CsvUtil.Table<EvaluationRequest> table;
 
-			BufferedReader reader = new BufferedReader(new InputStreamReader(is, "UTF-8"));
-
-			try {
+			try(BufferedReader reader = new BufferedReader(new InputStreamReader(is, "UTF-8"))){
 				table = CsvUtil.readTable(reader, CsvPreference.TAB_PREFERENCE);
-			} finally {
-				reader.close();
 			}
 
 			return table.getRows();
-		} finally {
-			is.close();
 		}
 	}
 
