@@ -19,7 +19,6 @@
 package org.openscoring.service;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -31,7 +30,9 @@ import org.dmg.pmml.Interval;
 import org.dmg.pmml.MiningField;
 import org.dmg.pmml.OpType;
 import org.dmg.pmml.OutputField;
+import org.dmg.pmml.Target;
 import org.dmg.pmml.Value;
+import org.jpmml.evaluator.EvaluatorUtil;
 import org.jpmml.evaluator.ModelEvaluator;
 import org.jpmml.evaluator.OutputUtil;
 import org.jpmml.evaluator.TypeUtil;
@@ -48,14 +49,12 @@ public class ModelUtil {
 
 		List<FieldName> activeFields = evaluator.getActiveFields();
 		List<FieldName> groupFields = evaluator.getGroupFields();
-		List<FieldName> targetFields = evaluator.getTargetFields();
-
-		if(targetFields.isEmpty()){
-			targetFields = Collections.singletonList(evaluator.getTargetField());
-		}
 
 		result.put("activeFields", encodeMiningFields(activeFields, evaluator));
 		result.put("groupFields", encodeMiningFields(groupFields, evaluator));
+
+		List<FieldName> targetFields = EvaluatorUtil.getTargetFields(evaluator);
+
 		result.put("targetFields", encodeMiningFields(targetFields, evaluator));
 
 		List<FieldName> outputFields = evaluator.getOutputFields();
@@ -71,25 +70,29 @@ public class ModelUtil {
 
 		for(FieldName name : names){
 			DataField dataField = evaluator.getDataField(name);
-
-			// A "phantom" default target field
-			if(dataField == null){
-				continue;
-			}
+			MiningField miningField = evaluator.getMiningField(name);
+			Target target = evaluator.getTarget(name);
 
 			DataType dataType = dataField.getDataType();
 
 			OpType opType = null;
 
-			MiningField miningField = evaluator.getMiningField(name);
-			if(miningField != null){
-				opType = miningField.getOpType();
+			if(target != null){
+				opType = target.getOpType();
 			} // End if
 
 			if(opType == null){
-				opType = dataField.getOpType();
+
+				if(miningField != null){
+					opType = miningField.getOpType();
+				} // End if
+
+				if(opType == null){
+					opType = dataField.getOpType();
+				}
 			} // End if
 
+			// A "phantom" default target field
 			if(name == null){
 				name = ModelResource.DEFAULT_NAME;
 			}
@@ -145,7 +148,7 @@ public class ModelUtil {
 
 		List<Interval> intervals = dataField.getIntervals();
 		for(Interval interval : intervals){
-			StringBuffer sb = new StringBuffer();
+			StringBuilder sb = new StringBuilder();
 
 			Double leftMargin = interval.getLeftMargin();
 			sb.append(leftMargin != null ? leftMargin : "-\u221e");
