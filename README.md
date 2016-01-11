@@ -195,8 +195,8 @@ Sample response:
 	"properties" : {
 		"created.timestamp" : "2015-03-17T12:41:35.933+0000",
 		"accessed.timestamp" : "2015-03-21T09:35:58.582+0000",
-		"file.size" : 5749,
-		"file.md5sum" : "c0dcb90bc7b42e7bddf1bc7d922635a3"
+		"file.size" : 4918,
+		"file.md5sum" : "870e1a7931d39f919fe3c02556bf6241"
 	},
 	"schema" : {
 		"activeFields" : [
@@ -239,11 +239,6 @@ Sample response:
 			}
 		],
 		"outputFields" : [
-			{
-				"id" : "Predicted_Species",
-				"dataType" : "string",
-				"opType" : "categorical"
-			},
 			{
 				"id" : "Probability_setosa",
 				"dataType" : "double",
@@ -327,7 +322,6 @@ Sample response:
 	"id" : "record-001",
 	"result" : {
 		"Species" : "setosa",
-		"Predicted_Species" : "setosa",
 		"Probability_setosa" : 1.0,
 		"Probability_versicolor" : 0.0,
 		"Probability_virginica" : 0.0,
@@ -395,10 +389,10 @@ record-003,6.3,3.3,6,2.5
 
 Sample response:
 ```
-Id,Species,Predicted_Species,Probability_setosa,Probability_versicolor,Probability_virginica,Node_Id
-record-001,setosa,setosa,1.0,0.0,0.0,2
-record-002,versicolor,versicolor,0.0,0.9074074074074074,0.09259259259259259,6
-record-003,virginica,virginica,0.0,0.021739130434782608,0.9782608695652174,7
+Id,Species,Probability_setosa,Probability_versicolor,Probability_virginica,Node_Id
+record-001,setosa,1.0,0.0,0.0,2
+record-002,versicolor,0.0,0.9074074074074074,0.09259259259259259,6
+record-003,virginica,0.0,0.021739130434782608,0.9782608695652174,7
 ```
 
 The evaluation is performed at "all-records-or-nothing" isolation level. If the evaluation of some row fails, then the whole CSV document fails.
