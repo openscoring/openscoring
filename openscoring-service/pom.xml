@@ -47,17 +47,6 @@
 			<artifactId>super-csv</artifactId>
 		</dependency>
 
-		<!-- 
-		Java 7 and newer include core JAXB libraries.
-		The purpose of this dependency is to bring in Glassfish Metro JAXB libraries,
-		which enable extra features such as SAX Locator information.
-		This dependency may be safely commented out or removed if extra features are not needed.
-		-->
-		<dependency>
-			<groupId>org.glassfish.jaxb</groupId>
-			<artifactId>jaxb-runtime</artifactId>
-		</dependency>
-
 		<dependency>
 			<groupId>org.glassfish.jersey.core</groupId>
 			<artifactId>jersey-server</artifactId>
@@ -74,6 +63,21 @@
 		<dependency>
 			<groupId>org.jpmml</groupId>
 			<artifactId>pmml-extension</artifactId>
+		</dependency>
+
+		<!--
+		Java 7 and newer include a JAXB runtime.
+		The purpose of the following two dependencies is to make it possible to 
+		override the default JAXB runtime either with GlassFish Metro or EclipseLink MOXy runtime.
+		They may be safely excluded if this kind of flexibility is not needed.
+		-->
+		<dependency>
+			<groupId>org.jpmml</groupId>
+			<artifactId>pmml-model-metro</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.jpmml</groupId>
+			<artifactId>pmml-model-moxy</artifactId>
 		</dependency>
 
 		<dependency>

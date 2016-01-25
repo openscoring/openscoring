@@ -39,7 +39,4 @@
 			<artifactId>pmml-model</artifactId>
 		</dependency>
 	</dependencies>
-
-	<build>
-	</build>
 </project>

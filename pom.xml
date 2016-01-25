@@ -165,13 +165,6 @@
 				<version>2.4.0-b31</version>
 			</dependency>
 
-			<!-- Mirrors the one specified by the org.jpmml:pmml-model dependency -->
-			<dependency>
-				<groupId>org.glassfish.jaxb</groupId>
-				<artifactId>jaxb-runtime</artifactId>
-				<version>2.2.11</version>
-			</dependency>
-
 			<dependency>
 				<groupId>org.glassfish.jersey.containers</groupId>
 				<artifactId>jersey-container-servlet</artifactId>
@@ -201,22 +194,32 @@
 			<dependency>
 				<groupId>org.jpmml</groupId>
 				<artifactId>pmml-evaluator</artifactId>
-				<version>1.2.9</version>
+				<version>1.2.10</version>
 			</dependency>
 			<dependency>
 				<groupId>org.jpmml</groupId>
 				<artifactId>pmml-extension</artifactId>
-				<version>1.2.9</version>
+				<version>1.2.10</version>
 			</dependency>
 			<dependency>
 				<groupId>org.jpmml</groupId>
 				<artifactId>pmml-model</artifactId>
-				<version>1.2.9</version>
+				<version>1.2.10</version>
 			</dependency>
 			<dependency>
 				<groupId>org.jpmml</groupId>
 				<artifactId>pmml-model-gwt</artifactId>
-				<version>1.2.9</version>
+				<version>1.2.10</version>
+			</dependency>
+			<dependency>
+				<groupId>org.jpmml</groupId>
+				<artifactId>pmml-model-metro</artifactId>
+				<version>1.2.10</version>
+			</dependency>
+			<dependency>
+				<groupId>org.jpmml</groupId>
+				<artifactId>pmml-model-moxy</artifactId>
+				<version>1.2.10</version>
 			</dependency>
 
 			<dependency>
