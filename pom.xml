@@ -194,13 +194,14 @@
 			<dependency>
 				<groupId>org.jpmml</groupId>
 				<artifactId>pmml-evaluator</artifactId>
-				<version>1.2.10</version>
+				<version>1.2.11</version>
 			</dependency>
 			<dependency>
 				<groupId>org.jpmml</groupId>
 				<artifactId>pmml-extension</artifactId>
-				<version>1.2.10</version>
+				<version>1.2.11</version>
 			</dependency>
+
 			<dependency>
 				<groupId>org.jpmml</groupId>
 				<artifactId>pmml-model</artifactId>
