@@ -162,33 +162,33 @@
 			<dependency>
 				<groupId>org.glassfish.hk2</groupId>
 				<artifactId>hk2-locator</artifactId>
-				<version>2.4.0-b31</version>
+				<version>2.4.0-b34</version>
 			</dependency>
 
 			<dependency>
 				<groupId>org.glassfish.jersey.containers</groupId>
 				<artifactId>jersey-container-servlet</artifactId>
-				<version>2.22.1</version>
+				<version>2.22.2</version>
 			</dependency>
 			<dependency>
 				<groupId>org.glassfish.jersey.core</groupId>
 				<artifactId>jersey-client</artifactId>
-				<version>2.22.1</version>
+				<version>2.22.2</version>
 			</dependency>
 			<dependency>
 				<groupId>org.glassfish.jersey.core</groupId>
 				<artifactId>jersey-server</artifactId>
-				<version>2.22.1</version>
+				<version>2.22.2</version>
 			</dependency>
 			<dependency>
 				<groupId>org.glassfish.jersey.media</groupId>
 				<artifactId>jersey-media-json-jackson</artifactId>
-				<version>2.22.1</version>
+				<version>2.22.2</version>
 			</dependency>
 			<dependency>
 				<groupId>org.glassfish.jersey.media</groupId>
 				<artifactId>jersey-media-multipart</artifactId>
-				<version>2.22.1</version>
+				<version>2.22.2</version>
 			</dependency>
 
 			<dependency>
@@ -251,13 +251,13 @@
 			<dependency>
 				<groupId>org.glassfish.jersey.test-framework</groupId>
 				<artifactId>jersey-test-framework-core</artifactId>
-				<version>2.22.1</version>
+				<version>2.22.2</version>
 				<scope>test</scope>
 			</dependency>
 			<dependency>
 				<groupId>org.glassfish.jersey.test-framework.providers</groupId>
 				<artifactId>jersey-test-framework-provider-inmemory</artifactId>
-				<version>2.22.1</version>
+				<version>2.22.2</version>
 				<scope>test</scope>
 			</dependency>
 		</dependencies>
