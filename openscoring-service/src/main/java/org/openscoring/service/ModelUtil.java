@@ -57,7 +57,7 @@ public class ModelUtil {
 
 		result.put("targetFields", encodeMiningFields(targetFields, evaluator));
 
-		List<FieldName> outputFields = evaluator.getOutputFields();
+		List<FieldName> outputFields = EvaluatorUtil.getOutputFields(evaluator);
 
 		result.put("outputFields", encodeOutputFields(outputFields, evaluator));
 
@@ -114,7 +114,7 @@ public class ModelUtil {
 		List<Field> fields = new ArrayList<>();
 
 		for(FieldName name : names){
-			OutputField outputField = evaluator.getOutputField(name);
+			OutputField outputField = EvaluatorUtil.getOutputField(evaluator, name);
 
 			DataType dataType = null;
 
