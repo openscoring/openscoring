@@ -283,15 +283,15 @@
 						<goals>
 							<goal>enforce</goal>
 						</goals>
+						<configuration>
+							<rules>
+								<requireJavaVersion>
+									<version>1.7</version>
+								</requireJavaVersion>
+							</rules>
+						</configuration>
 					</execution>
 				</executions>
-				<configuration>
-					<rules>
-						<requireJavaVersion>
-							<version>1.7</version>
-						</requireJavaVersion>
-					</rules>
-				</configuration>
 			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>

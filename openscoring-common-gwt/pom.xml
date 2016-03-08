@@ -89,16 +89,16 @@
 						<goals>
 							<goal>unpack-dependencies</goal>
 						</goals>
+						<configuration>
+							<classifier>sources</classifier>
+							<includes>org/openscoring/common/**</includes>
+							<excludes>META-INF/MANIFEST.MF</excludes>
+							<excludeTransitive>true</excludeTransitive>
+							<outputDirectory>${project.build.directory}/openscoring-common-sources</outputDirectory>
+							<type>java-source</type>
+						</configuration>
 					</execution>
 				</executions>
-				<configuration>
-					<classifier>sources</classifier>
-					<includes>org/openscoring/common/**</includes>
-					<excludes>META-INF/MANIFEST.MF</excludes>
-					<excludeTransitive>true</excludeTransitive>
-					<outputDirectory>${project.build.directory}/openscoring-common-sources</outputDirectory>
-					<type>java-source</type>
-				</configuration>
 			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
@@ -110,21 +110,20 @@
 						<goals>
 							<goal>run</goal>
 						</goals>
+						<configuration>
+							<target>
+								<delete failonerror="true">
+									<fileset dir="${project.build.directory}/openscoring-common-sources">
+										<and>
+											<filename name="**/*.java" />
+											<contains text="@GwtIncompatible" />
+										</and>
+									</fileset>
+								</delete>
+							</target>
+						</configuration>
 					</execution>
 				</executions>
-				<configuration>
-					<target>
-						<echo message="TEST" />
-						<delete failonerror="true">
-							<fileset dir="${project.build.directory}/openscoring-common-sources">
-								<and>
-									<filename name="**/*.java" />
-									<contains text="@GwtIncompatible" />
-								</and>
-							</fileset>
-						</delete>
-					</target>
-				</configuration>
 			</plugin>
 		</plugins>
 	</build>
