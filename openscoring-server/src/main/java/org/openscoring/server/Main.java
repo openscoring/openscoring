@@ -92,13 +92,24 @@ public class Main {
 		try {
 			commander.parse(args);
 		} catch(ParameterException pe){
-			commander.usage();
+			StringBuilder sb = new StringBuilder();
+
+			sb.append(pe.toString());
+			sb.append("\n");
+
+			commander.usage(sb);
+
+			System.err.println(sb.toString());
 
 			System.exit(-1);
 		}
 
 		if(main.help){
-			commander.usage();
+			StringBuilder sb = new StringBuilder();
+
+			commander.usage(sb);
+
+			System.out.println(sb.toString());
 
 			System.exit(0);
 		}
