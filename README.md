@@ -357,9 +357,9 @@ Evaluates data in "CSV prediction" mode.
 
 The request body is a CSV document (indicated by content-type header `text/plain`). The data table must contain a data column for every active and group field. The ordering of data columns is not significant, because they are mapped to fields by name.
 
-The response body is a CSV document. The data table contains a data column for every target and output field.
+The CSV reader component detects the CSV dialect by probing `,`, `;` and `\t` as CSV delimiter characters. This detection functionality can be suppressed by supplying the value of the CSV delimiter character using the `delimiterChar` query parameter.
 
-The CSV document must conform to Tab-separated values (TSV) dialect or Microsoft Excel dialect.
+The response body is a CSV document. The data table contains a data column for every target and output field.
 
 The first data column can be employed for row identification purposes. It will be copied over from the request data table to the response data table if its name equals to "Id" (the comparison is case insensitive) and the number of rows did not change during the evaluation.
 

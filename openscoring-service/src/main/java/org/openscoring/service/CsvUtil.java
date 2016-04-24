@@ -42,6 +42,36 @@ public class CsvUtil {
 	}
 
 	static
+	public CsvPreference getFormat(String delimiterChar, String quoteChar){
+		char delimiter = ',';
+		char quote = '\"';
+
+		if(delimiterChar != null){
+			delimiterChar = decodeDelimiter(delimiterChar);
+
+			if(delimiterChar.length() != 1){
+				throw new IllegalArgumentException("Invalid CSV delimiter character: \"" + delimiterChar + "\"");
+			}
+
+			delimiter = delimiterChar.charAt(0);
+		} // End if
+
+		if(quoteChar != null){
+			quoteChar = decodeQuote(quoteChar);
+
+			if(quoteChar.length() != 1){
+				throw new IllegalArgumentException("Invalid CSV quote character: \"" + quoteChar + "\"");
+			}
+
+			quote = quoteChar.charAt(0);
+		}
+
+		CsvPreference format = createFormat(delimiter, quote);
+
+		return format;
+	}
+
+	static
 	public CsvPreference getFormat(BufferedReader reader) throws IOException {
 		reader.mark(10 * 1024);
 
@@ -49,7 +79,7 @@ public class CsvUtil {
 			char delimiter = CsvUtil.DELIMITERS[i];
 
 			try {
-				CsvPreference format = createFormat(delimiter);
+				CsvPreference format = createFormat(delimiter, '\"');
 
 				if(checkFormat(reader, format)){
 					return format;
@@ -63,8 +93,8 @@ public class CsvUtil {
 	}
 
 	static
-	private CsvPreference createFormat(char delimiter){
-		CsvPreference.Builder builder = new CsvPreference.Builder('\"', delimiter, "\n");
+	private CsvPreference createFormat(char delimiter, char quote){
+		CsvPreference.Builder builder = new CsvPreference.Builder(quote, delimiter, "\n");
 		builder.useEncoder(new DefaultCsvEncoder());
 
 		return builder.build();
@@ -168,6 +198,30 @@ public class CsvUtil {
 
 		formatter.flush();
 		formatter.close();
+	}
+
+	static
+	private String decodeDelimiter(String delimiterChar){
+
+		if(("\\t").equals(delimiterChar)){
+			return "\t";
+		}
+
+		return delimiterChar;
+	}
+
+	static
+	private String decodeQuote(String quoteChar){
+
+		if(("\\'").equals(quoteChar)){
+			return "\'";
+		} else
+
+		if(("\\\"").equals(quoteChar)){
+			return "\"";
+		}
+
+		return quoteChar;
 	}
 
 	static

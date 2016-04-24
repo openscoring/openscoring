@@ -209,7 +209,7 @@ public class ModelResourceTest extends JerseyTest {
 		try(InputStream is = openCSV(id)){
 			Entity<InputStream> entity = Entity.entity(is, MediaType.TEXT_PLAIN_TYPE.withCharset(CHARSET_ISO_8859_1));
 
-			response = target("model/" + id + "/csv").request(MediaType.APPLICATION_JSON, MediaType.TEXT_PLAIN).post(entity);
+			response = target("model/" + id + "/csv").queryParam("delimiterChar", "\\t").queryParam("quoteChar", "\\\"").request(MediaType.APPLICATION_JSON, MediaType.TEXT_PLAIN).post(entity);
 		}
 
 		assertEquals(200, response.getStatus());

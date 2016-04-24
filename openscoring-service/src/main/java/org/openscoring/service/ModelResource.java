@@ -51,6 +51,7 @@ import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
@@ -285,25 +286,25 @@ public class ModelResource {
 	@Path("{id:" + ModelRegistry.ID_REGEX + "}/csv")
 	@Consumes(MediaType.TEXT_PLAIN)
 	@Produces({MediaType.APPLICATION_JSON, MediaType.TEXT_PLAIN})
-	public Response evaluateCsv(@PathParam("id") String id, @HeaderParam(HttpHeaders.CONTENT_TYPE) String contentType, InputStream is){
+	public Response evaluateCsv(@PathParam("id") String id, @QueryParam("delimiterChar") String delimiterChar, @QueryParam("quoteChar") String quoteChar, @HeaderParam(HttpHeaders.CONTENT_TYPE) String contentType, InputStream is){
 		com.google.common.net.MediaType mediaType = com.google.common.net.MediaType.parse(contentType);
 
 		Charset charset = (mediaType.charset()).or(ModelResource.CHARSET_UTF8);
 
-		return doEvaluateCsv(id, charset, is);
+		return doEvaluateCsv(id, delimiterChar, quoteChar, charset, is);
 	}
 
 	@POST
 	@Path("{id:" + ModelRegistry.ID_REGEX + "}/csv")
 	@Consumes(MediaType.MULTIPART_FORM_DATA)
 	@Produces({MediaType.APPLICATION_JSON, MediaType.TEXT_PLAIN})
-	public Response evaluateCsvForm(@PathParam("id") String id, @FormDataParam("csv") InputStream is){
+	public Response evaluateCsvForm(@PathParam("id") String id, @QueryParam("delimiterChar") String delimiterChar, @QueryParam("quoteChar") String quoteChar, @FormDataParam("csv") InputStream is){
 		Charset charset = ModelResource.CHARSET_UTF8;
 
-		return doEvaluateCsv(id, charset, is);
+		return doEvaluateCsv(id, delimiterChar, quoteChar, charset, is);
 	}
 
-	private Response doEvaluateCsv(String id, final Charset charset, InputStream is){
+	private Response doEvaluateCsv(String id, String delimiterChar, String quoteChar, final Charset charset, InputStream is){
 		final
 		CsvPreference format;
 
@@ -320,7 +321,13 @@ public class ModelResource {
 			};
 
 			try {
-				format = CsvUtil.getFormat(reader);
+				if(delimiterChar != null){
+					format = CsvUtil.getFormat(delimiterChar, quoteChar);
+				} else
+
+				{
+					format = CsvUtil.getFormat(reader);
+				}
 
 				requestTable = CsvUtil.readTable(reader, format);
 			} finally {
