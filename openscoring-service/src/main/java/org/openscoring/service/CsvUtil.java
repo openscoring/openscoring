@@ -45,11 +45,12 @@ public class CsvUtil {
 	public CsvPreference getFormat(BufferedReader reader) throws IOException {
 		reader.mark(10 * 1024);
 
-		CsvPreference[] templates = {CsvPreference.EXCEL_PREFERENCE, CsvPreference.EXCEL_NORTH_EUROPE_PREFERENCE, CsvPreference.TAB_PREFERENCE};
-		for(CsvPreference template : templates){
-			CsvPreference format = createFormat(template);
+		for(int i = 0; i < CsvUtil.DELIMITERS.length; i++){
+			char delimiter = CsvUtil.DELIMITERS[i];
 
 			try {
+				CsvPreference format = createFormat(delimiter);
+
 				if(checkFormat(reader, format)){
 					return format;
 				}
@@ -62,8 +63,8 @@ public class CsvUtil {
 	}
 
 	static
-	private CsvPreference createFormat(CsvPreference template){
-		CsvPreference.Builder builder = new CsvPreference.Builder(template);
+	private CsvPreference createFormat(char delimiter){
+		CsvPreference.Builder builder = new CsvPreference.Builder('\"', delimiter, "\n");
 		builder.useEncoder(new DefaultCsvEncoder());
 
 		return builder.build();
@@ -83,12 +84,14 @@ public class CsvUtil {
 		// Check the header line and the first ten lines
 		for(int line = 0; line < (1 + 10); line++){
 			List<String> row = parser.read();
+
 			if(row == null){
 				break;
-			} // End if
+			}
 
-			if(columns == 0 || columns == row.size()){
-				columns = row.size();
+			int rowColumns = row.size();
+			if((rowColumns > 1) && (columns == 0 || columns == rowColumns)){
+				columns = rowColumns;
 			} else
 
 			{
@@ -204,4 +207,6 @@ public class CsvUtil {
 			this.rows = rows;
 		}
 	}
+
+	private static final char[] DELIMITERS = {',', ';', '\t'};
 }
