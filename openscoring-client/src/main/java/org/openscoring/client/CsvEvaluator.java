@@ -46,6 +46,18 @@ public class CsvEvaluator extends ModelApplication {
 	private File input = null;
 
 	@Parameter (
+		names = "--csv-delimiter",
+		description = "CSV delimiter character"
+	)
+	private String delimiterChar = null;
+
+	@Parameter (
+		names = "--csv-quote",
+		description = "CSV quote character"
+	)
+	private String quoteChar = null;
+
+	@Parameter (
 		names = {"--output"},
 		description = "Output CSV file",
 		required = true
@@ -80,6 +92,16 @@ public class CsvEvaluator extends ModelApplication {
 
 			@Override
 			public SimpleResponse perform(WebTarget target) throws Exception {
+				String delimiterChar = getDelimiterChar();
+				String quoteChar = getQuoteChar();
+
+				if(delimiterChar != null){
+					target = target.queryParam("delimiterChar", delimiterChar);
+
+					if(quoteChar != null){
+						target = target.queryParam("quoteChar", quoteChar);
+					}
+				}
 
 				try(InputStream is = new FileInputStream(getInput())){
 
@@ -121,6 +143,22 @@ public class CsvEvaluator extends ModelApplication {
 
 	public void setInput(File input){
 		this.input = input;
+	}
+
+	public String getDelimiterChar(){
+		return this.delimiterChar;
+	}
+
+	public void setDelimiterChar(String delimiterChar){
+		this.delimiterChar = delimiterChar;
+	}
+
+	public String getQuoteChar(){
+		return this.quoteChar;
+	}
+
+	public void setQuoteChar(String quoteChar){
+		this.quoteChar = quoteChar;
 	}
 
 	public File getOutput(){
