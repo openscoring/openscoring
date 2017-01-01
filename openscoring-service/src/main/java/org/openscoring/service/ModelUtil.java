@@ -182,12 +182,12 @@ public class ModelUtil {
 			StringBuilder sb = new StringBuilder();
 
 			Double leftMargin = interval.getLeftMargin();
-			sb.append(leftMargin != null ? leftMargin : "-\u221e");
+			sb.append(Double.toString(leftMargin != null ? leftMargin : Double.NEGATIVE_INFINITY));
 
 			sb.append(", ");
 
 			Double rightMargin = interval.getRightMargin();
-			sb.append(rightMargin != null ? rightMargin : "\u221e");
+			sb.append(Double.toString(rightMargin != null ? rightMargin : Double.POSITIVE_INFINITY));
 
 			String value = sb.toString();
 
