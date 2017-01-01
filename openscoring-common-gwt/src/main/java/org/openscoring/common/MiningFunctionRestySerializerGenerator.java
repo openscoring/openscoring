@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015 Villu Ruusmann
+ * Copyright (c) 2016 Villu Ruusmann
  *
  * This file is part of Openscoring
  *
@@ -18,22 +18,25 @@
  */
 package org.openscoring.common;
 
-import java.io.IOException;
-
-import com.fasterxml.jackson.core.JsonGenerator;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonSerializer;
-import com.fasterxml.jackson.databind.SerializerProvider;
 import com.google.common.annotations.GwtIncompatible;
-import org.dmg.pmml.MiningFunctionType;
+import com.google.gwt.core.ext.typeinfo.JType;
+import com.google.gwt.core.ext.typeinfo.TypeOracle;
+import org.dmg.pmml.MiningFunction;
+import org.fusesource.restygwt.rebind.JsonEncoderDecoderClassCreator;
+import org.fusesource.restygwt.rebind.RestyJsonSerializerGenerator;
 
 @GwtIncompatible (
-	value = "MiningFunctionTypeSerializer"
+	value = "MiningFunctionRestySerializerGenerator"
 )
-public class MiningFunctionTypeSerializer extends JsonSerializer<MiningFunctionType> {
+public class MiningFunctionRestySerializerGenerator implements RestyJsonSerializerGenerator {
 
 	@Override
-	public void serialize(MiningFunctionType miningFunctionType, JsonGenerator generator, SerializerProvider provider) throws IOException, JsonProcessingException {
-		generator.writeString(miningFunctionType.value());
+	public Class<? extends JsonEncoderDecoderClassCreator> getGeneratorClass(){
+		return EnumSerializerGenerator.class;
+	}
+
+	@Override
+	public JType getType(TypeOracle typeOracle){
+		return typeOracle.findType(MiningFunction.class.getName());
 	}
 }

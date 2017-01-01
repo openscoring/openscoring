@@ -191,7 +191,7 @@ public class ModelRegistry {
 
 		ModelEvaluatorFactory modelEvaluatorFactory = ModelEvaluatorFactory.newInstance();
 
-		return modelEvaluatorFactory.newModelManager(pmml);
+		return modelEvaluatorFactory.newModelEvaluator(pmml);
 	}
 
 	static

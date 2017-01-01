@@ -62,7 +62,7 @@
 		</dependency>
 		<dependency>
 			<groupId>org.jpmml</groupId>
-			<artifactId>pmml-extension</artifactId>
+			<artifactId>pmml-evaluator-extension</artifactId>
 		</dependency>
 
 		<!--

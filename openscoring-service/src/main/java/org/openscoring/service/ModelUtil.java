@@ -19,22 +19,25 @@
 package org.openscoring.service;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.google.common.base.Function;
+import com.google.common.collect.Lists;
 import org.dmg.pmml.DataField;
 import org.dmg.pmml.DataType;
 import org.dmg.pmml.FieldName;
 import org.dmg.pmml.Interval;
-import org.dmg.pmml.MiningField;
 import org.dmg.pmml.OpType;
-import org.dmg.pmml.OutputField;
-import org.dmg.pmml.Target;
 import org.dmg.pmml.Value;
-import org.jpmml.evaluator.EvaluatorUtil;
+import org.jpmml.evaluator.HasGroupFields;
+import org.jpmml.evaluator.InputField;
 import org.jpmml.evaluator.ModelEvaluator;
+import org.jpmml.evaluator.OutputField;
 import org.jpmml.evaluator.OutputUtil;
+import org.jpmml.evaluator.TargetField;
 import org.jpmml.evaluator.TypeUtil;
 import org.openscoring.common.Field;
 
@@ -47,17 +50,23 @@ public class ModelUtil {
 	public Map<String, List<Field>> encodeSchema(ModelEvaluator<?> evaluator){
 		Map<String, List<Field>> result = new LinkedHashMap<>();
 
-		List<FieldName> activeFields = evaluator.getActiveFields();
-		List<FieldName> groupFields = evaluator.getGroupFields();
+		List<InputField> activeFields = evaluator.getActiveFields();
+		List<InputField> groupFields = Collections.emptyList();
 
-		result.put("activeFields", encodeMiningFields(activeFields, evaluator));
-		result.put("groupFields", encodeMiningFields(groupFields, evaluator));
+		if(evaluator instanceof HasGroupFields){
+			HasGroupFields hasGroupFields = (HasGroupFields)evaluator;
 
-		List<FieldName> targetFields = EvaluatorUtil.getTargetFields(evaluator);
+			groupFields = hasGroupFields.getGroupFields();
+		}
 
-		result.put("targetFields", encodeMiningFields(targetFields, evaluator));
+		result.put("activeFields", encodeInputFields(activeFields));
+		result.put("groupFields", encodeInputFields(groupFields));
 
-		List<FieldName> outputFields = EvaluatorUtil.getOutputFields(evaluator);
+		List<TargetField> targetFields = evaluator.getTargetFields();
+
+		result.put("targetFields", encodeTargetFields(targetFields));
+
+		List<OutputField> outputFields = evaluator.getOutputFields();
 
 		result.put("outputFields", encodeOutputFields(outputFields, evaluator));
 
@@ -65,79 +74,101 @@ public class ModelUtil {
 	}
 
 	static
-	private List<Field> encodeMiningFields(List<FieldName> names, ModelEvaluator<?> evaluator){
-		List<Field> fields = new ArrayList<>();
+	private List<Field> encodeInputFields(List<InputField> inputFields){
+		Function<InputField, Field> function = new Function<InputField, Field>(){
 
-		for(FieldName name : names){
-			DataField dataField = evaluator.getDataField(name);
-			MiningField miningField = evaluator.getMiningField(name);
-			Target target = evaluator.getTarget(name);
+			@Override
+			public Field apply(InputField inputField){
+				FieldName name = inputField.getName();
 
-			DataType dataType = dataField.getDataType();
+				DataField dataField = (DataField)inputField.getField();
 
-			OpType opType = null;
+				Field field = new Field(name.getValue());
+				field.setName(dataField.getDisplayName());
+				field.setDataType(inputField.getDataType());
+				field.setOpType(inputField.getOpType());
+				field.setValues(encodeValues(dataField));
 
-			if(target != null){
-				opType = target.getOpType();
-			} // End if
-
-			if(opType == null){
-
-				if(miningField != null){
-					opType = miningField.getOpType();
-				} // End if
-
-				if(opType == null){
-					opType = dataField.getOpType();
-				}
-			} // End if
-
-			// A "phantom" default target field
-			if(name == null){
-				name = ModelResource.DEFAULT_NAME;
+				return field;
 			}
+		};
 
-			Field field = new Field(name.getValue());
-			field.setName(dataField.getDisplayName());
-			field.setDataType(dataType);
-			field.setOpType(opType);
-			field.setValues(encodeValues(dataField));
-
-			fields.add(field);
-		}
+		List<Field> fields = new ArrayList<>(Lists.transform(inputFields, function));
 
 		return fields;
 	}
 
 	static
-	private List<Field> encodeOutputFields(List<FieldName> names, ModelEvaluator<?> evaluator){
-		List<Field> fields = new ArrayList<>();
+	private List<Field> encodeTargetFields(List<TargetField> targetFields){
+		Function<TargetField, Field> function = new Function<TargetField, Field>(){
 
-		for(FieldName name : names){
-			OutputField outputField = EvaluatorUtil.getOutputField(evaluator, name);
+			@Override
+			public Field apply(TargetField targetField){
+				FieldName name = targetField.getName();
 
-			DataType dataType = null;
-
-			OpType opType = null;
-
-			try {
-				dataType = OutputUtil.getDataType(outputField, evaluator);
-
-				opType = outputField.getOpType();
-				if(opType == null){
-					opType = TypeUtil.getOpType(dataType);
+				// A "phantom" default target field
+				if(targetField.isSynthetic()){
+					name = ModelResource.DEFAULT_NAME;
 				}
-			} catch(Exception e){
-				// Ignored
+
+				DataField dataField = targetField.getDataField();
+
+				Field field = new Field(name.getValue());
+				field.setName(dataField.getDisplayName());
+				field.setDataType(targetField.getDataType());
+				field.setOpType(targetField.getOpType());
+				field.setValues(encodeValues(dataField));
+
+				return field;
 			}
+		};
 
-			Field field = new Field(name.getValue());
-			field.setName(outputField.getDisplayName());
-			field.setDataType(dataType);
-			field.setOpType(opType);
+		List<Field> fields = new ArrayList<>(Lists.transform(targetFields, function));
 
-			fields.add(field);
-		}
+		return fields;
+	}
+
+	static
+	private List<Field> encodeOutputFields(List<OutputField> outputFields, final ModelEvaluator<?> evaluator){
+		Function<OutputField, Field> function = new Function<OutputField, Field>(){
+
+			@Override
+			public Field apply(OutputField outputField){
+				FieldName name = outputField.getName();
+
+				org.dmg.pmml.OutputField pmmlOutputField = outputField.getOutputField();
+
+				DataType dataType = outputField.getDataType();
+				OpType opType = outputField.getOpType();
+
+				if(dataType == null){
+
+					try {
+						dataType = OutputUtil.getDataType(pmmlOutputField, evaluator);
+					} catch(Exception e){
+						// Ignored
+					}
+				}
+
+				if(opType == null){
+
+					try {
+						opType = TypeUtil.getOpType(dataType);
+					} catch(Exception e){
+						// Ignored
+					}
+				}
+
+				Field field = new Field(name.getValue());
+				field.setName(pmmlOutputField.getDisplayName());
+				field.setDataType(outputField.getDataType());
+				field.setOpType(outputField.getOpType());
+
+				return field;
+			}
+		};
+
+		List<Field> fields = new ArrayList<>(Lists.transform(outputFields, function));
 
 		return fields;
 	}

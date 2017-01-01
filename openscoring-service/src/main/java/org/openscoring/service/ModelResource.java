@@ -74,6 +74,8 @@ import org.jpmml.evaluator.EvaluationException;
 import org.jpmml.evaluator.Evaluator;
 import org.jpmml.evaluator.EvaluatorUtil;
 import org.jpmml.evaluator.FieldValue;
+import org.jpmml.evaluator.HasGroupFields;
+import org.jpmml.evaluator.InputField;
 import org.jpmml.evaluator.ModelEvaluator;
 import org.openscoring.common.BatchEvaluationRequest;
 import org.openscoring.common.BatchEvaluationResponse;
@@ -394,15 +396,19 @@ public class ModelResource {
 		try {
 			ModelEvaluator<?> evaluator = model.getEvaluator();
 
-			List<FieldName> groupFields = evaluator.getGroupFields();
-			if(groupFields.size() == 1){
-				FieldName groupField = groupFields.get(0);
+			if(evaluator instanceof HasGroupFields){
+				HasGroupFields hasGroupFields = (HasGroupFields)evaluator;
 
-				requests = aggregateRequests(groupField, requests);
-			} else
+				List<InputField> groupFields = hasGroupFields.getGroupFields();
+				if(groupFields.size() == 1){
+					InputField groupField = groupFields.get(0);
 
-			if(groupFields.size() > 1){
-				throw new EvaluationException("Too many group fields");
+					requests = aggregateRequests(groupField.getName(), requests);
+				} else
+
+				if(groupFields.size() > 1){
+					throw new EvaluationException("Too many group fields");
+				}
 			}
 
 			for(EvaluationRequest request : requests){
@@ -483,10 +489,10 @@ public class ModelResource {
 	}
 
 	static
-	protected List<EvaluationRequest> aggregateRequests(FieldName groupField, List<EvaluationRequest> requests){
+	protected List<EvaluationRequest> aggregateRequests(FieldName groupName, List<EvaluationRequest> requests){
 		Map<Object, ListMultimap<String, Object>> groupedArguments = new LinkedHashMap<>();
 
-		String key = groupField.getValue();
+		String key = groupName.getValue();
 
 		for(EvaluationRequest request : requests){
 			Map<String, ?> requestArguments = request.getArguments();
@@ -543,18 +549,20 @@ public class ModelResource {
 
 		Map<FieldName, FieldValue> arguments = new LinkedHashMap<>();
 
-		List<FieldName> activeFields = evaluator.getActiveFields();
-		for(FieldName activeField : activeFields){
-			String key = activeField.getValue();
+		List<InputField> activeFields = evaluator.getActiveFields();
+		for(InputField activeField : activeFields){
+			FieldName activeName = activeField.getName();
+
+			String key = activeName.getValue();
 
 			Object value = requestArguments.get(key);
 			if(value == null && !requestArguments.containsKey(key)){
 				logger.warn("Evaluation request {} does not specify an active field {}", request.getId(), key);
 			}
 
-			FieldValue activeValue = EvaluatorUtil.prepare(evaluator, activeField, value);
+			FieldValue activeValue = activeField.prepare(value);
 
-			arguments.put(activeField, activeValue);
+			arguments.put(activeName, activeValue);
 		}
 
 		logger.debug("Evaluation request {} has prepared arguments: {}", request.getId(), arguments);

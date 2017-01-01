@@ -20,20 +20,20 @@ package org.openscoring.common;
 
 import java.io.IOException;
 
-import com.fasterxml.jackson.core.JsonParser;
+import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.DeserializationContext;
-import com.fasterxml.jackson.databind.JsonDeserializer;
+import com.fasterxml.jackson.databind.JsonSerializer;
+import com.fasterxml.jackson.databind.SerializerProvider;
 import com.google.common.annotations.GwtIncompatible;
-import org.dmg.pmml.MiningFunctionType;
+import org.dmg.pmml.MiningFunction;
 
 @GwtIncompatible (
-	value = "MiningFunctionTypeDeserializer"
+	value = "MiningFunctionSerializer"
 )
-public class MiningFunctionTypeDeserializer extends JsonDeserializer<MiningFunctionType> {
+public class MiningFunctionSerializer extends JsonSerializer<MiningFunction> {
 
 	@Override
-	public MiningFunctionType deserialize(JsonParser parser, DeserializationContext context) throws IOException, JsonProcessingException {
-		return MiningFunctionType.fromValue(parser.getText());
+	public void serialize(MiningFunction miningFunction, JsonGenerator generator, SerializerProvider provider) throws IOException, JsonProcessingException {
+		generator.writeString(miningFunction.value());
 	}
 }

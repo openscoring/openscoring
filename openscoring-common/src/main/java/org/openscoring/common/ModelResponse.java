@@ -24,7 +24,7 @@ import java.util.Map;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.google.common.base.MoreObjects;
 import com.google.common.base.MoreObjects.ToStringHelper;
-import org.dmg.pmml.MiningFunctionType;
+import org.dmg.pmml.MiningFunction;
 
 @JsonInclude (
 	value = JsonInclude.Include.NON_EMPTY
@@ -33,7 +33,7 @@ public class ModelResponse extends SimpleResponse {
 
 	private String id = null;
 
-	private MiningFunctionType miningFunction = null;
+	private MiningFunction miningFunction = null;
 
 	private String summary = null;
 
@@ -74,11 +74,11 @@ public class ModelResponse extends SimpleResponse {
 		this.id = id;
 	}
 
-	public MiningFunctionType getMiningFunction(){
+	public MiningFunction getMiningFunction(){
 		return this.miningFunction;
 	}
 
-	public void setMiningFunction(MiningFunctionType miningFunction){
+	public void setMiningFunction(MiningFunction miningFunction){
 		this.miningFunction = miningFunction;
 	}
 

@@ -5,7 +5,7 @@ REST web service for scoring PMML models.
 
 # Features #
 
-* Full support for PMML specification versions 3.0 through 4.2. The evaluation is handled by the [JPMML-Evaluator] (https://github.com/jpmml/jpmml-evaluator) library.
+* Full support for PMML specification versions 3.0 through 4.3. The evaluation is handled by the [JPMML-Evaluator] (https://github.com/jpmml/jpmml-evaluator) library.
 * Simple and powerful REST API:
   * Model deployment and undeployment.
   * Model evaluation in single prediction, batch prediction and CSV prediction modes.

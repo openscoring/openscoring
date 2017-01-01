@@ -21,7 +21,7 @@ package org.openscoring.common;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.google.common.annotations.GwtIncompatible;
 import org.dmg.pmml.DataType;
-import org.dmg.pmml.MiningFunctionType;
+import org.dmg.pmml.MiningFunction;
 import org.dmg.pmml.OpType;
 
 @GwtIncompatible (
@@ -33,8 +33,8 @@ public class OpenscoringModule extends SimpleModule {
 		addSerializer(DataType.class, new DataTypeSerializer());
 		addDeserializer(DataType.class, new DataTypeDeserializer());
 
-		addSerializer(MiningFunctionType.class, new MiningFunctionTypeSerializer());
-		addDeserializer(MiningFunctionType.class, new MiningFunctionTypeDeserializer());
+		addSerializer(MiningFunction.class, new MiningFunctionSerializer());
+		addDeserializer(MiningFunction.class, new MiningFunctionDeserializer());
 
 		addSerializer(OpType.class, new OpTypeSerializer());
 		addDeserializer(OpType.class, new OpTypeDeserializer());

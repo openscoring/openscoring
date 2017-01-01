@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Villu Ruusmann
+ * Copyright (c) 2015 Villu Ruusmann
  *
  * This file is part of Openscoring
  *
@@ -18,25 +18,22 @@
  */
 package org.openscoring.common;
 
+import java.io.IOException;
+
+import com.fasterxml.jackson.core.JsonParser;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.DeserializationContext;
+import com.fasterxml.jackson.databind.JsonDeserializer;
 import com.google.common.annotations.GwtIncompatible;
-import com.google.gwt.core.ext.typeinfo.JType;
-import com.google.gwt.core.ext.typeinfo.TypeOracle;
-import org.dmg.pmml.MiningFunctionType;
-import org.fusesource.restygwt.rebind.JsonEncoderDecoderClassCreator;
-import org.fusesource.restygwt.rebind.RestyJsonSerializerGenerator;
+import org.dmg.pmml.MiningFunction;
 
 @GwtIncompatible (
-	value = "MiningFunctionTypeRestySerializerGenerator"
+	value = "MiningFunctionDeserializer"
 )
-public class MiningFunctionTypeRestySerializerGenerator implements RestyJsonSerializerGenerator {
+public class MiningFunctionDeserializer extends JsonDeserializer<MiningFunction> {
 
 	@Override
-	public Class<? extends JsonEncoderDecoderClassCreator> getGeneratorClass(){
-		return EnumSerializerGenerator.class;
-	}
-
-	@Override
-	public JType getType(TypeOracle typeOracle){
-		return typeOracle.findType(MiningFunctionType.class.getName());
+	public MiningFunction deserialize(JsonParser parser, DeserializationContext context) throws IOException, JsonProcessingException {
+		return MiningFunction.fromValue(parser.getText());
 	}
 }
