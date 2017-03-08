@@ -145,17 +145,17 @@
 			<dependency>
 				<groupId>org.eclipse.jetty</groupId>
 				<artifactId>jetty-server</artifactId>
-				<version>9.2.20.v20161216</version>
+				<version>9.2.21.v20170120</version>
 			</dependency>
 			<dependency>
 				<groupId>org.eclipse.jetty</groupId>
 				<artifactId>jetty-servlet</artifactId>
-				<version>9.2.20.v20161216</version>
+				<version>9.2.21.v20170120</version>
 			</dependency>
 			<dependency>
 				<groupId>org.eclipse.jetty</groupId>
 				<artifactId>jetty-webapp</artifactId>
-				<version>9.2.20.v20161216</version>
+				<version>9.2.21.v20170120</version>
 			</dependency>
 
 			<dependency>
