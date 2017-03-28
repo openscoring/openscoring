@@ -1,0 +1,11 @@
+target/
+logs/
+.project
+.classpath
+*.prefs
+*.iml
+.idea
+/nbactions.xml
+/nb-configuration.xml
+/nbactions-artifactory.xml
+dependency-reduced-pom.xml
