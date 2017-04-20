@@ -5,7 +5,7 @@ REST web service for scoring PMML models.
 
 # Features #
 
-* Full support for PMML specification versions 3.0 through 4.3. The evaluation is handled by the [JPMML-Evaluator] (https://github.com/jpmml/jpmml-evaluator) library.
+* Full support for PMML specification versions 3.0 through 4.3. The evaluation is handled by the [JPMML-Evaluator](https://github.com/jpmml/jpmml-evaluator) library.
 * Simple and powerful REST API:
   * Model deployment and undeployment.
   * Model evaluation in single prediction, batch prediction and CSV prediction modes.
@@ -22,7 +22,7 @@ REST web service for scoring PMML models.
 
 The project requires Java 1.7 or newer to run.
 
-Enter the project root directory and build using [Apache Maven] (http://maven.apache.org/):
+Enter the project root directory and build using [Apache Maven](http://maven.apache.org/):
 ```
 mvn clean install
 ```
@@ -38,7 +38,7 @@ The build produces an executable uber-JAR file `openscoring-server/target/server
 java -jar target/server-executable-1.3-SNAPSHOT.jar
 ```
 
-By default, the REST web service is started at [http://localhost:8080/openscoring] (http://localhost:8080/openscoring/). The main class `org.openscoring.server.Main` accepts a number of configuration options for URI customization and other purposes. Please specify `--help` for more information.
+By default, the REST web service is started at [http://localhost:8080/openscoring](http://localhost:8080/openscoring/). The main class `org.openscoring.server.Main` accepts a number of configuration options for URI customization and other purposes. Please specify `--help` for more information.
 
 The working directory contains a sample Java logging configuration file `logging.properties.sample` that should be copied over to a new file `logging.properties` and customized to current needs. A Java logging configuration file can be imposed on the JVM by defining the `java.util.logging.config.file` system property:
 ```
@@ -63,7 +63,7 @@ modelRegistry {
 
 The build produces a WAR file `openscoring-webapp/target/openscoring-webapp-1.3-SNAPSHOT.war`. This WAR file can be deployed using any Java web container.
 
-The web application can be launced using [Jetty Maven Plugin] (http://eclipse.org/jetty/documentation/current/jetty-maven-plugin.html). Change the working directory to `openscoring-webapp` and execute the following command:
+The web application can be launced using [Jetty Maven Plugin](http://eclipse.org/jetty/documentation/current/jetty-maven-plugin.html). Change the working directory to `openscoring-webapp` and execute the following command:
 ```
 mvn jetty:run-war
 ```
@@ -113,7 +113,7 @@ Metric REST API endpoints:
 
 By default, the "admin" role is granted to all HTTP requests that originate from the local network address.
 
-In case of an error (ie. response status codes 4XX or 5XX), the response body is a JSON serialized form of an `org.openscoring.common.SimpleResponse`  [(source)] (https://github.com/jpmml/openscoring/blob/master/openscoring-common/src/main/java/org/openscoring/common/SimpleResponse.java) object.
+In case of an error (ie. response status codes 4XX or 5XX), the response body is a JSON serialized form of an `org.openscoring.common.SimpleResponse`  [(source)](https://github.com/jpmml/openscoring/blob/master/openscoring-common/src/main/java/org/openscoring/common/SimpleResponse.java) object.
 
 Java clients may use the following idiom to check if an operation succeeded or failed:
 ```java
@@ -136,7 +136,7 @@ Creates or updates a model.
 
 The request body is a PMML document (indicated by content-type header `text/xml` or `application/xml`).
 
-The response body is a JSON serialized form of an `org.openscoring.common.ModelResponse` [(source)] (https://github.com/jpmml/openscoring/blob/master/openscoring-common/src/main/java/org/openscoring/common/ModelResponse.java) object.
+The response body is a JSON serialized form of an `org.openscoring.common.ModelResponse` [(source)](https://github.com/jpmml/openscoring/blob/master/openscoring-common/src/main/java/org/openscoring/common/ModelResponse.java) object.
 
 Response status codes:
 * 200 OK. The model was updated.
@@ -161,7 +161,7 @@ curl -X PUT --data-binary @DecisionTreeIris.pmml.gz -H "Content-encoding: gzip" 
 
 Gets the summaries of all models.
 
-The response body is a JSON serialized form of an `org.openscoring.common.BatchModelResponse` [(source)] (https://github.com/jpmml/openscoring/blob/master/openscoring-common/src/main/java/org/openscoring/common/BatchModelResponse.java) object.
+The response body is a JSON serialized form of an `org.openscoring.common.BatchModelResponse` [(source)](https://github.com/jpmml/openscoring/blob/master/openscoring-common/src/main/java/org/openscoring/common/BatchModelResponse.java) object.
 
 Response status codes:
 * 200 OK. The model collection was queried.
@@ -175,7 +175,7 @@ curl -X GET http://localhost:8080/openscoring/model
 
 Gets the summary of a model.
 
-The response body is a JSON serialized form of an `org.openscoring.common.ModelResponse` [(source)] (https://github.com/jpmml/openscoring/blob/master/openscoring-common/src/main/java/org/openscoring/common/ModelResponse.java) object.
+The response body is a JSON serialized form of an `org.openscoring.common.ModelResponse` [(source)](https://github.com/jpmml/openscoring/blob/master/openscoring-common/src/main/java/org/openscoring/common/ModelResponse.java) object.
 
 Response status codes:
 * 200 OK. The model was queried.
@@ -264,7 +264,7 @@ Sample response:
 }
 ```
 
-Field definitions are retrieved from the [MiningSchema] (http://www.dmg.org/v4-2-1/MiningSchema.html) and [Output] (http://www.dmg.org/v4-2-1/Output.html) elements of the PMML document. The active and group fields relate to the `arguments` attribute of the evaluation request, whereas the target and output fields relate to the `result` attribute of the evaluation response (see below).
+Field definitions are retrieved from the [MiningSchema](http://www.dmg.org/v4-2-1/MiningSchema.html) and [Output](http://www.dmg.org/v4-2-1/Output.html) elements of the PMML document. The active and group fields relate to the `arguments` attribute of the evaluation request, whereas the target and output fields relate to the `result` attribute of the evaluation response (see below).
 
 ##### GET /model/${id}/pmml
 
@@ -288,9 +288,9 @@ curl -X GET http://localhost:8080/openscoring/model/DecisionTreeIris/pmml
 
 Evaluates data in "single prediction" mode.
 
-The request body is a JSON serialized form of an `org.openscoring.common.EvaluationRequest` [(source)] (https://github.com/jpmml/openscoring/blob/master/openscoring-common/src/main/java/org/openscoring/common/EvaluationRequest.java) object.
+The request body is a JSON serialized form of an `org.openscoring.common.EvaluationRequest` [(source)](https://github.com/jpmml/openscoring/blob/master/openscoring-common/src/main/java/org/openscoring/common/EvaluationRequest.java) object.
 
-The response body is a JSON serialized form of an `org.openscoring.common.EvaluationResponse` [(source)] (https://github.com/jpmml/openscoring/blob/master/openscoring-common/src/main/java/org/openscoring/common/EvaluationResponse.java) object.
+The response body is a JSON serialized form of an `org.openscoring.common.EvaluationResponse` [(source)](https://github.com/jpmml/openscoring/blob/master/openscoring-common/src/main/java/org/openscoring/common/EvaluationResponse.java) object.
 
 Response status codes:
 * 200 OK. The evaluation was successful.
@@ -334,9 +334,9 @@ Sample response:
 
 Evaluates data in "batch prediction" mode.
 
-The request body is a JSON serialized form of an `org.openscoring.common.BatchEvaluationRequest` [(source)] (https://github.com/jpmml/openscoring/blob/master/openscoring-common/src/main/java/org/openscoring/common/BatchEvaluationRequest.java) object.
+The request body is a JSON serialized form of an `org.openscoring.common.BatchEvaluationRequest` [(source)](https://github.com/jpmml/openscoring/blob/master/openscoring-common/src/main/java/org/openscoring/common/BatchEvaluationRequest.java) object.
 
-The response body is a JSON serialized form of an `org.openscoring.common.BatchEvaluationResponse` [(source)] (https://github.com/jpmml/openscoring/blob/master/openscoring-common/src/main/java/org/openscoring/common/BatchEvaluationResponse.java) object.
+The response body is a JSON serialized form of an `org.openscoring.common.BatchEvaluationResponse` [(source)](https://github.com/jpmml/openscoring/blob/master/openscoring-common/src/main/java/org/openscoring/common/BatchEvaluationResponse.java) object.
 
 Response status codes:
 * 200 OK. The evaluation was successful.
@@ -403,7 +403,7 @@ The evaluation is performed at "all-records-or-nothing" isolation level. If the 
 
 Deletes a model.
 
-The response body is a JSON serialized form of an `org.openscoring.common.SimpleResponse` [(source)] (https://github.com/jpmml/openscoring/blob/master/openscoring-common/src/main/java/org/openscoring/common/SimpleResponse.java) object.
+The response body is a JSON serialized form of an `org.openscoring.common.SimpleResponse` [(source)](https://github.com/jpmml/openscoring/blob/master/openscoring-common/src/main/java/org/openscoring/common/SimpleResponse.java) object.
 
 Response status codes:
 * 200 OK. The model was deleted.
@@ -416,7 +416,7 @@ Sample cURL invocation:
 curl -X DELETE http://localhost:8080/openscoring/model/DecisionTreeIris
 ```
 
-An HTTP PUT or DELETE method can be masked as an HTTP POST method by using the [HTTP method override mechanism] (https://jersey.java.net/apidocs/latest/jersey/org/glassfish/jersey/server/filter/HttpMethodOverrideFilter.html).
+An HTTP PUT or DELETE method can be masked as an HTTP POST method by using the [HTTP method override mechanism](https://jersey.java.net/apidocs/latest/jersey/org/glassfish/jersey/server/filter/HttpMethodOverrideFilter.html).
 
 Sample cURL invocation that employs the `X-HTTP-Method-Override` request header:
 ```
@@ -434,7 +434,7 @@ curl -X POST http://localhost:8080/openscoring/model/DecisionTreeIris?_method=DE
 
 Gets the snapshot of the metric set of a model.
 
-The response body is a JSON serialized form of an `org.openscoring.common.MetricSetResponse` [(source)] (https://github.com/jpmml/openscoring/blob/master/openscoring-common/src/main/java/org/openscoring/common/MetricSetResponse.java) object.
+The response body is a JSON serialized form of an `org.openscoring.common.MetricSetResponse` [(source)](https://github.com/jpmml/openscoring/blob/master/openscoring-common/src/main/java/org/openscoring/common/MetricSetResponse.java) object.
 
 Response status codes:
 * 200 OK. The evaluation was successful.
@@ -484,8 +484,8 @@ Sample response:
 
 # License #
 
-Openscoring is licensed under the [GNU Affero General Public License (AGPL) version 3.0] (http://www.gnu.org/licenses/agpl-3.0.html). Other licenses are available on request.
+Openscoring is licensed under the [GNU Affero General Public License (AGPL) version 3.0](http://www.gnu.org/licenses/agpl-3.0.html). Other licenses are available on request.
 
 # Additional information #
 
-Please contact [info@openscoring.io] (mailto:info@openscoring.io)
+Please contact [info@openscoring.io](mailto:info@openscoring.io)
