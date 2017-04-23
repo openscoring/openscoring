@@ -198,7 +198,7 @@ public class ModelResource {
 			throw new InternalServerErrorException("Concurrent modification");
 		}
 
-		ModelResponse entity = createModelResponse(id, model, true);
+		ModelResponse entity = createModelResponse(id, model, false);
 
 		if(oldModel != null){
 			return (Response.ok().entity(entity)).build();
@@ -550,14 +550,15 @@ public class ModelResource {
 		Map<FieldName, FieldValue> arguments = new LinkedHashMap<>();
 
 		List<InputField> activeFields = evaluator.getActiveFields();
-		for(InputField activeField : activeFields){
+		for (InputField activeField : activeFields) {
 			FieldName activeName = activeField.getName();
 
 			String key = activeName.getValue();
 
 			Object value = requestArguments.get(key);
-			if(value == null && !requestArguments.containsKey(key)){
-				logger.warn("Evaluation request {} does not specify an active field {}", request.getId(), key);
+			if (value == null && !requestArguments.containsKey(key)) {
+				logger.debug("Evaluation request {} does not specify an active field {}", request.getId(), key);
+				value = 0D;
 			}
 
 			FieldValue activeValue = activeField.prepare(value);
