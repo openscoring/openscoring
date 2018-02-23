@@ -95,7 +95,6 @@ Model REST API endpoints:
 | HTTP method | Endpoint | Required role(s) | Description |
 | ----------- | -------- | ---------------- | ----------- |
 | GET | /model | - | Get the summaries of all models |
-| POST | /model | admin | Deploy a model |
 | PUT | /model/${id} | admin | Deploy a model |
 | GET | /model/${id} | - | Get the summary of a model |
 | GET | /model/${id}/pmml | admin | Download a model as a PMML document |
