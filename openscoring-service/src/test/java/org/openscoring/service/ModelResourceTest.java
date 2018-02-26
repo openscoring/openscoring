@@ -41,6 +41,7 @@ import org.glassfish.jersey.test.JerseyTest;
 import org.junit.Test;
 import org.openscoring.common.BatchEvaluationRequest;
 import org.openscoring.common.BatchEvaluationResponse;
+import org.openscoring.common.BatchModelResponse;
 import org.openscoring.common.EvaluationRequest;
 import org.openscoring.common.EvaluationResponse;
 import org.openscoring.common.Headers;
@@ -50,6 +51,7 @@ import org.supercsv.prefs.CsvPreference;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 
 public class ModelResourceTest extends JerseyTest {
 
@@ -74,34 +76,49 @@ public class ModelResourceTest extends JerseyTest {
 
 		assertEquals("Iris", extractSuffix(id));
 
+		BatchModelResponse batchModelResponse = queryBatch();
+
+		List<ModelResponse> modelResponses = batchModelResponse.getResponses();
+
+		assertNull(modelResponses);
+
 		deploy(id);
+
+		batchModelResponse = queryBatch();
+
+		modelResponses = batchModelResponse.getResponses();
+
+		assertEquals(1, modelResponses.size());
 
 		download(id);
 
-		List<EvaluationRequest> records = loadRecords(id);
+		List<EvaluationRequest> evaluationRequests = loadRecords(id);
 
-		EvaluationRequest request = records.get(0);
+		EvaluationRequest evaluationRequest = evaluationRequests.get(0);
 
-		EvaluationResponse response = evaluate(id, request);
+		EvaluationResponse evaluationResponse = evaluate(id, evaluationRequest);
 
-		List<EvaluationRequest> requests = Arrays.asList(records.get(0), invalidate(records.get(50)), records.get(100));
+		assertEquals(evaluationRequest.getId(), evaluationResponse.getId());
 
-		BatchEvaluationRequest batchRequest = new BatchEvaluationRequest();
-		batchRequest.setRequests(requests);
+		EvaluationRequest invalidEvaluationRequest = invalidate(evaluationRequests.get(50));
 
-		BatchEvaluationResponse batchResponse = evaluateBatch(id, batchRequest);
+		evaluationRequests = Arrays.asList(evaluationRequests.get(0), invalidEvaluationRequest, evaluationRequests.get(100));
 
-		assertEquals(batchRequest.getId(), batchResponse.getId());
+		BatchEvaluationRequest batchEvaluationRequest = new BatchEvaluationRequest();
+		batchEvaluationRequest.setRequests(evaluationRequests);
 
-		List<EvaluationResponse> responses = batchResponse.getResponses();
+		BatchEvaluationResponse batchEvaluationResponse = evaluateBatch(id, batchEvaluationRequest);
 
-		assertEquals(requests.size(), responses.size());
+		assertEquals(batchEvaluationRequest.getId(), batchEvaluationResponse.getId());
 
-		EvaluationRequest invalidRequest = requests.get(1);
-		EvaluationResponse invalidResponse = responses.get(1);
+		List<EvaluationResponse> evaluationResponses = batchEvaluationResponse.getResponses();
 
-		assertEquals(invalidRequest.getId(), invalidResponse.getId());
-		assertNotNull(invalidResponse.getMessage());
+		assertEquals(evaluationRequests.size(), evaluationResponses.size());
+
+		EvaluationResponse invalidEvaluationResponse = evaluationResponses.get(1);
+
+		assertEquals(invalidEvaluationRequest.getId(), invalidEvaluationResponse.getId());
+		assertNotNull(invalidEvaluationResponse.getMessage());
 
 		undeploy(id);
 	}
@@ -114,21 +131,25 @@ public class ModelResourceTest extends JerseyTest {
 
 		deployForm(id);
 
-		List<EvaluationRequest> records = loadRecords(id);
+		query(id);
 
-		BatchEvaluationRequest batchRequest = new BatchEvaluationRequest();
-		batchRequest.setRequests(records);
+		List<EvaluationRequest> evaluationRequests = loadRecords(id);
 
-		BatchEvaluationResponse batchResponse = evaluateBatch(id, batchRequest);
+		BatchEvaluationRequest batchEvaluationRequest = new BatchEvaluationRequest();
+		batchEvaluationRequest.setRequests(evaluationRequests);
 
-		List<EvaluationRequest> aggregatedRecords = ModelResource.aggregateRequests(FieldName.create("transaction"), records);
+		BatchEvaluationResponse batchEvaluationResponse = evaluateBatch(id, batchEvaluationRequest);
 
-		batchRequest = new BatchEvaluationRequest("aggregate");
-		batchRequest.setRequests(aggregatedRecords);
+		assertEquals(batchEvaluationRequest.getId(), batchEvaluationResponse.getId());
 
-		batchResponse = evaluateBatch(id, batchRequest);
+		List<EvaluationRequest> aggregatedEvaluationRequests = ModelResource.aggregateRequests(FieldName.create("transaction"), evaluationRequests);
 
-		assertEquals(batchRequest.getId(), batchResponse.getId());
+		batchEvaluationRequest = new BatchEvaluationRequest("aggregate");
+		batchEvaluationRequest.setRequests(aggregatedEvaluationRequests);
+
+		batchEvaluationResponse = evaluateBatch(id, batchEvaluationRequest);
+
+		assertEquals(batchEvaluationRequest.getId(), batchEvaluationResponse.getId());
 
 		evaluateCsv(id);
 
@@ -168,10 +189,27 @@ public class ModelResourceTest extends JerseyTest {
 		}
 
 		assertEquals(201, response.getStatus());
+		assertNotNull(response.getHeaderString(Headers.SERVICE));
 
 		URI location = response.getLocation();
 
 		assertEquals("/model/" + id, location.getPath());
+
+		return response.readEntity(ModelResponse.class);
+	}
+
+	private BatchModelResponse queryBatch(){
+		Response response = target("model").request(MediaType.APPLICATION_JSON).get();
+
+		assertEquals(200, response.getStatus());
+
+		return response.readEntity(BatchModelResponse.class);
+	}
+
+	private ModelResponse query(String id){
+		Response response = target("model/" + id).request(MediaType.APPLICATION_JSON).get();
+
+		assertEquals(200, response.getStatus());
 
 		return response.readEntity(ModelResponse.class);
 	}
