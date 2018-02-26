@@ -27,6 +27,16 @@
 		<dependency>
 			<groupId>org.openscoring</groupId>
 			<artifactId>openscoring-service</artifactId>
+			<exclusions>
+				<exclusion>
+					<groupId>org.jpmml</groupId>
+					<artifactId>pmml-model-metro</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>org.jpmml</groupId>
+					<artifactId>pmml-model-moxy</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 
 		<dependency>
@@ -40,7 +50,7 @@
 			<plugin>
 				<groupId>org.eclipse.jetty</groupId>
 				<artifactId>jetty-maven-plugin</artifactId>
-				<version>9.2.21.v20170120</version>
+				<version>9.2.24.v20180105</version>
 				<configuration>
 					<webApp>
 						<contextPath>/openscoring</contextPath>
