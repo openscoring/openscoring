@@ -56,16 +56,16 @@ public class NetworkSecurityContextFilter implements ContainerRequestFilter {
 
 	@Inject
 	public NetworkSecurityContextFilter(@Named("openscoring") Config config){
-		Config networkConfig = config.getConfig("networkSecurityContextFilter");
+		Config filterConfig = config.getConfig("networkSecurityContextFilter");
 
-		List<String> trustedAddresses = networkConfig.getStringList("trustedAddresses");
+		List<String> trustedAddresses = filterConfig.getStringList("trustedAddresses");
 		if(trustedAddresses.size() > 0){
 			this.trustedAddresses = ImmutableSet.copyOf(trustedAddresses);
 		}
 	}
 
 	@Override
-	public void filter(ContainerRequestContext context){
+	public void filter(ContainerRequestContext requestContext){
 		SecurityContext securityContext = new NetworkSecurityContext(this.request){
 
 			private Set<String> trustedAddresses = NetworkSecurityContextFilter.this.trustedAddresses;
@@ -77,7 +77,7 @@ public class NetworkSecurityContextFilter implements ContainerRequestFilter {
 			}
 		};
 
-		context.setSecurityContext(securityContext);
+		requestContext.setSecurityContext(securityContext);
 	}
 
 	static

@@ -43,6 +43,7 @@ import org.openscoring.common.BatchEvaluationRequest;
 import org.openscoring.common.BatchEvaluationResponse;
 import org.openscoring.common.EvaluationRequest;
 import org.openscoring.common.EvaluationResponse;
+import org.openscoring.common.Headers;
 import org.openscoring.common.ModelResponse;
 import org.openscoring.common.SimpleResponse;
 import org.supercsv.prefs.CsvPreference;
@@ -146,6 +147,7 @@ public class ModelResourceTest extends JerseyTest {
 		}
 
 		assertEquals(201, response.getStatus());
+		assertNotNull(response.getHeaderString(Headers.SERVICE));
 
 		return response.readEntity(ModelResponse.class);
 	}
@@ -242,6 +244,7 @@ public class ModelResourceTest extends JerseyTest {
 		Response response = target("model/" + id).request(MediaType.APPLICATION_JSON).delete();
 
 		assertEquals(200, response.getStatus());
+		assertNotNull(response.getHeaderString(Headers.SERVICE));
 
 		return response.readEntity(SimpleResponse.class);
 	}

@@ -52,6 +52,11 @@
 		<url>https://github.com/jpmml/openscoring/issues</url>
 	</issueManagement>
 
+	<properties>
+		<service.name>Openscoring</service.name>
+		<service.version>${project.version}</service.version>
+	</properties>
+
 	<dependencyManagement>
 		<dependencies>
 			<dependency>
