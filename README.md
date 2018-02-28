@@ -20,7 +20,7 @@ REST web service for scoring PMML models.
 
 # Installation and Usage #
 
-The project requires Java 1.7 or newer to run.
+The project requires Java 1.8 or newer to run.
 
 Enter the project root directory and build using [Apache Maven](http://maven.apache.org/):
 ```
