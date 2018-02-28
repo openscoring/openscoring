@@ -30,9 +30,9 @@ import org.dmg.pmml.DataField;
 import org.dmg.pmml.FieldName;
 import org.dmg.pmml.Interval;
 import org.dmg.pmml.Value;
+import org.jpmml.evaluator.Evaluator;
 import org.jpmml.evaluator.HasGroupFields;
 import org.jpmml.evaluator.InputField;
-import org.jpmml.evaluator.ModelEvaluator;
 import org.jpmml.evaluator.OutputField;
 import org.jpmml.evaluator.TargetField;
 import org.openscoring.common.Field;
@@ -43,7 +43,7 @@ public class ModelUtil {
 	}
 
 	static
-	public Map<String, List<Field>> encodeSchema(ModelEvaluator<?> evaluator){
+	public Map<String, List<Field>> encodeSchema(Evaluator evaluator){
 		Map<String, List<Field>> result = new LinkedHashMap<>();
 
 		List<InputField> activeFields = evaluator.getActiveFields();
@@ -64,7 +64,7 @@ public class ModelUtil {
 
 		List<OutputField> outputFields = evaluator.getOutputFields();
 
-		result.put("outputFields", encodeOutputFields(outputFields, evaluator));
+		result.put("outputFields", encodeOutputFields(outputFields));
 
 		return result;
 	}
@@ -125,7 +125,7 @@ public class ModelUtil {
 	}
 
 	static
-	private List<Field> encodeOutputFields(List<OutputField> outputFields, final ModelEvaluator<?> evaluator){
+	private List<Field> encodeOutputFields(List<OutputField> outputFields){
 		Function<OutputField, Field> function = new Function<OutputField, Field>(){
 
 			@Override

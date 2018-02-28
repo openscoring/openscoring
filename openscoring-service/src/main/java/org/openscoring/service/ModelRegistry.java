@@ -111,9 +111,7 @@ public class ModelRegistry {
 
 		HashingInputStream hashingIs = new HashingInputStream(Hashing.md5(), countingIs);
 
-		ModelEvaluator<?> evaluator = unmarshal(hashingIs, this.validate);
-
-		PMML pmml = evaluator.getPMML();
+		PMML pmml = unmarshal(hashingIs, this.validate);
 
 		for(Class<? extends Visitor> visitorClazz : this.visitorClazzes){
 			Visitor visitor = visitorClazz.newInstance();
@@ -121,9 +119,13 @@ public class ModelRegistry {
 			visitor.applyTo(pmml);
 		}
 
-		evaluator.verify();
+		ModelEvaluatorFactory modelEvaluatorFactory = ModelEvaluatorFactory.newInstance();
 
-		Model model = new Model(evaluator);
+		ModelEvaluator<?> modelEvaluator = modelEvaluatorFactory.newModelEvaluator(pmml);
+
+		modelEvaluator.verify();
+
+		Model model = new Model(modelEvaluator);
 		model.putProperty(Model.PROPERTY_FILE_SIZE, countingIs.getCount());
 		model.putProperty(Model.PROPERTY_FILE_MD5SUM, (hashingIs.hash()).toString());
 
@@ -131,9 +133,11 @@ public class ModelRegistry {
 	}
 
 	public void store(Model model, OutputStream os) throws JAXBException {
-		ModelEvaluator<?> evaluator = model.getEvaluator();
+		ModelEvaluator<?> modelEvaluator = (ModelEvaluator<?>)model.getEvaluator();
 
-		marshal(evaluator, os);
+		PMML pmml = modelEvaluator.getPMML();
+
+		marshal(pmml, os);
 	}
 
 	public Model get(String id){
@@ -170,7 +174,7 @@ public class ModelRegistry {
 	}
 
 	static
-	private ModelEvaluator<?> unmarshal(InputStream is, boolean validate) throws IOException, SAXException, JAXBException {
+	private PMML unmarshal(InputStream is, boolean validate) throws IOException, SAXException, JAXBException {
 		XMLReader reader = XMLReaderFactory.createXMLReader();
 		reader.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
 
@@ -187,17 +191,11 @@ public class ModelRegistry {
 			unmarshaller.setSchema(schema);
 		}
 
-		PMML pmml = (PMML)unmarshaller.unmarshal(source);
-
-		ModelEvaluatorFactory modelEvaluatorFactory = ModelEvaluatorFactory.newInstance();
-
-		return modelEvaluatorFactory.newModelEvaluator(pmml);
+		return (PMML)unmarshaller.unmarshal(source);
 	}
 
 	static
-	private void marshal(ModelEvaluator<?> evaluator, OutputStream os) throws JAXBException {
-		PMML pmml = evaluator.getPMML();
-
+	private void marshal(PMML pmml, OutputStream os) throws JAXBException {
 		Result result = new StreamResult(os);
 
 		Marshaller marshaller = JAXBUtil.createMarshaller();

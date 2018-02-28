@@ -76,7 +76,6 @@ import org.jpmml.evaluator.EvaluatorUtil;
 import org.jpmml.evaluator.FieldValue;
 import org.jpmml.evaluator.HasGroupFields;
 import org.jpmml.evaluator.InputField;
-import org.jpmml.evaluator.ModelEvaluator;
 import org.openscoring.common.BatchEvaluationRequest;
 import org.openscoring.common.BatchEvaluationResponse;
 import org.openscoring.common.BatchModelResponse;
@@ -394,7 +393,7 @@ public class ModelResource {
 		Timer.Context context = timer.time();
 
 		try {
-			ModelEvaluator<?> evaluator = model.getEvaluator();
+			Evaluator evaluator = model.getEvaluator();
 
 			if(evaluator instanceof HasGroupFields){
 				HasGroupFields hasGroupFields = (HasGroupFields)evaluator;

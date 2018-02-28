@@ -24,12 +24,12 @@ import java.util.List;
 import java.util.Map;
 
 import org.dmg.pmml.MiningFunction;
-import org.jpmml.evaluator.ModelEvaluator;
+import org.jpmml.evaluator.Evaluator;
 import org.openscoring.common.Field;
 
 public class Model {
 
-	private ModelEvaluator<?> evaluator = null;
+	private Evaluator evaluator = null;
 
 	private Map<String, Object> properties = null;
 
@@ -39,7 +39,7 @@ public class Model {
 	protected Model(){
 	}
 
-	public Model(ModelEvaluator<?> evaluator){
+	public Model(Evaluator evaluator){
 		setEvaluator(evaluator);
 
 		Map<String, Object> properties = new LinkedHashMap<>();
@@ -51,22 +51,22 @@ public class Model {
 		setSchema(ModelUtil.encodeSchema(evaluator));
 	}
 
-	public ModelEvaluator<?> getEvaluator(){
+	public Evaluator getEvaluator(){
 		return this.evaluator;
 	}
 
-	private void setEvaluator(ModelEvaluator<?> evaluator){
+	private void setEvaluator(Evaluator evaluator){
 		this.evaluator = evaluator;
 	}
 
 	public MiningFunction getMiningFunction(){
-		ModelEvaluator<?> evaluator = getEvaluator();
+		Evaluator evaluator = getEvaluator();
 
 		return evaluator.getMiningFunction();
 	}
 
 	public String getSummary(){
-		ModelEvaluator<?> evaluator = getEvaluator();
+		Evaluator evaluator = getEvaluator();
 
 		return evaluator.getSummary();
 	}
