@@ -55,7 +55,7 @@
 			<plugin>
 				<groupId>org.eclipse.jetty</groupId>
 				<artifactId>jetty-maven-plugin</artifactId>
-				<version>9.2.24.v20180105</version>
+				<version>9.3.22.v20171030</version>
 				<configuration>
 					<webApp>
 						<contextPath>/openscoring</contextPath>
