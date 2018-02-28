@@ -27,18 +27,14 @@ import java.util.Map;
 import com.google.common.base.Function;
 import com.google.common.collect.Lists;
 import org.dmg.pmml.DataField;
-import org.dmg.pmml.DataType;
 import org.dmg.pmml.FieldName;
 import org.dmg.pmml.Interval;
-import org.dmg.pmml.OpType;
 import org.dmg.pmml.Value;
 import org.jpmml.evaluator.HasGroupFields;
 import org.jpmml.evaluator.InputField;
 import org.jpmml.evaluator.ModelEvaluator;
 import org.jpmml.evaluator.OutputField;
-import org.jpmml.evaluator.OutputUtil;
 import org.jpmml.evaluator.TargetField;
-import org.jpmml.evaluator.TypeUtil;
 import org.openscoring.common.Field;
 
 public class ModelUtil {
@@ -137,27 +133,6 @@ public class ModelUtil {
 				FieldName name = outputField.getName();
 
 				org.dmg.pmml.OutputField pmmlOutputField = outputField.getOutputField();
-
-				DataType dataType = outputField.getDataType();
-				OpType opType = outputField.getOpType();
-
-				if(dataType == null){
-
-					try {
-						dataType = OutputUtil.getDataType(pmmlOutputField, evaluator);
-					} catch(Exception e){
-						// Ignored
-					}
-				}
-
-				if(opType == null){
-
-					try {
-						opType = TypeUtil.getOpType(dataType);
-					} catch(Exception e){
-						// Ignored
-					}
-				}
 
 				Field field = new Field(name.getValue());
 				field.setName(pmmlOutputField.getDisplayName());
