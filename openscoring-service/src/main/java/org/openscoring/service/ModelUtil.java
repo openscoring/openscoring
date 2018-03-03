@@ -46,7 +46,10 @@ public class ModelUtil {
 	public Map<String, List<Field>> encodeSchema(Evaluator evaluator){
 		Map<String, List<Field>> result = new LinkedHashMap<>();
 
-		List<InputField> activeFields = evaluator.getActiveFields();
+		List<InputField> inputFields = evaluator.getInputFields();
+
+		result.put("inputFields", encodeInputFields(inputFields));
+
 		List<InputField> groupFields = Collections.emptyList();
 
 		if(evaluator instanceof HasGroupFields){
@@ -55,7 +58,6 @@ public class ModelUtil {
 			groupFields = hasGroupFields.getGroupFields();
 		}
 
-		result.put("activeFields", encodeInputFields(activeFields));
 		result.put("groupFields", encodeInputFields(groupFields));
 
 		List<TargetField> targetFields = evaluator.getTargetFields();

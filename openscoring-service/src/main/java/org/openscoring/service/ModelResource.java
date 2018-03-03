@@ -548,20 +548,20 @@ public class ModelResource {
 
 		Map<FieldName, FieldValue> arguments = new LinkedHashMap<>();
 
-		List<InputField> activeFields = evaluator.getActiveFields();
-		for(InputField activeField : activeFields){
-			FieldName activeName = activeField.getName();
+		List<InputField> inputFields = evaluator.getInputFields();
+		for(InputField inputField : inputFields){
+			FieldName inputName = inputField.getName();
 
-			String key = activeName.getValue();
+			String key = inputName.getValue();
 
 			Object value = requestArguments.get(key);
 			if(value == null && !requestArguments.containsKey(key)){
-				logger.warn("Evaluation request {} does not specify an active field {}", request.getId(), key);
+				logger.warn("Evaluation request {} does not specify an input field {}", request.getId(), key);
 			}
 
-			FieldValue activeValue = activeField.prepare(value);
+			FieldValue inputValue = inputField.prepare(value);
 
-			arguments.put(activeName, activeValue);
+			arguments.put(inputName, inputValue);
 		}
 
 		logger.debug("Evaluation request {} has prepared arguments: {}", request.getId(), arguments);

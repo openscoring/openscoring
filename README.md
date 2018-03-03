@@ -198,7 +198,7 @@ Sample response:
 		"file.md5sum" : "2d4698076ed807308c5ae40563b70345"
 	},
 	"schema" : {
-		"activeFields" : [
+		"inputFields" : [
 			{
 				"id" : "Sepal_Length",
 				"name" : "Sepal length in cm",
@@ -263,7 +263,7 @@ Sample response:
 }
 ```
 
-Field definitions are retrieved from the [MiningSchema](http://www.dmg.org/v4-2-1/MiningSchema.html) and [Output](http://www.dmg.org/v4-2-1/Output.html) elements of the PMML document. The active and group fields relate to the `arguments` attribute of the evaluation request, whereas the target and output fields relate to the `result` attribute of the evaluation response (see below).
+Field definitions are retrieved from the [MiningSchema](http://www.dmg.org/v4-2-1/MiningSchema.html) and [Output](http://www.dmg.org/v4-2-1/Output.html) elements of the PMML document. The input and group-by fields relate to the `arguments` attribute of the evaluation request, whereas the target and output fields relate to the `result` attribute of the evaluation response (see below).
 
 ##### GET /model/${id}/pmml
 
@@ -354,7 +354,7 @@ The evaluation is performed at "record" isolation level. If the evaluation of so
 
 Evaluates data in "CSV prediction" mode.
 
-The request body is a CSV document (indicated by content-type header `text/plain`). The data table must contain a data column for every active and group field. The ordering of data columns is not significant, because they are mapped to fields by name.
+The request body is a CSV document (indicated by content-type header `text/plain`). The data table must contain a data column for every input and group-by field. The ordering of data columns is not significant, because they are mapped to fields by name.
 
 The CSV reader component detects the CSV dialect by probing `,`, `;` and `\t` as CSV delimiter characters. This detection functionality can be suppressed by supplying the value of the CSV delimiter character using the `delimiterChar` query parameter.
 
