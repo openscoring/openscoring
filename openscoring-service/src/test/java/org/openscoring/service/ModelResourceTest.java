@@ -25,6 +25,7 @@ import java.io.InputStreamReader;
 import java.net.URI;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.core.Application;
@@ -52,6 +53,7 @@ import org.supercsv.prefs.CsvPreference;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 public class ModelResourceTest extends JerseyTest {
 
@@ -156,6 +158,33 @@ public class ModelResourceTest extends JerseyTest {
 		evaluateCsvForm(id);
 
 		undeployForm(id);
+	}
+
+	@Test
+	public void linearRegressionAuto() throws Exception {
+		String id = "LinearRegressionAuto";
+
+		assertEquals("Auto", extractSuffix(id));
+
+		deploy(id);
+
+		List<EvaluationRequest> evaluationRequests = loadRecords(id);
+
+		EvaluationRequest evaluationRequest = evaluationRequests.get(0);
+
+		EvaluationResponse evaluationResponse = evaluate(id, evaluationRequest);
+
+		assertEquals(evaluationRequest.getId(), evaluationResponse.getId());
+
+		Map<String, ?> result = evaluationResponse.getResult();
+
+		assertEquals(3, result.size());
+
+		String report = (String)result.get("report(Predicted_mpg)");
+
+		assertTrue(report.startsWith("<math xmlns=\"http://www.w3.org/1998/Math/MathML\">") && report.endsWith("</math>"));
+
+		undeploy(id);
 	}
 
 	private ModelResponse deploy(String id) throws IOException {

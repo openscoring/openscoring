@@ -150,6 +150,10 @@
 							<name>java.util.logging.config.file</name>
 							<value>src/test/resources/logging.properties</value>
 						</property>
+						<property>
+							<name>config.file</name>
+							<value>src/test/resources/application.conf</value>
+						</property>
 					</systemProperties>
 				</configuration>
 			</plugin>
