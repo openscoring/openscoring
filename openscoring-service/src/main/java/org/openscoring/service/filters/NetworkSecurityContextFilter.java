@@ -16,7 +16,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with Openscoring.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.openscoring.service;
+package org.openscoring.service.filters;
 
 import java.io.IOException;
 import java.net.InetAddress;

@@ -16,7 +16,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with Openscoring.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.openscoring.service;
+package org.openscoring.service.filters;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -30,6 +30,7 @@ import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.ext.Provider;
 
 import org.openscoring.common.Headers;
+import org.openscoring.service.ModelResource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
