@@ -1,12 +1,12 @@
 Openscoring includes third-party dependencies that are released under the Apache License, Version 2.0:
   * Coda Hale Metrics - http://metrics.codahale.com
+  * Config - https://github.com/lightbend/config
   * Guava - http://guava-libraries.googlecode.com
   * GWT - http://www.gwtproject.org
   * JCommander - http://jcommander.org
   * Jetty - http://www.eclipse.org/jetty/
   * RestyGWT - https://github.com/resty-gwt/resty-gwt
   * Super CSV - http://supercsv.sourceforge.net
-  * Typesafe Config - https://github.com/typesafehub/config
 
                                  Apache License
                            Version 2.0, January 2004
