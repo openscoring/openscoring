@@ -21,6 +21,7 @@ package org.openscoring.service;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
@@ -52,6 +53,7 @@ import org.dmg.pmml.PMML;
 import org.dmg.pmml.Visitor;
 import org.jpmml.evaluator.ModelEvaluator;
 import org.jpmml.evaluator.ModelEvaluatorFactory;
+import org.jpmml.evaluator.ValueFactoryFactory;
 import org.jpmml.model.JAXBUtil;
 import org.jpmml.model.filters.ImportFilter;
 import org.jvnet.hk2.annotations.Service;
@@ -64,6 +66,8 @@ import org.xml.sax.helpers.XMLReaderFactory;
 @Singleton
 public class ModelRegistry {
 
+	private ModelEvaluatorFactory modelEvaluatorFactory = null;
+
 	private List<Class<? extends Visitor>> visitorClazzes = new ArrayList<>();
 
 	private boolean validate = false;
@@ -75,23 +79,31 @@ public class ModelRegistry {
 	public ModelRegistry(@Named("openscoring") Config config){
 		Config modelRegistryConfig = config.getConfig("modelRegistry");
 
+		String modelEvaluatorFactoryClassName = modelRegistryConfig.getString("modelEvaluatorFactoryClass");
+		if(modelEvaluatorFactoryClassName != null){
+			Class<? extends ModelEvaluatorFactory> modelEvaluatorFactoryClazz = loadClass(ModelEvaluatorFactory.class, modelEvaluatorFactoryClassName);
+
+			ModelEvaluatorFactory modelEvaluatorFactory = newInstance(modelEvaluatorFactoryClazz);
+
+			this.modelEvaluatorFactory = modelEvaluatorFactory;
+		} else
+
+		{
+			this.modelEvaluatorFactory = ModelEvaluatorFactory.newInstance();
+		}
+
+		String valueFactoryFactoryClassName = modelRegistryConfig.getString("valueFactoryFactoryClass");
+		if(valueFactoryFactoryClassName != null){
+			Class<? extends ValueFactoryFactory> valueFactoryFactoryClazz = loadClass(ValueFactoryFactory.class, valueFactoryFactoryClassName);
+
+			ValueFactoryFactory valueFactoryFactory = newInstance(valueFactoryFactoryClazz);
+
+			this.modelEvaluatorFactory.setValueFactoryFactory(valueFactoryFactory);
+		}
+
 		List<String> visitorClassNames = modelRegistryConfig.getStringList("visitorClasses");
 		for(String visitorClassName : visitorClassNames){
-			Class<?> clazz;
-
-			try {
-				clazz = Class.forName(visitorClassName);
-			} catch(ClassNotFoundException cnfe){
-				throw new IllegalArgumentException(cnfe);
-			}
-
-			Class<? extends Visitor> visitorClazz;
-
-			try {
-				visitorClazz = clazz.asSubclass(Visitor.class);
-			} catch(ClassCastException cce){
-				throw new IllegalArgumentException(cce);
-			}
+			Class<? extends Visitor> visitorClazz = loadClass(Visitor.class, visitorClassName);
 
 			this.visitorClazzes.add(visitorClazz);
 		}
@@ -119,7 +131,7 @@ public class ModelRegistry {
 			visitor.applyTo(pmml);
 		}
 
-		ModelEvaluatorFactory modelEvaluatorFactory = ModelEvaluatorFactory.newInstance();
+		ModelEvaluatorFactory modelEvaluatorFactory = this.modelEvaluatorFactory;
 
 		ModelEvaluator<?> modelEvaluator = modelEvaluatorFactory.newModelEvaluator(pmml);
 
@@ -201,6 +213,38 @@ public class ModelRegistry {
 		Marshaller marshaller = JAXBUtil.createMarshaller();
 
 		marshaller.marshal(pmml, result);
+	}
+
+	static
+	private <E> Class<? extends E> loadClass(Class<? extends E> superClazz, String name){
+
+		try {
+			Class<?> clazz = Class.forName(name);
+
+			return clazz.asSubclass(superClazz);
+		} catch(ClassCastException cce){
+			throw new IllegalArgumentException(cce);
+		} catch(ClassNotFoundException cnfe){
+			throw new IllegalArgumentException(cnfe);
+		}
+	}
+
+	static
+	private <E> E newInstance(Class<? extends E> clazz){
+
+		try {
+			try {
+				Method method = clazz.getDeclaredMethod("newInstance");
+
+				Object result = method.invoke(null);
+
+				return clazz.cast(result);
+			} catch(NoSuchMethodException nsme){
+				return clazz.newInstance();
+			}
+		} catch(ReflectiveOperationException roe){
+			throw new IllegalArgumentException(roe);
+		}
 	}
 
 	static
