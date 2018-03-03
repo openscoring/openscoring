@@ -194,8 +194,8 @@ Sample response:
 	"properties" : {
 		"created.timestamp" : "2015-03-17T12:41:35.933+0000",
 		"accessed.timestamp" : "2015-03-21T09:35:58.582+0000",
-		"file.size" : 4918,
-		"file.md5sum" : "870e1a7931d39f919fe3c02556bf6241"
+		"file.size" : 4306,
+		"file.md5sum" : "2d4698076ed807308c5ae40563b70345"
 	},
 	"schema" : {
 		"activeFields" : [
