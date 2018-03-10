@@ -61,7 +61,7 @@ public class NetworkSecurityContext implements SecurityContext {
 		ServletRequest request = getRequest();
 
 		if(("admin").equals(role)){
-			String address = "(in-memory)";
+			String address = null;
 
 			if(request != null){
 				address = request.getRemoteAddr();
