@@ -30,10 +30,7 @@ import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
 import org.eclipse.jetty.webapp.WebAppContext;
 import org.glassfish.jersey.servlet.ServletContainer;
-import org.openscoring.client.DirectoryDeployer;
 import org.openscoring.service.Openscoring;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class Main {
 
@@ -62,13 +59,6 @@ public class Main {
 		description = "Server host name or ip address"
 	)
 	private String host = null;
-
-	@Parameter (
-		names = {"--model-dir"},
-		description = "PMML model auto-deployment directory",
-		hidden = true
-	)
-	private File modelDir = null;
 
 	@Parameter (
 		names = {"--port"},
@@ -131,29 +121,6 @@ public class Main {
 		Server server = createServer(address);
 
 		server.start();
-
-		if(this.modelDir != null){
-			final
-			DirectoryDeployer deployer = new DirectoryDeployer();
-			deployer.setDir(this.modelDir);
-			deployer.setModelCollection(("http://" + address.getHostString() + ":" + String.valueOf(address.getPort())) + this.contextPath + "/model"); // XXX
-
-			Thread deployerThread = new Thread(){
-
-				@Override
-				public void run(){
-
-					try {
-						deployer.run();
-					} catch(Exception e){
-						Main.logger.error("Model auto-deployment interrupted", e);
-					}
-				}
-			};
-
-			deployerThread.start();
-		}
-
 		server.join();
 	}
 
@@ -185,6 +152,4 @@ public class Main {
 
 		return server;
 	}
-
-	private static final Logger logger = LoggerFactory.getLogger(Main.class);
 }
