@@ -74,12 +74,6 @@
 			<artifactId>pmml-evaluator-extension</artifactId>
 		</dependency>
 
-		<!--
-		Java 7 and newer include a JAXB runtime.
-		The purpose of the following two dependencies is to make it possible to 
-		override the default JAXB runtime either with GlassFish Metro or EclipseLink MOXy runtime.
-		They may be safely excluded if this kind of flexibility is not needed.
-		-->
 		<dependency>
 			<groupId>org.jpmml</groupId>
 			<artifactId>pmml-model-metro</artifactId>

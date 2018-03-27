@@ -22,7 +22,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.lang.reflect.Method;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
@@ -51,10 +50,12 @@ import com.google.common.io.CountingInputStream;
 import com.typesafe.config.Config;
 import org.dmg.pmml.PMML;
 import org.dmg.pmml.Visitor;
-import org.jpmml.evaluator.ModelEvaluator;
+import org.jpmml.evaluator.Evaluator;
+import org.jpmml.evaluator.HasPMML;
 import org.jpmml.evaluator.ModelEvaluatorFactory;
 import org.jpmml.evaluator.ValueFactoryFactory;
 import org.jpmml.model.JAXBUtil;
+import org.jpmml.model.VisitorBattery;
 import org.jpmml.model.filters.ImportFilter;
 import org.jvnet.hk2.annotations.Service;
 import org.xml.sax.InputSource;
@@ -68,7 +69,7 @@ public class ModelRegistry {
 
 	private ModelEvaluatorFactory modelEvaluatorFactory = null;
 
-	private List<Class<? extends Visitor>> visitorClazzes = new ArrayList<>();
+	private VisitorBattery visitorBattery = new VisitorBattery();
 
 	private boolean validate = false;
 
@@ -105,7 +106,7 @@ public class ModelRegistry {
 		for(String visitorClassName : visitorClassNames){
 			Class<? extends Visitor> visitorClazz = loadClass(Visitor.class, visitorClassName);
 
-			this.visitorClazzes.add(visitorClazz);
+			this.visitorBattery.add(visitorClazz);
 		}
 
 		this.validate = modelRegistryConfig.getBoolean("validate");
@@ -125,19 +126,15 @@ public class ModelRegistry {
 
 		PMML pmml = unmarshal(hashingIs, this.validate);
 
-		for(Class<? extends Visitor> visitorClazz : this.visitorClazzes){
-			Visitor visitor = visitorClazz.newInstance();
-
-			visitor.applyTo(pmml);
-		}
+		this.visitorBattery.applyTo(pmml);
 
 		ModelEvaluatorFactory modelEvaluatorFactory = this.modelEvaluatorFactory;
 
-		ModelEvaluator<?> modelEvaluator = modelEvaluatorFactory.newModelEvaluator(pmml);
+		Evaluator evaluator = modelEvaluatorFactory.newModelEvaluator(pmml);
 
-		modelEvaluator.verify();
+		evaluator.verify();
 
-		Model model = new Model(modelEvaluator);
+		Model model = new Model(evaluator);
 		model.putProperty(Model.PROPERTY_FILE_SIZE, countingIs.getCount());
 		model.putProperty(Model.PROPERTY_FILE_MD5SUM, (hashingIs.hash()).toString());
 
@@ -145,11 +142,15 @@ public class ModelRegistry {
 	}
 
 	public void store(Model model, OutputStream os) throws JAXBException {
-		ModelEvaluator<?> modelEvaluator = (ModelEvaluator<?>)model.getEvaluator();
+		Evaluator evaluator = model.getEvaluator();
 
-		PMML pmml = modelEvaluator.getPMML();
+		if(evaluator instanceof HasPMML){
+			HasPMML hasPMML = (HasPMML)evaluator;
 
-		marshal(pmml, os);
+			PMML pmml = hasPMML.getPMML();
+
+			marshal(pmml, os);
+		}
 	}
 
 	public Model get(String id){
