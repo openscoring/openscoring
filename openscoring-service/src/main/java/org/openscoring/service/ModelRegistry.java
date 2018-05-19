@@ -104,9 +104,25 @@ public class ModelRegistry {
 
 		List<String> visitorClassNames = modelRegistryConfig.getStringList("visitorClasses");
 		for(String visitorClassName : visitorClassNames){
-			Class<? extends Visitor> visitorClazz = loadClass(Visitor.class, visitorClassName);
+			Class<?> clazz = loadClass(Object.class, visitorClassName);
 
-			this.visitorBattery.add(visitorClazz);
+			if((Visitor.class).isAssignableFrom(clazz)){
+				Class<? extends Visitor> visitorClazz = clazz.asSubclass(Visitor.class);
+
+				this.visitorBattery.add(visitorClazz);
+			} else
+
+			if((VisitorBattery.class).isAssignableFrom(clazz)){
+				Class<? extends VisitorBattery> visitorBatteryClazz = clazz.asSubclass(VisitorBattery.class);
+
+				VisitorBattery visitorBattery = newInstance(visitorBatteryClazz);
+
+				this.visitorBattery.addAll(visitorBattery);
+			} else
+
+			{
+				throw new IllegalArgumentException(new ClassCastException(clazz.toString()));
+			}
 		}
 
 		this.validate = modelRegistryConfig.getBoolean("validate");
