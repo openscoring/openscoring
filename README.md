@@ -33,21 +33,21 @@ The example PMML file `DecisionTreeIris.pmml` along with example JSON and CSV fi
 
 ##### Standalone application
 
-The build produces an executable uber-JAR file `openscoring-server/target/server-executable-1.4-SNAPSHOT.jar`. Change the working directory to `openscoring-server` and execute the following command:
+The build produces an executable uber-JAR file `openscoring-server/target/openscoring-server-executable-1.4-SNAPSHOT.jar`. Change the working directory to `openscoring-server` and execute the following command:
 ```
-java -jar target/server-executable-1.4-SNAPSHOT.jar
+java -jar target/openscoring-server-executable-1.4-SNAPSHOT.jar
 ```
 
 By default, the REST web service is started at [http://localhost:8080/openscoring](http://localhost:8080/openscoring/). The main class `org.openscoring.server.Main` accepts a number of configuration options for URI customization and other purposes. Please specify `--help` for more information.
 
 The working directory contains a sample Java logging configuration file `logging.properties.sample` that should be copied over to a new file `logging.properties` and customized to current needs. A Java logging configuration file can be imposed on the JVM by defining the `java.util.logging.config.file` system property:
 ```
-java -Djava.util.logging.config.file=logging.properties -jar target/server-executable-1.4-SNAPSHOT.jar
+java -Djava.util.logging.config.file=logging.properties -jar target/openscoring-server-executable-1.4-SNAPSHOT.jar
 ```
 
 Additionally, the working directory contains a sample Typesafe's Config configuration file `application.conf.sample` that should be copied over to a new file `application.conf` and customized to current needs. This local configuration file can be imposed on the JVM by defining the `config.file` system property:
 ```
-java -Dconfig.file=application.conf -jar target/server-executable-1.4-SNAPSHOT.jar
+java -Dconfig.file=application.conf -jar target/openscoring-server-executable-1.4-SNAPSHOT.jar
 ```
 
 The local configuration file overrides the default configuration that is defined in the reference REST web service configuration file `openscoring-service/src/main/reference.conf`. For example, the following configuration file selectively overrides the list-valued `modelRegistry.visitorClasses` property:
@@ -70,20 +70,20 @@ mvn jetty:run-war
 
 ### Client side
 
-The build produces an executable uber-JAR file `openscoring-client/target/client-executable-1.4-SNAPSHOT.jar`. Change the working directory to `openscoring-client` and replay the life cycle of a sample `DecisionTreeIris` model (in "REST API", see below) by executing the following sequence of commands:
+The build produces an executable uber-JAR file `openscoring-client/target/openscoring-client-executable-1.4-SNAPSHOT.jar`. Change the working directory to `openscoring-client` and replay the life cycle of a sample `DecisionTreeIris` model (in "REST API", see below) by executing the following sequence of commands:
 ```
-java -cp target/client-executable-1.4-SNAPSHOT.jar org.openscoring.client.Deployer --model http://localhost:8080/openscoring/model/DecisionTreeIris --file DecisionTreeIris.pmml
+java -cp target/openscoring-client-executable-1.4-SNAPSHOT.jar org.openscoring.client.Deployer --model http://localhost:8080/openscoring/model/DecisionTreeIris --file DecisionTreeIris.pmml
 
-java -cp target/client-executable-1.4-SNAPSHOT.jar org.openscoring.client.Evaluator --model http://localhost:8080/openscoring/model/DecisionTreeIris -XSepal_Length=5.1 -XSepal_Width=3.5 -XPetal_Length=1.4 -XPetal_Width=0.2
+java -cp target/openscoring-client-executable-1.4-SNAPSHOT.jar org.openscoring.client.Evaluator --model http://localhost:8080/openscoring/model/DecisionTreeIris -XSepal_Length=5.1 -XSepal_Width=3.5 -XPetal_Length=1.4 -XPetal_Width=0.2
 
-java -cp target/client-executable-1.4-SNAPSHOT.jar org.openscoring.client.CsvEvaluator --model http://localhost:8080/openscoring/model/DecisionTreeIris --input input.csv --output output.csv
+java -cp target/openscoring-client-executable-1.4-SNAPSHOT.jar org.openscoring.client.CsvEvaluator --model http://localhost:8080/openscoring/model/DecisionTreeIris --input input.csv --output output.csv
 
-java -cp target/client-executable-1.4-SNAPSHOT.jar org.openscoring.client.Undeployer --model http://localhost:8080/openscoring/model/DecisionTreeIris
+java -cp target/openscoring-client-executable-1.4-SNAPSHOT.jar org.openscoring.client.Undeployer --model http://localhost:8080/openscoring/model/DecisionTreeIris
 ```
 
 Additionally, this JAR file contains an application class `org.openscoring.client.DirectoryDeployer`, which monitors the specified directory for PMML file addition and removal events:
 ```
-java -cp target/client-executable-1.4-SNAPSHOT.jar org.openscoring.client.DirectoryDeployer --model-collection http://localhost:8080/openscoring/model --dir pmml
+java -cp target/openscoring-client-executable-1.4-SNAPSHOT.jar org.openscoring.client.DirectoryDeployer --model-collection http://localhost:8080/openscoring/model --dir pmml
 ```
 
 # REST API #
@@ -112,7 +112,7 @@ Metric REST API endpoints:
 
 By default, the "admin" role is granted to all HTTP requests that originate from the local network address.
 
-In case of an error (ie. response status codes 4XX or 5XX), the response body is a JSON serialized form of an `org.openscoring.common.SimpleResponse`  [(source)](https://github.com/jpmml/openscoring/blob/master/openscoring-common/src/main/java/org/openscoring/common/SimpleResponse.java) object.
+In case of an error (ie. response status codes 4XX or 5XX), the response body is a JSON serialized form of an `org.openscoring.common.SimpleResponse`  [(source)](https://github.com/openscoring/openscoring/blob/master/openscoring-common/src/main/java/org/openscoring/common/SimpleResponse.java) object.
 
 Java clients may use the following idiom to check if an operation succeeded or failed:
 ```java
@@ -135,7 +135,7 @@ Creates or updates a model.
 
 The request body is a PMML document (indicated by content-type header `text/xml` or `application/xml`).
 
-The response body is a JSON serialized form of an `org.openscoring.common.ModelResponse` [(source)](https://github.com/jpmml/openscoring/blob/master/openscoring-common/src/main/java/org/openscoring/common/ModelResponse.java) object.
+The response body is a JSON serialized form of an `org.openscoring.common.ModelResponse` [(source)](https://github.com/openscoring/openscoring/blob/master/openscoring-common/src/main/java/org/openscoring/common/ModelResponse.java) object.
 
 Response status codes:
 * 200 OK. The model was updated.
@@ -160,7 +160,7 @@ curl -X PUT --data-binary @DecisionTreeIris.pmml.gz -H "Content-encoding: gzip" 
 
 Gets the summaries of all models.
 
-The response body is a JSON serialized form of an `org.openscoring.common.BatchModelResponse` [(source)](https://github.com/jpmml/openscoring/blob/master/openscoring-common/src/main/java/org/openscoring/common/BatchModelResponse.java) object.
+The response body is a JSON serialized form of an `org.openscoring.common.BatchModelResponse` [(source)](https://github.com/openscoring/openscoring/blob/master/openscoring-common/src/main/java/org/openscoring/common/BatchModelResponse.java) object.
 
 Response status codes:
 * 200 OK. The model collection was queried.
@@ -174,7 +174,7 @@ curl -X GET http://localhost:8080/openscoring/model
 
 Gets the summary of a model.
 
-The response body is a JSON serialized form of an `org.openscoring.common.ModelResponse` [(source)](https://github.com/jpmml/openscoring/blob/master/openscoring-common/src/main/java/org/openscoring/common/ModelResponse.java) object.
+The response body is a JSON serialized form of an `org.openscoring.common.ModelResponse` [(source)](https://github.com/openscoring/openscoring/blob/master/openscoring-common/src/main/java/org/openscoring/common/ModelResponse.java) object.
 
 Response status codes:
 * 200 OK. The model was queried.
@@ -287,9 +287,9 @@ curl -X GET http://localhost:8080/openscoring/model/DecisionTreeIris/pmml
 
 Evaluates data in "single prediction" mode.
 
-The request body is a JSON serialized form of an `org.openscoring.common.EvaluationRequest` [(source)](https://github.com/jpmml/openscoring/blob/master/openscoring-common/src/main/java/org/openscoring/common/EvaluationRequest.java) object.
+The request body is a JSON serialized form of an `org.openscoring.common.EvaluationRequest` [(source)](https://github.com/openscoring/openscoring/blob/master/openscoring-common/src/main/java/org/openscoring/common/EvaluationRequest.java) object.
 
-The response body is a JSON serialized form of an `org.openscoring.common.EvaluationResponse` [(source)](https://github.com/jpmml/openscoring/blob/master/openscoring-common/src/main/java/org/openscoring/common/EvaluationResponse.java) object.
+The response body is a JSON serialized form of an `org.openscoring.common.EvaluationResponse` [(source)](https://github.com/openscoring/openscoring/blob/master/openscoring-common/src/main/java/org/openscoring/common/EvaluationResponse.java) object.
 
 Response status codes:
 * 200 OK. The evaluation was successful.
@@ -333,9 +333,9 @@ Sample response:
 
 Evaluates data in "batch prediction" mode.
 
-The request body is a JSON serialized form of an `org.openscoring.common.BatchEvaluationRequest` [(source)](https://github.com/jpmml/openscoring/blob/master/openscoring-common/src/main/java/org/openscoring/common/BatchEvaluationRequest.java) object.
+The request body is a JSON serialized form of an `org.openscoring.common.BatchEvaluationRequest` [(source)](https://github.com/openscoring/openscoring/blob/master/openscoring-common/src/main/java/org/openscoring/common/BatchEvaluationRequest.java) object.
 
-The response body is a JSON serialized form of an `org.openscoring.common.BatchEvaluationResponse` [(source)](https://github.com/jpmml/openscoring/blob/master/openscoring-common/src/main/java/org/openscoring/common/BatchEvaluationResponse.java) object.
+The response body is a JSON serialized form of an `org.openscoring.common.BatchEvaluationResponse` [(source)](https://github.com/openscoring/openscoring/blob/master/openscoring-common/src/main/java/org/openscoring/common/BatchEvaluationResponse.java) object.
 
 Response status codes:
 * 200 OK. The evaluation was successful.
@@ -402,7 +402,7 @@ The evaluation is performed at "all-records-or-nothing" isolation level. If the 
 
 Deletes a model.
 
-The response body is a JSON serialized form of an `org.openscoring.common.SimpleResponse` [(source)](https://github.com/jpmml/openscoring/blob/master/openscoring-common/src/main/java/org/openscoring/common/SimpleResponse.java) object.
+The response body is a JSON serialized form of an `org.openscoring.common.SimpleResponse` [(source)](https://github.com/openscoring/openscoring/blob/master/openscoring-common/src/main/java/org/openscoring/common/SimpleResponse.java) object.
 
 Response status codes:
 * 200 OK. The model was deleted.
@@ -433,7 +433,7 @@ curl -X POST http://localhost:8080/openscoring/model/DecisionTreeIris?_method=DE
 
 Gets the snapshot of the metric set of a model.
 
-The response body is a JSON serialized form of an `org.openscoring.common.MetricSetResponse` [(source)](https://github.com/jpmml/openscoring/blob/master/openscoring-common/src/main/java/org/openscoring/common/MetricSetResponse.java) object.
+The response body is a JSON serialized form of an `org.openscoring.common.MetricSetResponse` [(source)](https://github.com/openscoring/openscoring/blob/master/openscoring-common/src/main/java/org/openscoring/common/MetricSetResponse.java) object.
 
 Response status codes:
 * 200 OK. The evaluation was successful.

@@ -42,14 +42,14 @@
 	</modules>
 
 	<scm>
-		<connection>scm:git:git@github.com:jpmml/openscoring.git</connection>
-		<developerConnection>scm:git:git@github.com:jpmml/openscoring.git</developerConnection>
-		<url>git://github.com/jpmml/openscoring.git</url>
+		<connection>scm:git:git@github.com:openscoring/openscoring.git</connection>
+		<developerConnection>scm:git:git@github.com:openscoring/openscoring.git</developerConnection>
+		<url>git://github.com/openscoring/openscoring.git</url>
 		<tag>HEAD</tag>
 	</scm>
 	<issueManagement>
 		<system>GitHub</system>
-		<url>https://github.com/jpmml/openscoring/issues</url>
+		<url>https://github.com/openscoring/openscoring/issues</url>
 	</issueManagement>
 
 	<properties>
@@ -342,6 +342,23 @@
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-surefire-plugin</artifactId>
 				<version>2.19.1</version>
+			</plugin>
+			<plugin>
+				<groupId>de.jutzig</groupId>
+				<artifactId>github-release-plugin</artifactId>
+				<version>1.2.0</version>
+				<executions>
+					<execution>
+						<id>default-cli</id>
+						<configuration>
+							<artifact>${project.build.directory}/${project.artifactId}-executable-${project.version}.${project.packaging}</artifact>
+							<description>https://github.com/openscoring/openscoring</description>
+							<releaseName>${project.version}</releaseName>
+							<repositoryId>openscoring/openscoring</repositoryId>
+							<tag>${project.version}</tag>
+						</configuration>
+					</execution>
+				</executions>
 			</plugin>
 		</plugins>
 	</build>
