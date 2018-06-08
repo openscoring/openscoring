@@ -3,6 +3,37 @@ Openscoring [![Build Status](https://travis-ci.org/openscoring/openscoring.png?b
 
 REST web service for scoring PMML models.
 
+# Table of Contents #
+
+- [Features](#features)
+- [Prerequisites](#prerequisites)
+- [Installation](#installation)
+    + [Binary release](#binary-release)
+    + [Source code snapshot](#source-code-snapshot)
+- [Usage](#usage)
+    + [Client side](#client-side)
+    + [Server side](#server-side)
+        * [Advanced configuration](#advanced-configuration)
+        * [Logging](#logging)
+- [REST API](#rest-api)
+    + [Overview](#overview)
+    + [Model deployment](#model-deployment)
+        * [PUT /model/${id}](#put-modelid)
+    + [Model querying](#model-querying)
+        * [GET /model](#get-model)
+        * [GET /model/${id}](#get-modelid)
+        * [GET /model/${id}/pmml](#get-modelidpmml)
+    + [Model evaluation](#model-evaluation)
+        * [POST /model/${id}](#post-modelid)
+        * [POST /model/${id}/batch](#post-modelidbatch)
+        * [POST /model/${id}/csv](#post-modelidcsv)
+    + [Model undeployment](#model-undeployment)
+        * [DELETE /model/${id}](#delete-modelid)
+    + [Metric querying](#metric-querying)
+        * [GET /metric/model/${id}](#get-metricmodelid)
+- [License](#license)
+- [Additional information](#additional-information)
+
 # Features #
 
 * Full support for PMML specification versions 3.0 through 4.3. The evaluation is handled by the [JPMML-Evaluator](https://github.com/jpmml/jpmml-evaluator) library.
@@ -18,72 +49,91 @@ REST web service for scoring PMML models.
   * User authentication and authorization.
   * Metrics dashboards.
 
-# Installation and Usage #
+# Prerequisites #
 
-The project requires Java 1.8 or newer to run.
+* Java 1.8 or newer.
+
+# Installation #
+
+### Binary release
+
+Openscoring client and server uber-JAR files are distributed via the [GitHub releases page](https://github.com/openscoring/openscoring/releases), and the Openscoring webapp WAR file is distributed via the Maven Central repository.
+
+This README file corresponds to latest source code snapshot. In order to follow its instructions as closely as possible, it's recommended to download the latest binary release.
+
+The current version is **1.4.1** (20 May, 2018):
+
+* [openscoring-client-executable-1.4.1.jar](https://github.com/openscoring/openscoring/releases/download/1.4.1/openscoring-client-executable-1.4.1.jar)
+* [openscoring-server-executable-1.4.1.jar](https://github.com/openscoring/openscoring/releases/download/1.4.1/openscoring-server-executable-1.4.1.jar)
+* [openscoring-webapp-1.4.1.jar](http://search.maven.org/remotecontent?filepath=org/openscoring/openscoring-webapp/1.4.1/openscoring-webapp-1.4.1.war)
+
+### Source code snapshot
 
 Enter the project root directory and build using [Apache Maven](http://maven.apache.org/):
 ```
 mvn clean install
 ```
 
+The build produces two uber-JAR files and a WAR file:
+
+* `openscoring-client/target/openscoring-client-executable-1.4-SNAPSHOT.jar`
+* `openscoring-server/target/openscoring-server-executable-1.4-SNAPSHOT.jar`
+* `openscoring-webapp/target/openscoring-webapp-1.4-SNAPSHOT.war`
+
+# Usage #
+
 The example PMML file `DecisionTreeIris.pmml` along with example JSON and CSV files can be found in the `openscoring-service/src/etc` directory.
+
+### Client side
+
+Replay the life cycle of a sample `DecisionTreeIris` model (in "REST API", see below) by launching the following Java application classes from the uber-JAR file:
+```
+java -cp openscoring-client-executable-${version}.jar org.openscoring.client.Deployer --model http://localhost:8080/openscoring/model/DecisionTreeIris --file DecisionTreeIris.pmml
+
+java -cp openscoring-client-executable-${version}.jar org.openscoring.client.Evaluator --model http://localhost:8080/openscoring/model/DecisionTreeIris -XSepal_Length=5.1 -XSepal_Width=3.5 -XPetal_Length=1.4 -XPetal_Width=0.2
+
+java -cp openscoring-client-executable-${version}.jar org.openscoring.client.CsvEvaluator --model http://localhost:8080/openscoring/model/DecisionTreeIris --input input.csv --output output.csv
+
+java -cp openscoring-client-executable-${version}.jar org.openscoring.client.Undeployer --model http://localhost:8080/openscoring/model/DecisionTreeIris
+```
+
+The deployment and undeployment of models can be automated by launching the `org.openscoring.client.DirectoryDeployer` Java application class from the uber-JAR file, which listens for PMML file addition and removal events on the specified directory ("PMML directory watchdog"):
+```
+java -cp openscoring-client-executable-${version}.jar org.openscoring.client.DirectoryDeployer --model-collection http://localhost:8080/openscoring/model --dir pmml
+```
 
 ### Server side
 
-##### Standalone application
-
-The build produces an executable uber-JAR file `openscoring-server/target/openscoring-server-executable-1.4-SNAPSHOT.jar`. Change the working directory to `openscoring-server` and execute the following command:
+Launch the executable uber-JAR file:
 ```
-java -jar target/openscoring-server-executable-1.4-SNAPSHOT.jar
+java -jar openscoring-server-executable-${version}.jar
 ```
 
 By default, the REST web service is started at [http://localhost:8080/openscoring](http://localhost:8080/openscoring/). The main class `org.openscoring.server.Main` accepts a number of configuration options for URI customization and other purposes. Please specify `--help` for more information.
 
-The working directory contains a sample Java logging configuration file `logging.properties.sample` that should be copied over to a new file `logging.properties` and customized to current needs. A Java logging configuration file can be imposed on the JVM by defining the `java.util.logging.config.file` system property:
 ```
-java -Djava.util.logging.config.file=logging.properties -jar target/openscoring-server-executable-1.4-SNAPSHOT.jar
-```
-
-Additionally, the working directory contains a sample Typesafe's Config configuration file `application.conf.sample` that should be copied over to a new file `application.conf` and customized to current needs. This local configuration file can be imposed on the JVM by defining the `config.file` system property:
-```
-java -Dconfig.file=application.conf -jar target/openscoring-server-executable-1.4-SNAPSHOT.jar
+java -jar openscoring-server-executable-${version}.jar --help
 ```
 
-The local configuration file overrides the default configuration that is defined in the reference REST web service configuration file `openscoring-service/src/main/reference.conf`. For example, the following configuration file selectively overrides the list-valued `modelRegistry.visitorClasses` property:
+##### Advanced configuration
+
+Copy the sample Typesafe's Config configuration file `openscoring-server/application.conf.sample` to a new file `application.conf`, and customize its content to current needs. Use the `config.file` system property to impose changes on the JVM:
 ```
-modelRegistry {
-	visitorClasses = [
-		"org.jpmml.model.visitors.LocatorNullifier" // Erases SAX Locator information from the PMML class model object, which will considerably reduce the memory consumption of deployed models
-	]
+java -Dconfig.file=application.conf -jar openscoring-server-executable-${version}.jar
+```
+
+The local configuration overrides the default configuration that is defined in the reference REST web service configuration file `openscoring-service/src/main/reference.conf`. For example, the following local configuration would selectively override the list-valued `networkSecurityContextFilter.trustedAddresses` property (treats any local or remote IP address as a trusted IP address):
+```
+networkSecurityContextFilter {
+	trustedAddresses = ["*"]
 }
 ```
 
-##### Web application
+##### Logging
 
-The build produces a WAR file `openscoring-webapp/target/openscoring-webapp-1.4-SNAPSHOT.war`. This WAR file can be deployed using any Java web container.
-
-The web application can be launced using [Jetty Maven Plugin](http://eclipse.org/jetty/documentation/current/jetty-maven-plugin.html). Change the working directory to `openscoring-webapp` and execute the following command:
+Copy the sample Java Logging API configuration file `openscoring-server/logging.properties.sample` to a new file `logging.properties`, and customize its content to current needs. Use the `java.util.logging.config.file` system property to impose changes on the JVM:
 ```
-mvn jetty:run-war
-```
-
-### Client side
-
-The build produces an executable uber-JAR file `openscoring-client/target/openscoring-client-executable-1.4-SNAPSHOT.jar`. Change the working directory to `openscoring-client` and replay the life cycle of a sample `DecisionTreeIris` model (in "REST API", see below) by executing the following sequence of commands:
-```
-java -cp target/openscoring-client-executable-1.4-SNAPSHOT.jar org.openscoring.client.Deployer --model http://localhost:8080/openscoring/model/DecisionTreeIris --file DecisionTreeIris.pmml
-
-java -cp target/openscoring-client-executable-1.4-SNAPSHOT.jar org.openscoring.client.Evaluator --model http://localhost:8080/openscoring/model/DecisionTreeIris -XSepal_Length=5.1 -XSepal_Width=3.5 -XPetal_Length=1.4 -XPetal_Width=0.2
-
-java -cp target/openscoring-client-executable-1.4-SNAPSHOT.jar org.openscoring.client.CsvEvaluator --model http://localhost:8080/openscoring/model/DecisionTreeIris --input input.csv --output output.csv
-
-java -cp target/openscoring-client-executable-1.4-SNAPSHOT.jar org.openscoring.client.Undeployer --model http://localhost:8080/openscoring/model/DecisionTreeIris
-```
-
-Additionally, this JAR file contains an application class `org.openscoring.client.DirectoryDeployer`, which monitors the specified directory for PMML file addition and removal events:
-```
-java -cp target/openscoring-client-executable-1.4-SNAPSHOT.jar org.openscoring.client.DirectoryDeployer --model-collection http://localhost:8080/openscoring/model --dir pmml
+java -Djava.util.logging.config.file=logging.properties -jar target/openscoring-server-executable-${version}.jar
 ```
 
 # REST API #
@@ -112,7 +162,7 @@ Metric REST API endpoints:
 
 By default, the "admin" role is granted to all HTTP requests that originate from the local network address.
 
-In case of an error (ie. response status codes 4XX or 5XX), the response body is a JSON serialized form of an `org.openscoring.common.SimpleResponse`  [(source)](https://github.com/openscoring/openscoring/blob/master/openscoring-common/src/main/java/org/openscoring/common/SimpleResponse.java) object.
+In case of an error (ie. response status codes 4XX or 5XX), the response body is a JSON serialized form of an `org.openscoring.common.SimpleResponse` [(source)](https://github.com/openscoring/openscoring/blob/master/openscoring-common/src/main/java/org/openscoring/common/SimpleResponse.java) object.
 
 Java clients may use the following idiom to check if an operation succeeded or failed:
 ```java
