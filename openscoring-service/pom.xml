@@ -5,7 +5,7 @@
 	<parent>
 		<groupId>org.openscoring</groupId>
 		<artifactId>openscoring</artifactId>
-		<version>1.4.0</version>
+		<version>1.4.1</version>
 	</parent>
 
 	<groupId>org.openscoring</groupId>
@@ -74,12 +74,6 @@
 			<artifactId>pmml-evaluator-extension</artifactId>
 		</dependency>
 
-		<!--
-		Java 7 and newer include a JAXB runtime.
-		The purpose of the following two dependencies is to make it possible to 
-		override the default JAXB runtime either with GlassFish Metro or EclipseLink MOXy runtime.
-		They may be safely excluded if this kind of flexibility is not needed.
-		-->
 		<dependency>
 			<groupId>org.jpmml</groupId>
 			<artifactId>pmml-model-metro</artifactId>
@@ -167,7 +161,7 @@
 			<plugin>
 				<groupId>org.jacoco</groupId>
 				<artifactId>jacoco-maven-plugin</artifactId>
-				<version>0.8.0</version>
+				<version>0.8.1</version>
 				<executions>
 					<execution>
 						<id>pre-unit-test</id>
