@@ -78,7 +78,7 @@
 									</excludes>
 								</filter>
 							</filters>
-							<finalName>client-executable-${project.version}</finalName>
+							<finalName>${project.artifactId}-executable-${project.version}</finalName>
 						</configuration>
 					</execution>
 				</executions>
