@@ -39,7 +39,6 @@ import javax.xml.bind.ValidationEvent;
 import javax.xml.bind.ValidationEventHandler;
 import javax.xml.transform.Result;
 import javax.xml.transform.Source;
-import javax.xml.transform.sax.SAXSource;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.validation.Schema;
 
@@ -55,13 +54,12 @@ import org.jpmml.evaluator.HasPMML;
 import org.jpmml.evaluator.ModelEvaluatorFactory;
 import org.jpmml.evaluator.ValueFactoryFactory;
 import org.jpmml.model.JAXBUtil;
+import org.jpmml.model.SAXUtil;
 import org.jpmml.model.VisitorBattery;
 import org.jpmml.model.filters.ImportFilter;
+import org.jpmml.model.filters.WhitespaceFilter;
 import org.jvnet.hk2.annotations.Service;
-import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
-import org.xml.sax.XMLReader;
-import org.xml.sax.helpers.XMLReaderFactory;
 
 @Service
 @Singleton
@@ -204,12 +202,7 @@ public class ModelRegistry {
 
 	static
 	private PMML unmarshal(InputStream is, boolean validate) throws IOException, SAXException, JAXBException {
-		XMLReader reader = XMLReaderFactory.createXMLReader();
-		reader.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
-
-		ImportFilter filter = new ImportFilter(reader);
-
-		Source source = new SAXSource(filter, new InputSource(is));
+		Source source = SAXUtil.createFilteredSource(is, new ImportFilter(), new WhitespaceFilter());
 
 		Unmarshaller unmarshaller = JAXBUtil.createUnmarshaller();
 		unmarshaller.setEventHandler(new SimpleValidationEventHandler());
