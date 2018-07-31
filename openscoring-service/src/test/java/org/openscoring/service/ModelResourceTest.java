@@ -26,13 +26,14 @@ import java.net.URI;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.core.Application;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-import com.google.common.collect.Maps;
 import org.dmg.pmml.FieldName;
 import org.glassfish.jersey.client.ClientConfig;
 import org.glassfish.jersey.media.multipart.FormDataBodyPart;
@@ -326,19 +327,25 @@ public class ModelResourceTest extends JerseyTest {
 
 	static
 	private EvaluationRequest invalidate(EvaluationRequest record){
-		Maps.EntryTransformer<String, Object, String> transformer = new Maps.EntryTransformer<String, Object, String>(){
+		Function<String, String> function = new Function<String, String>(){
 
 			@Override
-			public String transformEntry(String key, Object value){
-				StringBuilder sb = new StringBuilder(key);
-				sb.reverse();
+			public String apply(String string){
+				StringBuilder sb = new StringBuilder(string);
+
+				sb = sb.reverse();
 
 				return sb.toString();
 			}
 		};
 
+		Map<String, ?> arguments = record.getArguments();
+
+		arguments = (arguments.entrySet()).stream()
+			.collect(Collectors.toMap(entry -> entry.getKey(), entry -> function.apply(entry.getKey())));
+
 		EvaluationRequest invalidRecord = new EvaluationRequest(record.getId());
-		invalidRecord.setArguments(Maps.transformEntries(record.getArguments(), transformer));
+		invalidRecord.setArguments(arguments);
 
 		return invalidRecord;
 	}

@@ -23,9 +23,9 @@ import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
-import com.google.common.base.Function;
-import com.google.common.collect.Lists;
 import org.dmg.pmml.DataField;
 import org.dmg.pmml.FieldName;
 import org.dmg.pmml.Interval;
@@ -33,6 +33,7 @@ import org.dmg.pmml.Value;
 import org.jpmml.evaluator.Evaluator;
 import org.jpmml.evaluator.HasGroupFields;
 import org.jpmml.evaluator.InputField;
+import org.jpmml.evaluator.ModelField;
 import org.jpmml.evaluator.OutputField;
 import org.jpmml.evaluator.TargetField;
 import org.openscoring.common.Field;
@@ -85,15 +86,13 @@ public class ModelUtil {
 				field.setName(dataField.getDisplayName());
 				field.setDataType(inputField.getDataType());
 				field.setOpType(inputField.getOpType());
-				field.setValues(encodeValues(dataField));
+				field.setValues(encodeDomain(dataField));
 
 				return field;
 			}
 		};
 
-		List<Field> fields = new ArrayList<>(Lists.transform(inputFields, function));
-
-		return fields;
+		return encodeFields(inputFields, function);
 	}
 
 	static
@@ -115,15 +114,13 @@ public class ModelUtil {
 				field.setName(dataField.getDisplayName());
 				field.setDataType(targetField.getDataType());
 				field.setOpType(targetField.getOpType());
-				field.setValues(encodeValues(dataField));
+				field.setValues(encodeDomain(dataField));
 
 				return field;
 			}
 		};
 
-		List<Field> fields = new ArrayList<>(Lists.transform(targetFields, function));
-
-		return fields;
+		return encodeFields(targetFields, function);
 	}
 
 	static
@@ -145,59 +142,60 @@ public class ModelUtil {
 			}
 		};
 
-		List<Field> fields = new ArrayList<>(Lists.transform(outputFields, function));
-
-		return fields;
+		return encodeFields(outputFields, function);
 	}
 
 	static
-	private List<String> encodeValues(DataField dataField){
+	private <F extends ModelField> List<Field> encodeFields(List<? extends F> fields, Function<F, Field> function){
+		return fields.stream()
+			.map(function)
+			.collect(Collectors.toList());
+	}
+
+	static
+	private List<String> encodeDomain(DataField dataField){
 		List<String> result = new ArrayList<>();
 
-		List<Interval> intervals = dataField.getIntervals();
-		for(Interval interval : intervals){
-			StringBuilder sb = new StringBuilder();
+		if(dataField.hasIntervals()){
+			List<Interval> intervals = dataField.getIntervals();
 
-			Double leftMargin = interval.getLeftMargin();
-			sb.append(Double.toString(leftMargin != null ? leftMargin : Double.NEGATIVE_INFINITY));
+			Function<Interval, String> function = new Function<Interval, String>(){
 
-			sb.append(", ");
+				@Override
+				public String apply(Interval interval){
+					Double leftMargin = interval.getLeftMargin();
+					Double rightMargin = interval.getRightMargin();
 
-			Double rightMargin = interval.getRightMargin();
-			sb.append(Double.toString(rightMargin != null ? rightMargin : Double.POSITIVE_INFINITY));
+					String value = (leftMargin != null ? leftMargin : Double.NEGATIVE_INFINITY) + ", " + (rightMargin != null ? rightMargin : Double.POSITIVE_INFINITY);
 
-			String value = sb.toString();
+					Interval.Closure closure = interval.getClosure();
+					switch(closure){
+						case OPEN_OPEN:
+							return "(" + value + ")";
+						case OPEN_CLOSED:
+							return "(" + value + "]";
+						case CLOSED_OPEN:
+							return "[" + value + ")";
+						case CLOSED_CLOSED:
+							return "[" + value + "]";
+						default:
+							throw new IllegalArgumentException();
+					}
+				}
+			};
 
-			Interval.Closure closure = interval.getClosure();
-			switch(closure){
-				case OPEN_OPEN:
-					result.add("(" + value + ")");
-					break;
-				case OPEN_CLOSED:
-					result.add("(" + value + "]");
-					break;
-				case CLOSED_OPEN:
-					result.add("[" + value + ")");
-					break;
-				case CLOSED_CLOSED:
-					result.add("[" + value + "]");
-					break;
-				default:
-					break;
-			}
-		}
+			intervals.stream()
+				.map(function)
+				.forEach(result::add);
+		} // End if
 
-		List<Value> values = dataField.getValues();
-		for(Value value : values){
-			Value.Property property = value.getProperty();
+		if(dataField.hasValues()){
+			List<Value> values = dataField.getValues();
 
-			switch(property){
-				case VALID:
-					result.add(value.getValue());
-					break;
-				default:
-					break;
-			}
+			values.stream()
+				.filter(value -> (Value.Property.VALID).equals(value.getProperty()))
+				.map(Value::getValue)
+				.forEach(result::add);
 		}
 
 		return result;

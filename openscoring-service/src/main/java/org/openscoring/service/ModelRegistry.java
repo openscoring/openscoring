@@ -26,6 +26,7 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
@@ -42,7 +43,6 @@ import javax.xml.transform.Source;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.validation.Schema;
 
-import com.google.common.base.Preconditions;
 import com.google.common.hash.Hashing;
 import com.google.common.hash.HashingInputStream;
 import com.google.common.io.CountingInputStream;
@@ -182,13 +182,13 @@ public class ModelRegistry {
 	}
 
 	public boolean put(String id, Model model){
-		Model oldModel = this.models.putIfAbsent(id, Preconditions.checkNotNull(model));
+		Model oldModel = this.models.putIfAbsent(id, Objects.requireNonNull(model));
 
 		return (oldModel == null);
 	}
 
 	public boolean replace(String id, Model oldModel, Model model){
-		return this.models.replace(id, oldModel, Preconditions.checkNotNull(model));
+		return this.models.replace(id, oldModel, Objects.requireNonNull(model));
 	}
 
 	public boolean remove(String id, Model model){
