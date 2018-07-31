@@ -20,5 +20,18 @@ package org.openscoring.common;
 
 import java.io.Serializable;
 
+import org.jpmml.model.ToStringHelper;
+
 public class SimpleRequest implements Serializable {
+
+	@Override
+	public String toString(){
+		ToStringHelper helper = toStringHelper();
+
+		return helper.toString();
+	}
+
+	protected ToStringHelper toStringHelper(){
+		return new ToStringHelper(this);
+	}
 }

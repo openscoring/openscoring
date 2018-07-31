@@ -22,10 +22,9 @@ import java.io.Serializable;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.google.common.base.MoreObjects;
-import com.google.common.base.MoreObjects.ToStringHelper;
 import org.dmg.pmml.DataType;
 import org.dmg.pmml.OpType;
+import org.jpmml.model.ToStringHelper;
 
 @JsonInclude (
 	value = JsonInclude.Include.NON_EMPTY
@@ -52,14 +51,14 @@ public class Field implements Serializable {
 
 	@Override
 	public String toString(){
-		ToStringHelper stringHelper = MoreObjects.toStringHelper(getClass())
+		ToStringHelper helper = new ToStringHelper(this)
 			.add("id", getId())
 			.add("name", getName())
 			.add("dataType", getDataType())
 			.add("opType", getOpType())
 			.add("values", getValues());
 
-		return stringHelper.toString();
+		return helper.toString();
 	}
 
 	public String getId(){

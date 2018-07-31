@@ -21,8 +21,7 @@ package org.openscoring.common;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.google.common.base.MoreObjects;
-import com.google.common.base.MoreObjects.ToStringHelper;
+import org.jpmml.model.ToStringHelper;
 
 @JsonInclude (
 	value = JsonInclude.Include.NON_EMPTY
@@ -42,12 +41,10 @@ public class BatchEvaluationRequest extends SimpleRequest {
 	}
 
 	@Override
-	public String toString(){
-		ToStringHelper stringHelper = MoreObjects.toStringHelper(getClass())
+	protected ToStringHelper toStringHelper(){
+		return super.toStringHelper()
 			.add("id", getId())
 			.add("requests", getRequests());
-
-		return stringHelper.toString();
 	}
 
 	public String getId(){
