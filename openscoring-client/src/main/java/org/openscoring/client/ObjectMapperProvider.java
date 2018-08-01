@@ -23,7 +23,7 @@ import javax.ws.rs.ext.Provider;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
-import org.openscoring.common.OpenscoringModule;
+import org.jpmml.model.PMMLModule;
 
 @Provider
 public class ObjectMapperProvider implements ContextResolver<ObjectMapper> {
@@ -33,7 +33,7 @@ public class ObjectMapperProvider implements ContextResolver<ObjectMapper> {
 
 	public ObjectMapperProvider(){
 		ObjectMapper mapper = new ObjectMapper();
-		mapper.registerModule(new OpenscoringModule());
+		mapper.registerModule(new PMMLModule());
 		mapper.enable(SerializationFeature.INDENT_OUTPUT);
 
 		setMapper(mapper);

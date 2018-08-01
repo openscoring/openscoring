@@ -96,6 +96,12 @@
 				<version>1.72</version>
 			</dependency>
 
+			<dependency>
+				<groupId>com.fasterxml.jackson.core</groupId>
+				<artifactId>jackson-annotations</artifactId>
+				<version>2.9.6</version>
+			</dependency>
+
 			<!-- Inherited from org.glassfish.jersey:project dependency -->
 			<dependency>
 				<groupId>com.fasterxml.jackson.jaxrs</groupId>
@@ -227,22 +233,27 @@
 			<dependency>
 				<groupId>org.jpmml</groupId>
 				<artifactId>pmml-model</artifactId>
-				<version>1.4.5</version>
+				<version>1.4.6</version>
 			</dependency>
 			<dependency>
 				<groupId>org.jpmml</groupId>
 				<artifactId>pmml-model-gwt</artifactId>
-				<version>1.4.5</version>
+				<version>1.4.6</version>
+			</dependency>
+			<dependency>
+				<groupId>org.jpmml</groupId>
+				<artifactId>pmml-model-jackson</artifactId>
+				<version>1.4.6</version>
 			</dependency>
 			<dependency>
 				<groupId>org.jpmml</groupId>
 				<artifactId>pmml-model-metro</artifactId>
-				<version>1.4.5</version>
+				<version>1.4.6</version>
 			</dependency>
 			<dependency>
 				<groupId>org.jpmml</groupId>
 				<artifactId>pmml-model-moxy</artifactId>
-				<version>1.4.5</version>
+				<version>1.4.6</version>
 			</dependency>
 
 			<dependency>

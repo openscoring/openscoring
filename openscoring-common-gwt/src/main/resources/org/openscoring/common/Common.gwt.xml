@@ -11,4 +11,7 @@
 	<inherits 
 		name="org.dmg.pmml.PMML"
 	/>
+	<inherits
+		name="org.jpmml.model.Model"
+	/>
 </module>
