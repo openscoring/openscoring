@@ -177,12 +177,6 @@
 			</dependency>
 
 			<dependency>
-				<groupId>org.fusesource.restygwt</groupId>
-				<artifactId>restygwt</artifactId>
-				<version>2.1.1</version>
-			</dependency>
-
-			<dependency>
 				<groupId>org.glassfish.jersey.containers</groupId>
 				<artifactId>jersey-container-servlet</artifactId>
 				<version>2.27</version>
