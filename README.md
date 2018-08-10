@@ -65,7 +65,7 @@ The current version is **1.4.2** (2 July, 2018):
 
 * [openscoring-client-executable-1.4.2.jar](https://github.com/openscoring/openscoring/releases/download/1.4.2/openscoring-client-executable-1.4.2.jar)
 * [openscoring-server-executable-1.4.2.jar](https://github.com/openscoring/openscoring/releases/download/1.4.2/openscoring-server-executable-1.4.2.jar)
-* [openscoring-webapp-1.4.2.jar](http://search.maven.org/remotecontent?filepath=org/openscoring/openscoring-webapp/1.4.2/openscoring-webapp-1.4.2.war)
+* [openscoring-webapp-1.4.2.war](http://search.maven.org/remotecontent?filepath=org/openscoring/openscoring-webapp/1.4.2/openscoring-webapp-1.4.2.war)
 
 ### Source code snapshot
 
