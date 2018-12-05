@@ -29,17 +29,16 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
+import java.util.function.Function;
 
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Singleton;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
-import javax.xml.bind.Unmarshaller;
 import javax.xml.bind.ValidationEvent;
 import javax.xml.bind.ValidationEventHandler;
 import javax.xml.transform.Result;
-import javax.xml.transform.Source;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.validation.Schema;
 
@@ -47,17 +46,16 @@ import com.google.common.hash.Hashing;
 import com.google.common.hash.HashingInputStream;
 import com.google.common.io.CountingInputStream;
 import com.typesafe.config.Config;
+import org.dmg.pmml.FieldName;
 import org.dmg.pmml.PMML;
 import org.dmg.pmml.Visitor;
 import org.jpmml.evaluator.Evaluator;
 import org.jpmml.evaluator.HasPMML;
+import org.jpmml.evaluator.LoadingModelEvaluatorBuilder;
 import org.jpmml.evaluator.ModelEvaluatorFactory;
 import org.jpmml.evaluator.ValueFactoryFactory;
 import org.jpmml.model.JAXBUtil;
-import org.jpmml.model.SAXUtil;
 import org.jpmml.model.VisitorBattery;
-import org.jpmml.model.filters.ImportFilter;
-import org.jpmml.model.filters.WhitespaceFilter;
 import org.jvnet.hk2.annotations.Service;
 import org.xml.sax.SAXException;
 
@@ -65,11 +63,7 @@ import org.xml.sax.SAXException;
 @Singleton
 public class ModelRegistry {
 
-	private ModelEvaluatorFactory modelEvaluatorFactory = null;
-
-	private VisitorBattery visitorBattery = new VisitorBattery();
-
-	private boolean validate = false;
+	private LoadingModelEvaluatorBuilder modelEvaluatorBuilder = null;
 
 	private ConcurrentMap<String, Model> models = new ConcurrentHashMap<>();
 
@@ -78,27 +72,25 @@ public class ModelRegistry {
 	public ModelRegistry(@Named("openscoring") Config config){
 		Config modelRegistryConfig = config.getConfig("modelRegistry");
 
-		String modelEvaluatorFactoryClassName = modelRegistryConfig.getString("modelEvaluatorFactoryClass");
-		if(modelEvaluatorFactoryClassName != null){
-			Class<? extends ModelEvaluatorFactory> modelEvaluatorFactoryClazz = loadClass(ModelEvaluatorFactory.class, modelEvaluatorFactoryClassName);
+		LoadingModelEvaluatorBuilder modelEvaluatorBuilder = new LoadingModelEvaluatorBuilder();
 
-			ModelEvaluatorFactory modelEvaluatorFactory = newInstance(modelEvaluatorFactoryClazz);
+		boolean validate = modelRegistryConfig.getBoolean("validate");
 
-			this.modelEvaluatorFactory = modelEvaluatorFactory;
-		} else
+		if(validate){
+			Schema schema;
 
-		{
-			this.modelEvaluatorFactory = ModelEvaluatorFactory.newInstance();
+			try {
+				schema = JAXBUtil.getSchema();
+			} catch(SAXException | IOException e){
+				throw new RuntimeException(e);
+			}
+
+			modelEvaluatorBuilder
+				.setSchema(schema)
+				.setValidationEventHandler(new SimpleValidationEventHandler());
 		}
 
-		String valueFactoryFactoryClassName = modelRegistryConfig.getString("valueFactoryFactoryClass");
-		if(valueFactoryFactoryClassName != null){
-			Class<? extends ValueFactoryFactory> valueFactoryFactoryClazz = loadClass(ValueFactoryFactory.class, valueFactoryFactoryClassName);
-
-			ValueFactoryFactory valueFactoryFactory = newInstance(valueFactoryFactoryClazz);
-
-			this.modelEvaluatorFactory.setValueFactoryFactory(valueFactoryFactory);
-		}
+		VisitorBattery visitors = new VisitorBattery();
 
 		List<String> visitorClassNames = modelRegistryConfig.getStringList("visitorClasses");
 		for(String visitorClassName : visitorClassNames){
@@ -107,7 +99,7 @@ public class ModelRegistry {
 			if((Visitor.class).isAssignableFrom(clazz)){
 				Class<? extends Visitor> visitorClazz = clazz.asSubclass(Visitor.class);
 
-				this.visitorBattery.add(visitorClazz);
+				visitors.add(visitorClazz);
 			} else
 
 			if((VisitorBattery.class).isAssignableFrom(clazz)){
@@ -115,7 +107,7 @@ public class ModelRegistry {
 
 				VisitorBattery visitorBattery = newInstance(visitorBatteryClazz);
 
-				this.visitorBattery.addAll(visitorBattery);
+				visitors.addAll(visitorBattery);
 			} else
 
 			{
@@ -123,7 +115,39 @@ public class ModelRegistry {
 			}
 		}
 
-		this.validate = modelRegistryConfig.getBoolean("validate");
+		modelEvaluatorBuilder.setVisitors(visitors);
+
+		String modelEvaluatorFactoryClassName = modelRegistryConfig.getString("modelEvaluatorFactoryClass");
+		if(modelEvaluatorFactoryClassName != null){
+			Class<? extends ModelEvaluatorFactory> modelEvaluatorFactoryClazz = loadClass(ModelEvaluatorFactory.class, modelEvaluatorFactoryClassName);
+
+			modelEvaluatorBuilder.setModelEvaluatorFactory(newInstance(modelEvaluatorFactoryClazz));
+		}
+
+		String valueFactoryFactoryClassName = modelRegistryConfig.getString("valueFactoryFactoryClass");
+		if(valueFactoryFactoryClassName != null){
+			Class<? extends ValueFactoryFactory> valueFactoryFactoryClazz = loadClass(ValueFactoryFactory.class, valueFactoryFactoryClassName);
+
+			modelEvaluatorBuilder.setValueFactoryFactory(newInstance(valueFactoryFactoryClazz));
+		}
+
+		Function<FieldName, FieldName> resultMapper = new Function<FieldName, FieldName>(){
+
+			@Override
+			public FieldName apply(FieldName name){
+
+				// A "phantom" default target field
+				if(name == null){
+					return ModelResource.DEFAULT_NAME;
+				}
+
+				return name;
+			}
+		};
+
+		modelEvaluatorBuilder.setResultMapper(resultMapper);
+
+		this.modelEvaluatorBuilder = modelEvaluatorBuilder;
 	}
 
 	public Collection<Map.Entry<String, Model>> entries(){
@@ -138,13 +162,9 @@ public class ModelRegistry {
 
 		HashingInputStream hashingIs = new HashingInputStream(Hashing.md5(), countingIs);
 
-		PMML pmml = unmarshal(hashingIs, this.validate);
-
-		this.visitorBattery.applyTo(pmml);
-
-		ModelEvaluatorFactory modelEvaluatorFactory = this.modelEvaluatorFactory;
-
-		Evaluator evaluator = modelEvaluatorFactory.newModelEvaluator(pmml);
+		Evaluator evaluator = this.modelEvaluatorBuilder.clone()
+			.load(hashingIs)
+			.build();
 
 		evaluator.verify();
 
@@ -163,7 +183,11 @@ public class ModelRegistry {
 
 			PMML pmml = hasPMML.getPMML();
 
-			marshal(pmml, os);
+			Result result = new StreamResult(os);
+
+			Marshaller marshaller = JAXBUtil.createMarshaller();
+
+			marshaller.marshal(pmml, result);
 		}
 	}
 
@@ -198,31 +222,6 @@ public class ModelRegistry {
 	static
 	public boolean validateId(String id){
 		return (id != null && (id).matches(ID_REGEX));
-	}
-
-	static
-	private PMML unmarshal(InputStream is, boolean validate) throws IOException, SAXException, JAXBException {
-		Source source = SAXUtil.createFilteredSource(is, new ImportFilter(), new WhitespaceFilter());
-
-		Unmarshaller unmarshaller = JAXBUtil.createUnmarshaller();
-		unmarshaller.setEventHandler(new SimpleValidationEventHandler());
-
-		if(validate){
-			Schema schema = JAXBUtil.getSchema();
-
-			unmarshaller.setSchema(schema);
-		}
-
-		return (PMML)unmarshaller.unmarshal(source);
-	}
-
-	static
-	private void marshal(PMML pmml, OutputStream os) throws JAXBException {
-		Result result = new StreamResult(os);
-
-		Marshaller marshaller = JAXBUtil.createMarshaller();
-
-		marshaller.marshal(pmml, result);
 	}
 
 	static

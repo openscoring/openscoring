@@ -26,8 +26,9 @@ import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import org.dmg.pmml.DataField;
 import org.dmg.pmml.FieldName;
+import org.dmg.pmml.HasContinuousDomain;
+import org.dmg.pmml.HasDiscreteDomain;
 import org.dmg.pmml.Interval;
 import org.dmg.pmml.Value;
 import org.jpmml.evaluator.Evaluator;
@@ -49,7 +50,7 @@ public class ModelUtil {
 
 		List<InputField> inputFields = evaluator.getInputFields();
 
-		result.put("inputFields", encodeInputFields(inputFields));
+		result.put("inputFields", encodeModelFields(inputFields));
 
 		List<InputField> groupFields = Collections.emptyList();
 
@@ -59,105 +60,57 @@ public class ModelUtil {
 			groupFields = hasGroupFields.getGroupFields();
 		}
 
-		result.put("groupFields", encodeInputFields(groupFields));
+		result.put("groupFields", encodeModelFields(groupFields));
 
 		List<TargetField> targetFields = evaluator.getTargetFields();
 
-		result.put("targetFields", encodeTargetFields(targetFields));
+		result.put("targetFields", encodeModelFields(targetFields));
 
 		List<OutputField> outputFields = evaluator.getOutputFields();
 
-		result.put("outputFields", encodeOutputFields(outputFields));
+		result.put("outputFields", encodeModelFields(outputFields));
 
 		return result;
 	}
 
 	static
-	private List<Field> encodeInputFields(List<InputField> inputFields){
-		Function<InputField, Field> function = new Function<InputField, Field>(){
+	private List<Field> encodeModelFields(List<? extends ModelField> modelFields){
+		Function<ModelField, Field> function = new Function<ModelField, Field>(){
 
 			@Override
-			public Field apply(InputField inputField){
-				FieldName name = inputField.getName();
+			public Field apply(ModelField modelField){
+				org.dmg.pmml.Field<?> pmmlField = modelField.getField();
 
-				DataField dataField = (DataField)inputField.getField();
+				FieldName name = modelField.getName();
 
 				Field field = new Field(name.getValue());
-				field.setName(dataField.getDisplayName());
-				field.setDataType(inputField.getDataType());
-				field.setOpType(inputField.getOpType());
-				field.setValues(encodeDomain(dataField));
+				field.setName(modelField.getDisplayName());
+				field.setOpType(modelField.getOpType());
+				field.setDataType(modelField.getDataType());
 
-				return field;
-			}
-		};
+				if(pmmlField instanceof HasContinuousDomain){
+					field.setValues(encodeContinuousDomain((org.dmg.pmml.Field & HasContinuousDomain)pmmlField));
+				} else
 
-		return encodeFields(inputFields, function);
-	}
-
-	static
-	private List<Field> encodeTargetFields(List<TargetField> targetFields){
-		Function<TargetField, Field> function = new Function<TargetField, Field>(){
-
-			@Override
-			public Field apply(TargetField targetField){
-				FieldName name = targetField.getName();
-
-				// A "phantom" default target field
-				if(targetField.isSynthetic()){
-					name = ModelResource.DEFAULT_NAME;
+				if(pmmlField instanceof HasDiscreteDomain){
+					field.setValues(encodeDiscreteDomain((org.dmg.pmml.Field & HasDiscreteDomain)pmmlField));
 				}
 
-				DataField dataField = targetField.getDataField();
-
-				Field field = new Field(name.getValue());
-				field.setName(dataField.getDisplayName());
-				field.setDataType(targetField.getDataType());
-				field.setOpType(targetField.getOpType());
-				field.setValues(encodeDomain(dataField));
-
 				return field;
 			}
 		};
 
-		return encodeFields(targetFields, function);
-	}
-
-	static
-	private List<Field> encodeOutputFields(List<OutputField> outputFields){
-		Function<OutputField, Field> function = new Function<OutputField, Field>(){
-
-			@Override
-			public Field apply(OutputField outputField){
-				FieldName name = outputField.getName();
-
-				org.dmg.pmml.OutputField pmmlOutputField = outputField.getOutputField();
-
-				Field field = new Field(name.getValue());
-				field.setName(pmmlOutputField.getDisplayName());
-				field.setDataType(outputField.getDataType());
-				field.setOpType(outputField.getOpType());
-
-				return field;
-			}
-		};
-
-		return encodeFields(outputFields, function);
-	}
-
-	static
-	private <F extends ModelField> List<Field> encodeFields(List<? extends F> fields, Function<F, Field> function){
-		return fields.stream()
+		return modelFields.stream()
 			.map(function)
 			.collect(Collectors.toList());
 	}
 
 	static
-	private List<String> encodeDomain(DataField dataField){
+	private <F extends org.dmg.pmml.Field<F> & HasContinuousDomain<F>> List<String> encodeContinuousDomain(F field){
 		List<String> result = new ArrayList<>();
 
-		if(dataField.hasIntervals()){
-			List<Interval> intervals = dataField.getIntervals();
+		if(field.hasIntervals()){
+			List<Interval> intervals = field.getIntervals();
 
 			Function<Interval, String> function = new Function<Interval, String>(){
 
@@ -187,10 +140,17 @@ public class ModelUtil {
 			intervals.stream()
 				.map(function)
 				.forEach(result::add);
-		} // End if
+		}
 
-		if(dataField.hasValues()){
-			List<Value> values = dataField.getValues();
+		return result;
+	}
+
+	static
+	private <F extends org.dmg.pmml.Field<F> & HasDiscreteDomain<F>> List<String> encodeDiscreteDomain(F field){
+		List<String> result = new ArrayList<>();
+
+		if(field.hasValues()){
+			List<Value> values = field.getValues();
 
 			values.stream()
 				.filter(value -> (Value.Property.VALID).equals(value.getProperty()))

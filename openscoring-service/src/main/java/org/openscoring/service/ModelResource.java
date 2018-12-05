@@ -566,14 +566,14 @@ public class ModelResource {
 
 		logger.debug("Evaluation request {} has prepared arguments: {}", request.getId(), arguments);
 
-		Map<FieldName, ?> result = evaluator.evaluate(arguments);
+		Map<FieldName, ?> results = evaluator.evaluate(arguments);
 
 		// Jackson does not support the JSON serialization of <code>null</code> map keys
-		result = replaceNullKey(result);
+		results = replaceNullKey(results);
 
-		logger.debug("Evaluation response {} has result: {}", response.getId(), result);
+		logger.debug("Evaluation response {} has result: {}", response.getId(), results);
 
-		response.setResult(EvaluatorUtil.decode(result));
+		response.setResult(EvaluatorUtil.decode(results));
 
 		logger.info("Returned {}", response);
 
