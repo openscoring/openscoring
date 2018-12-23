@@ -41,7 +41,6 @@
 	</DataDictionary>
 	<RegressionModel modelName="Linear_Regression_Model" functionName="regression" algorithmName="least squares">
 		<MiningSchema>
-			<MiningField name="mpg" usageType="predicted" invalidValueTreatment="returnInvalid"/>
 			<MiningField name="cylinders" usageType="active" invalidValueTreatment="returnInvalid"/>
 			<MiningField name="displacement" usageType="active" invalidValueTreatment="returnInvalid"/>
 			<MiningField name="horsepower" usageType="active" invalidValueTreatment="returnInvalid"/>
@@ -51,8 +50,8 @@
 			<MiningField name="origin" usageType="active" invalidValueTreatment="returnInvalid"/>
 		</MiningSchema>
 		<Output>
-			<OutputField name="Predicted_mpg" feature="predictedValue"/>
-			<OutputField name="report(Predicted_mpg)" feature="x-report" x-reportField="Predicted_mpg"/>
+			<OutputField name="Predicted_mpg" dataType="double" feature="predictedValue"/>
+			<OutputField name="report(Predicted_mpg)" dataType="string" feature="x-report" x-reportField="Predicted_mpg"/>
 		</Output>
 		<RegressionTable intercept="30.9168414889827">
 			<NumericPredictor name="displacement" exponent="1" coefficient="0.011824591874189"/>
