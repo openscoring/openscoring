@@ -34,7 +34,9 @@ import javax.ws.rs.core.Application;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import org.dmg.pmml.DataType;
 import org.dmg.pmml.FieldName;
+import org.dmg.pmml.OpType;
 import org.glassfish.jersey.client.ClientConfig;
 import org.glassfish.jersey.media.multipart.FormDataBodyPart;
 import org.glassfish.jersey.media.multipart.FormDataMultiPart;
@@ -46,6 +48,7 @@ import org.openscoring.common.BatchEvaluationResponse;
 import org.openscoring.common.BatchModelResponse;
 import org.openscoring.common.EvaluationRequest;
 import org.openscoring.common.EvaluationResponse;
+import org.openscoring.common.Field;
 import org.openscoring.common.Headers;
 import org.openscoring.common.ModelResponse;
 import org.openscoring.common.SimpleResponse;
@@ -55,6 +58,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 public class ModelResourceTest extends JerseyTest {
 
@@ -85,7 +89,32 @@ public class ModelResourceTest extends JerseyTest {
 
 		assertNull(modelResponses);
 
-		deploy(id);
+		ModelResponse modelResponse = deploy(id);
+
+		Map<String, List<Field>> schema = modelResponse.getSchema();
+
+		List<Field> inputFields = schema.get("inputFields");
+		List<Field> targetFields = schema.get("targetFields");
+		List<Field> outputFields = schema.get("outputFields");
+
+		assertEquals(4, inputFields.size());
+		assertEquals(1, targetFields.size());
+		assertEquals(4, outputFields.size());
+
+		for(Field inputField : inputFields){
+			assertNotNull(inputField.getId());
+			assertNotNull(inputField.getName());
+
+			if((DataType.DOUBLE).equals(inputField.getDataType()) && (OpType.CONTINUOUS).equals(inputField.getOpType())){
+				List<String> values = inputField.getValues();
+
+				assertEquals(1, values.size());
+			} else
+
+			{
+				fail();
+			}
+		}
 
 		batchModelResponse = queryBatch();
 
@@ -132,7 +161,17 @@ public class ModelResourceTest extends JerseyTest {
 
 		assertEquals("Shopping", extractSuffix(id));
 
-		deployForm(id);
+		ModelResponse modelResponse = deployForm(id);
+
+		Map<String, List<Field>> schema = modelResponse.getSchema();
+
+		List<Field> inputFields = schema.get("inputFields");
+		List<Field> groupFields = schema.get("groupFields");
+		List<Field> outputFields = schema.get("outputFields");
+
+		assertEquals(1, inputFields.size());
+		assertEquals(1, groupFields.size());
+		assertEquals(3, outputFields.size());
 
 		query(id);
 
@@ -167,7 +206,48 @@ public class ModelResourceTest extends JerseyTest {
 
 		assertEquals("Auto", extractSuffix(id));
 
-		deploy(id);
+		ModelResponse modelResponse = deploy(id);
+
+		Map<String, List<Field>> schema = modelResponse.getSchema();
+
+		List<Field> inputFields = schema.get("inputFields");
+		List<Field> targetFields = schema.get("targetFields");
+		List<Field> outputFields = schema.get("outputFields");
+
+		assertEquals(7, inputFields.size());
+		assertEquals(1, targetFields.size());
+		assertEquals(2, outputFields.size());
+
+		for(Field inputField : inputFields){
+			assertNotNull(inputField.getId());
+			assertNull(inputField.getName());
+
+			DataType dataType = inputField.getDataType();
+			OpType opType = inputField.getOpType();
+
+			List<String> values = inputField.getValues();
+
+			if((DataType.STRING).equals(dataType) && (OpType.CATEGORICAL).equals(opType)){
+				assertTrue(values.size() > 0);
+			} else
+
+			if((DataType.DOUBLE).equals(dataType) && (OpType.CONTINUOUS).equals(opType)){
+				assertNull(values);
+			} else
+
+			{
+				fail();
+			}
+		}
+
+		{
+			Field targetField = targetFields.get(0);
+
+			assertEquals("_default", targetField.getId());
+
+			assertEquals(DataType.DOUBLE, targetField.getDataType());
+			assertEquals(OpType.CONTINUOUS, targetField.getOpType());
+		}
 
 		List<EvaluationRequest> evaluationRequests = loadRecords(id);
 

@@ -88,13 +88,17 @@ public class ModelUtil {
 				field.setOpType(modelField.getOpType());
 				field.setDataType(modelField.getDataType());
 
+				List<String> values = new ArrayList<>();
+
 				if(pmmlField instanceof HasContinuousDomain){
-					field.setValues(encodeContinuousDomain((org.dmg.pmml.Field & HasContinuousDomain)pmmlField));
-				} else
+					values.addAll(encodeContinuousDomain((org.dmg.pmml.Field & HasContinuousDomain)pmmlField));
+				} // End if
 
 				if(pmmlField instanceof HasDiscreteDomain){
-					field.setValues(encodeDiscreteDomain((org.dmg.pmml.Field & HasDiscreteDomain)pmmlField));
+					values.addAll(encodeDiscreteDomain((org.dmg.pmml.Field & HasDiscreteDomain)pmmlField));
 				}
+
+				field.setValues(values);
 
 				return field;
 			}
@@ -107,7 +111,6 @@ public class ModelUtil {
 
 	static
 	private <F extends org.dmg.pmml.Field<F> & HasContinuousDomain<F>> List<String> encodeContinuousDomain(F field){
-		List<String> result = new ArrayList<>();
 
 		if(field.hasIntervals()){
 			List<Interval> intervals = field.getIntervals();
@@ -137,27 +140,26 @@ public class ModelUtil {
 				}
 			};
 
-			intervals.stream()
+			return intervals.stream()
 				.map(function)
-				.forEach(result::add);
+				.collect(Collectors.toList());
 		}
 
-		return result;
+		return Collections.emptyList();
 	}
 
 	static
 	private <F extends org.dmg.pmml.Field<F> & HasDiscreteDomain<F>> List<String> encodeDiscreteDomain(F field){
-		List<String> result = new ArrayList<>();
 
 		if(field.hasValues()){
 			List<Value> values = field.getValues();
 
-			values.stream()
+			return values.stream()
 				.filter(value -> (Value.Property.VALID).equals(value.getProperty()))
 				.map(Value::getValue)
-				.forEach(result::add);
+				.collect(Collectors.toList());
 		}
 
-		return result;
+		return Collections.emptyList();
 	}
 }
