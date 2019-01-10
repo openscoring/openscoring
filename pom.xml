@@ -205,38 +205,38 @@
 			<dependency>
 				<groupId>org.jpmml</groupId>
 				<artifactId>pmml-evaluator</artifactId>
-				<version>1.4.4</version>
+				<version>1.4.6</version>
 			</dependency>
 			<dependency>
 				<groupId>org.jpmml</groupId>
 				<artifactId>pmml-evaluator-extension</artifactId>
-				<version>1.4.4</version>
+				<version>1.4.6</version>
 			</dependency>
 
 			<dependency>
 				<groupId>org.jpmml</groupId>
 				<artifactId>pmml-model</artifactId>
-				<version>1.4.7</version>
+				<version>1.4.8</version>
 			</dependency>
 			<dependency>
 				<groupId>org.jpmml</groupId>
 				<artifactId>pmml-model-gwt</artifactId>
-				<version>1.4.7</version>
+				<version>1.4.8</version>
 			</dependency>
 			<dependency>
 				<groupId>org.jpmml</groupId>
 				<artifactId>pmml-model-jackson</artifactId>
-				<version>1.4.7</version>
+				<version>1.4.8</version>
 			</dependency>
 			<dependency>
 				<groupId>org.jpmml</groupId>
 				<artifactId>pmml-model-metro</artifactId>
-				<version>1.4.7</version>
+				<version>1.4.8</version>
 			</dependency>
 			<dependency>
 				<groupId>org.jpmml</groupId>
 				<artifactId>pmml-model-moxy</artifactId>
-				<version>1.4.7</version>
+				<version>1.4.8</version>
 			</dependency>
 
 			<dependency>

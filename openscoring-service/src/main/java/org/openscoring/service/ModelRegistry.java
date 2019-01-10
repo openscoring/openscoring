@@ -29,7 +29,6 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
-import java.util.function.Function;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -50,6 +49,7 @@ import org.dmg.pmml.FieldName;
 import org.dmg.pmml.PMML;
 import org.dmg.pmml.Visitor;
 import org.jpmml.evaluator.Evaluator;
+import org.jpmml.evaluator.FieldMapper;
 import org.jpmml.evaluator.HasPMML;
 import org.jpmml.evaluator.LoadingModelEvaluatorBuilder;
 import org.jpmml.evaluator.ModelEvaluatorFactory;
@@ -131,7 +131,7 @@ public class ModelRegistry {
 			modelEvaluatorBuilder.setValueFactoryFactory(newInstance(valueFactoryFactoryClazz));
 		}
 
-		Function<FieldName, FieldName> resultMapper = new Function<FieldName, FieldName>(){
+		FieldMapper resultMapper = new FieldMapper(){
 
 			@Override
 			public FieldName apply(FieldName name){
