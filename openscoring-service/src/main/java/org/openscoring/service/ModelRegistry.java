@@ -90,6 +90,10 @@ public class ModelRegistry {
 				.setValidationEventHandler(new SimpleValidationEventHandler());
 		}
 
+		boolean locatable = modelRegistryConfig.getBoolean("locatable");
+
+		modelEvaluatorBuilder.setLocatable(locatable);
+
 		VisitorBattery visitors = new VisitorBattery();
 
 		List<String> visitorClassNames = modelRegistryConfig.getStringList("visitorClasses");
