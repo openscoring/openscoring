@@ -31,7 +31,6 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import com.beust.jcommander.Parameter;
-import com.google.common.io.ByteStreams;
 import org.openscoring.common.SimpleResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -120,7 +119,16 @@ public class CsvEvaluator extends ModelApplication {
 						}
 
 						try(InputStream result = response.readEntity(InputStream.class)){
-							ByteStreams.copy(result, os);
+							byte[] buffer = new byte[10 * 1024];
+
+							while(true){
+								int count = result.read(buffer);
+								if(count < 0){
+									break;
+								}
+
+								os.write(buffer, 0, count);
+							}
 
 							return null;
 						}

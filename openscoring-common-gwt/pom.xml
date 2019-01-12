@@ -29,20 +29,10 @@
 			<artifactId>openscoring-common</artifactId>
 			<exclusions>
 				<exclusion>
-					<groupId>com.google.guava</groupId>
-					<artifactId>guava</artifactId>
-				</exclusion>
-
-				<exclusion>
 					<groupId>org.jpmml</groupId>
 					<artifactId>pmml-model</artifactId>
 				</exclusion>
 			</exclusions>
-		</dependency>
-
-		<dependency>
-			<groupId>com.google.guava</groupId>
-			<artifactId>guava-gwt</artifactId>
 		</dependency>
 
 		<dependency>
@@ -79,31 +69,6 @@
 							<excludeTransitive>true</excludeTransitive>
 							<outputDirectory>${project.build.directory}/openscoring-common-sources</outputDirectory>
 							<type>java-source</type>
-						</configuration>
-					</execution>
-				</executions>
-			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-antrun-plugin</artifactId>
-				<version>1.8</version>
-				<executions>
-					<execution>
-						<phase>process-sources</phase>
-						<goals>
-							<goal>run</goal>
-						</goals>
-						<configuration>
-							<target>
-								<delete failonerror="true">
-									<fileset dir="${project.build.directory}/openscoring-common-sources">
-										<and>
-											<filename name="**/*.java" />
-											<contains text="@GwtIncompatible" />
-										</and>
-									</fileset>
-								</delete>
-							</target>
 						</configuration>
 					</execution>
 				</executions>

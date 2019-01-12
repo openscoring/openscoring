@@ -5,10 +5,6 @@
 	/>
 
 	<inherits 
-		name="com.google.common.base.Base"
-	/>
-
-	<inherits 
 		name="org.dmg.pmml.PMML"
 	/>
 	<inherits
