@@ -40,7 +40,6 @@ public class Openscoring extends ResourceConfig {
 	public Openscoring(){
 		super(ModelResource.class);
 
-		final
 		Config config = ConfigFactory.load();
 
 		Binder binder = new AbstractBinder(){

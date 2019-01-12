@@ -211,7 +211,6 @@ public class ModelResource {
 	)
 	@Produces({MediaType.APPLICATION_JSON, MediaType.TEXT_XML})
 	public Response download(@PathParam("id") String id){
-		final
 		Model model = this.modelRegistry.get(id, true);
 		if(model == null){
 			throw new NotFoundException("Model \"" + id + "\" not found");
@@ -254,7 +253,7 @@ public class ModelResource {
 	public EvaluationResponse evaluate(@PathParam("id") String id, EvaluationRequest request){
 		List<EvaluationRequest> requests = Collections.singletonList(request);
 
-		List<EvaluationResponse> responses = doEvaluate(id, requests, true, "evaluate");
+		List<EvaluationResponse> responses = doEvaluate(id, requests, true);
 
 		return responses.get(0);
 	}
@@ -268,7 +267,7 @@ public class ModelResource {
 
 		List<EvaluationRequest> requests = request.getRequests();
 
-		List<EvaluationResponse> responses = doEvaluate(id, requests, false, "evaluate.batch");
+		List<EvaluationResponse> responses = doEvaluate(id, requests, false);
 
 		batchResponse.setResponses(responses);
 
@@ -297,11 +296,9 @@ public class ModelResource {
 		return doEvaluateCsv(id, delimiterChar, quoteChar, charset, is);
 	}
 
-	private Response doEvaluateCsv(String id, String delimiterChar, String quoteChar, final Charset charset, InputStream is){
-		final
+	private Response doEvaluateCsv(String id, String delimiterChar, String quoteChar, Charset charset, InputStream is){
 		CsvPreference format;
 
-		final
 		CsvUtil.Table<EvaluationRequest> requestTable;
 
 		try {
@@ -334,9 +331,8 @@ public class ModelResource {
 
 		List<EvaluationRequest> requests = requestTable.getRows();
 
-		List<EvaluationResponse> responses = doEvaluate(id, requests, true, "evaluate.csv");
+		List<EvaluationResponse> responses = doEvaluate(id, requests, true);
 
-		final
 		CsvUtil.Table<EvaluationResponse> responseTable = new CsvUtil.Table<>();
 		responseTable.setId(requestTable.getId());
 		responseTable.setRows(responses);
@@ -369,10 +365,7 @@ public class ModelResource {
 			.build();
 	}
 
-	@SuppressWarnings (
-		value = "resource"
-	)
-	private List<EvaluationResponse> doEvaluate(String id, List<EvaluationRequest> requests, boolean allOrNothing, String method){
+	private List<EvaluationResponse> doEvaluate(String id, List<EvaluationRequest> requests, boolean allOrNothing){
 		Model model = this.modelRegistry.get(id, true);
 		if(model == null){
 			throw new NotFoundException("Model \"" + id + "\" not found");
