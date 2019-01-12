@@ -2,7 +2,9 @@ application {
 }
 
 modelRegistry {
-	// Activated the validation of uploaded PMML documents.
-	// An invalid PMML document should fail fast during model deployment, as opposed to failing some time later during model evaluation
-	validate = true
+	modelEvaluatorBuilder {
+		// Activate the validation of uploaded PMML documents.
+		// An invalid PMML document should fail fast during model deployment, as opposed to failing some time later during model evaluation.
+		validate = true
+	}
 }

@@ -72,86 +72,7 @@ public class ModelRegistry {
 	public ModelRegistry(@Named("openscoring") Config config){
 		Config modelRegistryConfig = config.getConfig("modelRegistry");
 
-		LoadingModelEvaluatorBuilder modelEvaluatorBuilder = new LoadingModelEvaluatorBuilder();
-
-		String modelEvaluatorFactoryClassName = modelRegistryConfig.getString("modelEvaluatorFactoryClass");
-		if(modelEvaluatorFactoryClassName != null){
-			Class<? extends ModelEvaluatorFactory> modelEvaluatorFactoryClazz = loadClass(ModelEvaluatorFactory.class, modelEvaluatorFactoryClassName);
-
-			modelEvaluatorBuilder.setModelEvaluatorFactory(newInstance(modelEvaluatorFactoryClazz));
-		}
-
-		String valueFactoryFactoryClassName = modelRegistryConfig.getString("valueFactoryFactoryClass");
-		if(valueFactoryFactoryClassName != null){
-			Class<? extends ValueFactoryFactory> valueFactoryFactoryClazz = loadClass(ValueFactoryFactory.class, valueFactoryFactoryClassName);
-
-			modelEvaluatorBuilder.setValueFactoryFactory(newInstance(valueFactoryFactoryClazz));
-		}
-
-		FieldMapper resultMapper = new FieldMapper(){
-
-			@Override
-			public FieldName apply(FieldName name){
-
-				// A "phantom" default target field
-				if(name == null){
-					return ModelResource.DEFAULT_NAME;
-				}
-
-				return name;
-			}
-		};
-
-		modelEvaluatorBuilder.setResultMapper(resultMapper);
-
-		boolean validate = modelRegistryConfig.getBoolean("validate");
-
-		if(validate){
-			Schema schema;
-
-			try {
-				schema = JAXBUtil.getSchema();
-			} catch(SAXException | IOException e){
-				throw new RuntimeException(e);
-			}
-
-			modelEvaluatorBuilder
-				.setSchema(schema)
-				.setValidationEventHandler(new SimpleValidationEventHandler());
-		}
-
-		boolean locatable = modelRegistryConfig.getBoolean("locatable");
-
-		modelEvaluatorBuilder.setLocatable(locatable);
-
-		VisitorBattery visitors = new VisitorBattery();
-
-		List<String> visitorClassNames = modelRegistryConfig.getStringList("visitorClasses");
-		for(String visitorClassName : visitorClassNames){
-			Class<?> clazz = loadClass(Object.class, visitorClassName);
-
-			if((Visitor.class).isAssignableFrom(clazz)){
-				Class<? extends Visitor> visitorClazz = clazz.asSubclass(Visitor.class);
-
-				visitors.add(visitorClazz);
-			} else
-
-			if((VisitorBattery.class).isAssignableFrom(clazz)){
-				Class<? extends VisitorBattery> visitorBatteryClazz = clazz.asSubclass(VisitorBattery.class);
-
-				VisitorBattery visitorBattery = newInstance(visitorBatteryClazz);
-
-				visitors.addAll(visitorBattery);
-			} else
-
-			{
-				throw new IllegalArgumentException(new ClassCastException(clazz.toString()));
-			}
-		}
-
-		modelEvaluatorBuilder.setVisitors(visitors);
-
-		this.modelEvaluatorBuilder = modelEvaluatorBuilder;
+		this.modelEvaluatorBuilder = createModelEvaluatorBuilder(modelRegistryConfig);
 	}
 
 	public Collection<Map.Entry<String, Model>> entries(){
@@ -226,6 +147,92 @@ public class ModelRegistry {
 	static
 	public boolean validateId(String id){
 		return (id != null && (id).matches(ID_REGEX));
+	}
+
+	static
+	private LoadingModelEvaluatorBuilder createModelEvaluatorBuilder(Config modelRegistryConfig){
+		Config modelEvaluatorBuilderConfig = modelRegistryConfig.getConfig("modelEvaluatorBuilder");
+
+		LoadingModelEvaluatorBuilder modelEvaluatorBuilder = new LoadingModelEvaluatorBuilder();
+
+		String modelEvaluatorFactoryClassName = modelEvaluatorBuilderConfig.getString("modelEvaluatorFactoryClass");
+		if(modelEvaluatorFactoryClassName != null){
+			Class<? extends ModelEvaluatorFactory> modelEvaluatorFactoryClazz = loadClass(ModelEvaluatorFactory.class, modelEvaluatorFactoryClassName);
+
+			modelEvaluatorBuilder.setModelEvaluatorFactory(newInstance(modelEvaluatorFactoryClazz));
+		}
+
+		String valueFactoryFactoryClassName = modelEvaluatorBuilderConfig.getString("valueFactoryFactoryClass");
+		if(valueFactoryFactoryClassName != null){
+			Class<? extends ValueFactoryFactory> valueFactoryFactoryClazz = loadClass(ValueFactoryFactory.class, valueFactoryFactoryClassName);
+
+			modelEvaluatorBuilder.setValueFactoryFactory(newInstance(valueFactoryFactoryClazz));
+		}
+
+		FieldMapper resultMapper = new FieldMapper(){
+
+			@Override
+			public FieldName apply(FieldName name){
+
+				// A "phantom" default target field
+				if(name == null){
+					return ModelResource.DEFAULT_NAME;
+				}
+
+				return name;
+			}
+		};
+
+		modelEvaluatorBuilder.setResultMapper(resultMapper);
+
+		boolean validate = modelEvaluatorBuilderConfig.getBoolean("validate");
+
+		if(validate){
+			Schema schema;
+
+			try {
+				schema = JAXBUtil.getSchema();
+			} catch(SAXException | IOException e){
+				throw new RuntimeException(e);
+			}
+
+			modelEvaluatorBuilder
+				.setSchema(schema)
+				.setValidationEventHandler(new SimpleValidationEventHandler());
+		}
+
+		boolean locatable = modelEvaluatorBuilderConfig.getBoolean("locatable");
+
+		modelEvaluatorBuilder.setLocatable(locatable);
+
+		VisitorBattery visitors = new VisitorBattery();
+
+		List<String> visitorClassNames = modelEvaluatorBuilderConfig.getStringList("visitorClasses");
+		for(String visitorClassName : visitorClassNames){
+			Class<?> clazz = loadClass(Object.class, visitorClassName);
+
+			if((Visitor.class).isAssignableFrom(clazz)){
+				Class<? extends Visitor> visitorClazz = clazz.asSubclass(Visitor.class);
+
+				visitors.add(visitorClazz);
+			} else
+
+			if((VisitorBattery.class).isAssignableFrom(clazz)){
+				Class<? extends VisitorBattery> visitorBatteryClazz = clazz.asSubclass(VisitorBattery.class);
+
+				VisitorBattery visitorBattery = newInstance(visitorBatteryClazz);
+
+				visitors.addAll(visitorBattery);
+			} else
+
+			{
+				throw new IllegalArgumentException(new ClassCastException(clazz.toString()));
+			}
+		}
+
+		modelEvaluatorBuilder.setVisitors(visitors);
+
+		return modelEvaluatorBuilder;
 	}
 
 	static
