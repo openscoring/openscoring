@@ -50,7 +50,7 @@
 			<MiningField name="origin" usageType="active" invalidValueTreatment="returnInvalid"/>
 		</MiningSchema>
 		<Output>
-			<OutputField name="Predicted_mpg" dataType="double" feature="predictedValue"/>
+			<OutputField name="Predicted_mpg" dataType="double" isFinalResult="false" feature="predictedValue"/>
 			<OutputField name="report(Predicted_mpg)" dataType="string" feature="x-report" x-reportField="Predicted_mpg"/>
 		</Output>
 		<RegressionTable intercept="30.9168414889827">

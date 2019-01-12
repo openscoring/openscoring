@@ -53,6 +53,7 @@ import org.jpmml.evaluator.FieldMapper;
 import org.jpmml.evaluator.HasPMML;
 import org.jpmml.evaluator.LoadingModelEvaluatorBuilder;
 import org.jpmml.evaluator.ModelEvaluatorFactory;
+import org.jpmml.evaluator.OutputFilters;
 import org.jpmml.evaluator.ValueFactoryFactory;
 import org.jpmml.model.JAXBUtil;
 import org.jpmml.model.VisitorBattery;
@@ -168,6 +169,8 @@ public class ModelRegistry {
 
 			modelEvaluatorBuilder.setValueFactoryFactory(newInstance(valueFactoryFactoryClazz));
 		}
+
+		modelEvaluatorBuilder.setOutputFilter(OutputFilters.KEEP_FINAL_RESULTS);
 
 		FieldMapper resultMapper = new FieldMapper(){
 

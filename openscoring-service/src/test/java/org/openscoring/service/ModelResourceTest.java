@@ -216,7 +216,7 @@ public class ModelResourceTest extends JerseyTest {
 
 		assertEquals(7, inputFields.size());
 		assertEquals(1, targetFields.size());
-		assertEquals(2, outputFields.size());
+		assertEquals(1, outputFields.size());
 
 		for(Field inputField : inputFields){
 			assertNotNull(inputField.getId());
@@ -259,7 +259,7 @@ public class ModelResourceTest extends JerseyTest {
 
 		Map<String, ?> result = evaluationResponse.getResult();
 
-		assertEquals(3, result.size());
+		assertEquals(2, result.size());
 
 		String report = (String)result.get("report(Predicted_mpg)");
 
