@@ -3,7 +3,6 @@ Openscoring includes third-party dependencies that are released under the Apache
   * Guava - http://guava-libraries.googlecode.com
   * JCommander - http://jcommander.org
   * Jetty - http://www.eclipse.org/jetty/
-  * Metrics - http://metrics.dropwizard.io/
   * Super CSV - http://supercsv.sourceforge.net
 
                                  Apache License

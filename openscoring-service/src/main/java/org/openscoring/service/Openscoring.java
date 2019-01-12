@@ -22,7 +22,6 @@ import java.util.List;
 
 import javax.inject.Singleton;
 
-import com.codahale.metrics.MetricRegistry;
 import com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider;
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
@@ -39,7 +38,7 @@ import org.glassfish.jersey.server.filter.RolesAllowedDynamicFeature;
 public class Openscoring extends ResourceConfig {
 
 	public Openscoring(){
-		super(ModelResource.class, MetricResource.class);
+		super(ModelResource.class);
 
 		final
 		Config config = ConfigFactory.load();
@@ -51,7 +50,6 @@ public class Openscoring extends ResourceConfig {
 				bind(config).to(Config.class).named("openscoring");
 
 				bind(ModelRegistry.class).to(ModelRegistry.class).in(Singleton.class);
-				bind(MetricRegistry.class).to(MetricRegistry.class).in(Singleton.class);
 			}
 		};
 		register(binder);

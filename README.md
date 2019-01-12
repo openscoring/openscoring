@@ -29,8 +29,6 @@ REST web service for scoring PMML models.
         * [POST /model/${id}/csv](#post-modelidcsv)
     + [Model undeployment](#model-undeployment)
         * [DELETE /model/${id}](#delete-modelid)
-    + [Metric querying](#metric-querying)
-        * [GET /metric/model/${id}](#get-metricmodelid)
 - [License](#license)
 - [Additional information](#additional-information)
 
@@ -40,14 +38,12 @@ REST web service for scoring PMML models.
 * Simple and powerful REST API:
   * Model deployment and undeployment.
   * Model evaluation in single prediction, batch prediction and CSV prediction modes.
-  * Model metrics.
 * High performance and high throughput:
   * Sub-millisecond response times.
   * Request and response compression using `gzip` and `deflate` encodings.
   * Thread safe.
 * Open, extensible architecture for easy integration with proprietary systems and services:
   * User authentication and authorization.
-  * Metrics dashboards.
 
 # Prerequisites #
 
@@ -152,13 +148,6 @@ Model REST API endpoints:
 | POST | /model/${id}/batch | - | Evaluate data in "batch prediction" mode |
 | POST | /model/${id}/csv | - | Evaluate data in "CSV prediction" mode |
 | DELETE | /model/${id} | admin | Undeploy a model |
-
-Metric REST API endpoints:
-
-| HTTP method | Endpoint | Required role(s) | Description |
-| ----------- | -------- | ---------------- | ----------- |
-| GET | /metric/model | admin | Get the metric sets of all models |
-| GET | /metric/model/${id} | admin | Get the metric set of a model |
 
 By default, the "admin" role is granted to all HTTP requests that originate from the local network address.
 
@@ -475,60 +464,6 @@ curl -X POST -H "X-HTTP-Method-Override: DELETE" http://localhost:8080/openscori
 Sample cURL invocation that employs the `_method` query parameter:
 ```
 curl -X POST http://localhost:8080/openscoring/model/DecisionTreeIris?_method=DELETE
-```
-
-### Metric querying
-
-##### GET /metric/model/${id}
-
-Gets the snapshot of the metric set of a model.
-
-The response body is a JSON serialized form of an `org.openscoring.common.MetricSetResponse` [(source)](https://github.com/openscoring/openscoring/blob/master/openscoring-common/src/main/java/org/openscoring/common/MetricSetResponse.java) object.
-
-Response status codes:
-* 200 OK. The evaluation was successful.
-* 403 Forbidden. The acting user does not have an "admin" role.
-* 404 Not Found. The requested model was not found.
-
-Sample cURL invocation:
-```
-curl -X GET http://localhost:8080/openscoring/metric/model/DecisionTreeIris
-```
-
-Sample response:
-```json
-{
-	"version" : "3.0.0",
-	"counters" : {
-		"records" : {
-			"count" : 1
-		}
-	},
-	"gauges" : { },
-	"histograms" : { },
-	"meters" : { },
-	"timers" : {
-		"evaluate" : {
-			"count" : 1,
-			"max" : 0.008521913,
-			"mean" : 0.008521913,
-			"min" : 0.008521913,
-			"p50" : 0.008521913,
-			"p75" : 0.008521913,
-			"p95" : 0.008521913,
-			"p98" : 0.008521913,
-			"p99" : 0.008521913,
-			"p999" : 0.008521913,
-			"stddev" : 0.0,
-			"m15_rate" : 0.19237151525464488,
-			"m1_rate" : 0.11160702915400945,
-			"m5_rate" : 0.17797635419760474,
-			"mean_rate" : 0.023793073545863026,
-			"duration_units" : "seconds",
-			"rate_units" : "calls/second"
-		}
-	}
-}
 ```
 
 # License #

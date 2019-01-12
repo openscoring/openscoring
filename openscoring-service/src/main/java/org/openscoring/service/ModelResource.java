@@ -61,11 +61,6 @@ import javax.ws.rs.core.UriBuilder;
 import javax.ws.rs.core.UriInfo;
 import javax.xml.bind.JAXBException;
 
-import com.codahale.metrics.Counter;
-import com.codahale.metrics.Metric;
-import com.codahale.metrics.MetricFilter;
-import com.codahale.metrics.MetricRegistry;
-import com.codahale.metrics.Timer;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.ListMultimap;
 import org.dmg.pmml.FieldName;
@@ -96,13 +91,10 @@ public class ModelResource {
 
 	private ModelRegistry modelRegistry = null;
 
-	private MetricRegistry metricRegistry = null;
-
 
 	@Inject
-	public ModelResource(ModelRegistry modelRegistry, MetricRegistry metricRegistry){
+	public ModelResource(ModelRegistry modelRegistry){
 		this.modelRegistry = modelRegistry;
-		this.metricRegistry = metricRegistry;
 	}
 
 	@GET
@@ -388,10 +380,6 @@ public class ModelResource {
 
 		List<EvaluationResponse> responses = new ArrayList<>();
 
-		Timer timer = this.metricRegistry.timer(createName(id, method));
-
-		Timer.Context context = timer.time();
-
 		try {
 			Evaluator evaluator = model.getEvaluator();
 
@@ -433,12 +421,6 @@ public class ModelResource {
 			throw new BadRequestException(e);
 		}
 
-		context.stop();
-
-		Counter counter = this.metricRegistry.counter(createName(id, "records"));
-
-		counter.inc(responses.size());
-
 		return responses;
 	}
 
@@ -459,32 +441,9 @@ public class ModelResource {
 			throw new InternalServerErrorException("Concurrent modification");
 		}
 
-		final
-		String prefix = createNamePrefix(id);
-
-		MetricFilter filter = new MetricFilter(){
-
-			@Override
-			public boolean matches(String name, Metric metric){
-				return name.startsWith(prefix);
-			}
-		};
-
-		this.metricRegistry.removeMatching(filter);
-
 		SimpleResponse response = new SimpleResponse();
 
 		return response;
-	}
-
-	static
-	protected String createName(String... strings){
-		return MetricRegistry.name(ModelResource.class, strings);
-	}
-
-	static
-	protected String createNamePrefix(String... strings){
-		return createName(strings) + ".";
 	}
 
 	static

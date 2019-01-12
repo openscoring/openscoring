@@ -18,12 +18,9 @@
  */
 package org.openscoring.service;
 
-import java.util.concurrent.TimeUnit;
-
 import javax.ws.rs.ext.ContextResolver;
 import javax.ws.rs.ext.Provider;
 
-import com.codahale.metrics.json.MetricsModule;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import org.jpmml.model.PMMLModule;
@@ -36,7 +33,6 @@ public class ObjectMapperProvider implements ContextResolver<ObjectMapper> {
 
 	public ObjectMapperProvider(){
 		ObjectMapper mapper = new ObjectMapper();
-		mapper.registerModule(new MetricsModule(TimeUnit.SECONDS, TimeUnit.SECONDS, false));
 		mapper.registerModule(new PMMLModule());
 		mapper.enable(SerializationFeature.INDENT_OUTPUT);
 		mapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
