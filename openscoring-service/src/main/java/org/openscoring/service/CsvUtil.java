@@ -22,14 +22,14 @@ import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.LinkedHashMap;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import org.openscoring.common.EvaluationRequest;
 import org.openscoring.common.EvaluationResponse;
+import org.openscoring.common.TableEvaluationRequest;
+import org.openscoring.common.TableEvaluationResponse;
 import org.supercsv.encoder.DefaultCsvEncoder;
 import org.supercsv.io.CsvListReader;
 import org.supercsv.io.CsvMapReader;
@@ -135,65 +135,66 @@ public class CsvUtil {
 	}
 
 	static
-	public Table<EvaluationRequest> readTable(BufferedReader reader, CsvPreference format) throws IOException {
-		Table<EvaluationRequest> table = new Table<>();
-
+	public TableEvaluationRequest readTable(BufferedReader reader, CsvPreference format) throws IOException {
 		CsvMapReader parser = new CsvMapReader(reader, format);
 
 		String[] header = parser.getHeader(true);
 
-		if(header.length > 0 && ("id").equalsIgnoreCase(header[0])){
-			table.setId(header[0]);
-		}
+		List<String> columns = Arrays.asList(header);
+
+		TableEvaluationRequest tableRequest = new TableEvaluationRequest();
+		tableRequest.setColumns(columns);
+
+		String idColumn = tableRequest.getIdColumn();
 
 		List<EvaluationRequest> requests = new ArrayList<>();
 
 		while(true){
-			Map<String, String> arguments = parser.read(header);
-			if(arguments == null){
+			Map<String, String> row = parser.read(header);
+			if(row == null){
 				break;
 			}
 
-			String id = arguments.remove(table.getId());
+			String id = null;
+
+			if(idColumn != null){
+				id = row.remove(idColumn);
+			}
 
 			EvaluationRequest request = new EvaluationRequest(id);
-			request.setArguments(arguments);
+			request.setArguments(row);
 
 			requests.add(request);
 		}
 
+		tableRequest.setRequests(requests);
+
 		parser.close();
 
-		table.setRows(requests);
-
-		return table;
+		return tableRequest;
 	}
 
 	static
-	public void writeTable(BufferedWriter writer, CsvPreference format, Table<EvaluationResponse> table) throws IOException {
+	public void writeTable(TableEvaluationResponse tableResponse, BufferedWriter writer, CsvPreference format) throws IOException {
 		CsvMapWriter formatter = new CsvMapWriter(writer, format);
 
-		String[] header = null;
+		String idColumn = tableResponse.getIdColumn();
+		List<String> columns = tableResponse.getColumns();
 
-		List<EvaluationResponse> responses = table.getRows();
+		String[] header = columns.toArray(new String[columns.size()]);
+
+		formatter.writeHeader(header);
+
+		List<EvaluationResponse> responses = tableResponse.getResponses();
 
 		for(EvaluationResponse response : responses){
-			Map<String, ?> result = response.getResult();
+			Map<String, Object> row = (Map)response.getResult();
 
-			String id = response.getId();
-			if(id != null){
-				result = join(Collections.<String, String>singletonMap(table.getId(), id), result);
-			} // End if
-
-			if(header == null){
-				Set<String> keys = result.keySet();
-
-				header = (keys).toArray(new String[keys.size()]);
-
-				formatter.writeHeader(header);
+			if(idColumn != null){
+				row.put(idColumn, response.getId());
 			}
 
-			formatter.write(result, header);
+			formatter.write(row, header);
 		}
 
 		formatter.flush();
@@ -222,44 +223,6 @@ public class CsvUtil {
 		}
 
 		return quoteChar;
-	}
-
-	static
-	private Map<String, ?> join(Map<String, ?> left, Map<String, ?> right){
-		Map<String, Object> result = new LinkedHashMap<>(left);
-		result.putAll(right);
-
-		return result;
-	}
-
-	static
-	public class Table<R> {
-
-		private String id = null;
-
-		private List<R> rows = null;
-
-
-		public String getId(){
-			return this.id;
-		}
-
-		public void setId(String id){
-
-			if(this.id != null){
-				throw new IllegalStateException();
-			}
-
-			this.id = id;
-		}
-
-		public List<R> getRows(){
-			return this.rows;
-		}
-
-		public void setRows(List<R> rows){
-			this.rows = rows;
-		}
 	}
 
 	private static final char[] DELIMITERS = {',', ';', '\t'};

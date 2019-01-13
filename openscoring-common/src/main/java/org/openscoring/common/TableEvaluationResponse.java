@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015 Villu Ruusmann
+ * Copyright (c) 2019 Villu Ruusmann
  *
  * This file is part of Openscoring
  *
@@ -26,39 +26,43 @@ import org.jpmml.model.ToStringHelper;
 @JsonInclude (
 	value = JsonInclude.Include.NON_EMPTY
 )
-public class BatchEvaluationResponse extends SimpleResponse {
+public class TableEvaluationResponse extends SimpleResponse {
 
-	private String id = null;
+	private List<String> columns = null;
 
 	private List<EvaluationResponse> responses = null;
 
 
-	public BatchEvaluationResponse(){
-	}
-
-	public BatchEvaluationResponse(String id){
-		setId(id);
+	public TableEvaluationResponse(){
 	}
 
 	@Override
 	protected ToStringHelper toStringHelper(){
 		return super.toStringHelper()
-			.add("id", getId())
+			.add("columns", getColumns())
 			.add("responses", getResponses());
 	}
 
-	public String getId(){
-		return this.id;
+	public String getIdColumn(){
+		List<String> columns = getColumns();
+
+		if(columns != null && columns.size() > 0){
+			String column = columns.get(0);
+
+			if(("id").equalsIgnoreCase(column)){
+				return column;
+			}
+		}
+
+		return null;
 	}
 
-	public void setId(String id){
-		this.id = id;
+	public List<String> getColumns(){
+		return this.columns;
 	}
 
-	public EvaluationResponse getResponse(int index){
-		List<EvaluationResponse> responses = getResponses();
-
-		return responses.get(index);
+	public void setColumns(List<String> columns){
+		this.columns = columns;
 	}
 
 	public List<EvaluationResponse> getResponses(){

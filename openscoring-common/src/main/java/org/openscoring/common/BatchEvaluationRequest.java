@@ -55,6 +55,12 @@ public class BatchEvaluationRequest extends SimpleRequest {
 		this.id = id;
 	}
 
+	public EvaluationRequest getRequest(int index){
+		List<EvaluationRequest> requests = getRequests();
+
+		return requests.get(index);
+	}
+
 	public List<EvaluationRequest> getRequests(){
 		return this.requests;
 	}

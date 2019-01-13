@@ -52,6 +52,7 @@ import org.openscoring.common.Field;
 import org.openscoring.common.Headers;
 import org.openscoring.common.ModelResponse;
 import org.openscoring.common.SimpleResponse;
+import org.openscoring.common.TableEvaluationRequest;
 import org.supercsv.prefs.CsvPreference;
 
 import static org.junit.Assert.assertEquals;
@@ -124,19 +125,19 @@ public class ModelResourceTest extends JerseyTest {
 
 		download(id);
 
-		List<EvaluationRequest> evaluationRequests = loadRecords(id);
+		BatchEvaluationRequest batchEvaluationRequest = loadRecords(id);
 
-		EvaluationRequest evaluationRequest = evaluationRequests.get(0);
+		EvaluationRequest evaluationRequest = batchEvaluationRequest.getRequest(0);
 
 		EvaluationResponse evaluationResponse = evaluate(id, evaluationRequest);
 
 		assertEquals(evaluationRequest.getId(), evaluationResponse.getId());
 
-		EvaluationRequest invalidEvaluationRequest = invalidate(evaluationRequests.get(50));
+		EvaluationRequest invalidEvaluationRequest = invalidate(batchEvaluationRequest.getRequest(50));
 
-		evaluationRequests = Arrays.asList(evaluationRequests.get(0), invalidEvaluationRequest, evaluationRequests.get(100));
+		List<EvaluationRequest> evaluationRequests = Arrays.asList(batchEvaluationRequest.getRequest(0), invalidEvaluationRequest, batchEvaluationRequest.getRequest(100));
 
-		BatchEvaluationRequest batchEvaluationRequest = new BatchEvaluationRequest();
+		batchEvaluationRequest = new BatchEvaluationRequest();
 		batchEvaluationRequest.setRequests(evaluationRequests);
 
 		BatchEvaluationResponse batchEvaluationResponse = evaluateBatch(id, batchEvaluationRequest);
@@ -175,14 +176,13 @@ public class ModelResourceTest extends JerseyTest {
 
 		query(id);
 
-		List<EvaluationRequest> evaluationRequests = loadRecords(id);
-
-		BatchEvaluationRequest batchEvaluationRequest = new BatchEvaluationRequest();
-		batchEvaluationRequest.setRequests(evaluationRequests);
+		BatchEvaluationRequest batchEvaluationRequest = loadRecords(id);
 
 		BatchEvaluationResponse batchEvaluationResponse = evaluateBatch(id, batchEvaluationRequest);
 
 		assertEquals(batchEvaluationRequest.getId(), batchEvaluationResponse.getId());
+
+		List<EvaluationRequest> evaluationRequests = batchEvaluationRequest.getRequests();
 
 		List<EvaluationRequest> aggregatedEvaluationRequests = ModelResource.aggregateRequests(FieldName.create("transaction"), evaluationRequests);
 
@@ -249,7 +249,9 @@ public class ModelResourceTest extends JerseyTest {
 			assertEquals(OpType.CONTINUOUS, targetField.getOpType());
 		}
 
-		List<EvaluationRequest> evaluationRequests = loadRecords(id);
+		BatchEvaluationRequest batchEvaluationRequest = loadRecords(id);
+
+		List<EvaluationRequest> evaluationRequests = batchEvaluationRequest.getRequests();
 
 		EvaluationRequest evaluationRequest = evaluationRequests.get(0);
 
@@ -431,16 +433,19 @@ public class ModelResourceTest extends JerseyTest {
 	}
 
 	static
-	private List<EvaluationRequest> loadRecords(String id) throws Exception {
+	private BatchEvaluationRequest loadRecords(String id) throws Exception {
 
 		try(InputStream is = openCSV(id)){
-			CsvUtil.Table<EvaluationRequest> table;
+			TableEvaluationRequest tableEvaluationRequest;
 
 			try(BufferedReader reader = new BufferedReader(new InputStreamReader(is, "UTF-8"))){
-				table = CsvUtil.readTable(reader, CsvPreference.TAB_PREFERENCE);
+				tableEvaluationRequest = CsvUtil.readTable(reader, CsvPreference.TAB_PREFERENCE);
 			}
 
-			return table.getRows();
+			BatchEvaluationRequest batchEvaluationRequest = new BatchEvaluationRequest();
+			batchEvaluationRequest.setRequests(tableEvaluationRequest.getRequests());
+
+			return batchEvaluationRequest;
 		}
 	}
 

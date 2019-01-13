@@ -78,6 +78,8 @@ import org.openscoring.common.EvaluationRequest;
 import org.openscoring.common.EvaluationResponse;
 import org.openscoring.common.ModelResponse;
 import org.openscoring.common.SimpleResponse;
+import org.openscoring.common.TableEvaluationRequest;
+import org.openscoring.common.TableEvaluationResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.supercsv.prefs.CsvPreference;
@@ -299,7 +301,7 @@ public class ModelResource {
 	private Response doEvaluateCsv(String id, String delimiterChar, String quoteChar, Charset charset, InputStream is){
 		CsvPreference format;
 
-		CsvUtil.Table<EvaluationRequest> requestTable;
+		TableEvaluationRequest tableRequest;
 
 		try {
 			BufferedReader reader = new BufferedReader(new InputStreamReader(is, charset)){
@@ -319,7 +321,7 @@ public class ModelResource {
 					format = CsvUtil.getFormat(reader);
 				}
 
-				requestTable = CsvUtil.readTable(reader, format);
+				tableRequest = CsvUtil.readTable(reader, format);
 			} finally {
 				reader.close();
 			}
@@ -329,13 +331,35 @@ public class ModelResource {
 			throw new BadRequestException(e);
 		}
 
-		List<EvaluationRequest> requests = requestTable.getRows();
+		List<EvaluationRequest> requests = tableRequest.getRequests();
 
 		List<EvaluationResponse> responses = doEvaluate(id, requests, true);
 
-		CsvUtil.Table<EvaluationResponse> responseTable = new CsvUtil.Table<>();
-		responseTable.setId(requestTable.getId());
-		responseTable.setRows(responses);
+		List<String> columns = new ArrayList<>();
+
+		String idColumn = tableRequest.getIdColumn();
+		if(idColumn != null){
+			columns.add(idColumn);
+		}
+
+		responses:
+		for(EvaluationResponse response : responses){
+			String message = response.getMessage();
+
+			if(message != null){
+				continue;
+			}
+
+			Map<String, ?> result = response.getResult();
+
+			columns.addAll(result.keySet());
+
+			break responses;
+		}
+
+		TableEvaluationResponse tableResponse = new TableEvaluationResponse();
+		tableResponse.setColumns(columns);
+		tableResponse.setResponses(responses);
 
 		StreamingOutput entity = new StreamingOutput(){
 
@@ -352,7 +376,7 @@ public class ModelResource {
 				};
 
 				try {
-					CsvUtil.writeTable(writer, format, responseTable);
+					CsvUtil.writeTable(tableResponse, writer, format);
 				} finally {
 					writer.close();
 				}

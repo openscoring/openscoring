@@ -40,6 +40,12 @@ public class BatchModelResponse extends SimpleResponse {
 			.add("responses", getResponses());
 	}
 
+	public ModelResponse getResponse(int index){
+		List<ModelResponse> responses = getResponses();
+
+		return responses.get(index);
+	}
+
 	public List<ModelResponse> getResponses(){
 		return this.responses;
 	}
