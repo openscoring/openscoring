@@ -57,6 +57,9 @@ public class Openscoring extends ResourceConfig {
 		register(JacksonJsonProvider.class);
 		register(ObjectMapperProvider.class);
 
+		// CSV support
+		register(TableProvider.class);
+
 		// Convert exceptions to JSON objects
 		register(WebApplicationExceptionMapper.class);
 

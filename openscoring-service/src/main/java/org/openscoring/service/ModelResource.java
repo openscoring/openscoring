@@ -19,15 +19,10 @@
 package org.openscoring.service;
 
 import java.io.BufferedOutputStream;
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.OutputStream;
-import java.io.OutputStreamWriter;
 import java.net.URI;
-import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -43,7 +38,6 @@ import javax.ws.rs.BadRequestException;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
-import javax.ws.rs.HeaderParam;
 import javax.ws.rs.InternalServerErrorException;
 import javax.ws.rs.NotFoundException;
 import javax.ws.rs.POST;
@@ -51,7 +45,6 @@ import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
@@ -82,7 +75,6 @@ import org.openscoring.common.TableEvaluationRequest;
 import org.openscoring.common.TableEvaluationResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.supercsv.prefs.CsvPreference;
 
 @Path("model")
 @PermitAll
@@ -242,7 +234,7 @@ public class ModelResource {
 		};
 
 		return (Response.ok().entity(entity))
-			.type(MediaType.APPLICATION_XML_TYPE.withCharset(ModelResource.CHARSET_UTF8.name()))
+			.type(MediaType.APPLICATION_XML_TYPE.withCharset("UTF-8"))
 			.header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + id + ".pmml.xml") // XXX
 			.build();
 	}
@@ -278,60 +270,24 @@ public class ModelResource {
 	@Path("{id:" + ModelRegistry.ID_REGEX + "}/csv")
 	@Consumes(MediaType.TEXT_PLAIN)
 	@Produces({MediaType.APPLICATION_JSON, MediaType.TEXT_PLAIN})
-	public Response evaluateCsv(@PathParam("id") String id, @QueryParam("delimiterChar") String delimiterChar, @QueryParam("quoteChar") String quoteChar, @HeaderParam(HttpHeaders.CONTENT_TYPE) String contentType, InputStream is){
-		com.google.common.net.MediaType mediaType = com.google.common.net.MediaType.parse(contentType);
-
-		Charset charset = (mediaType.charset()).or(ModelResource.CHARSET_UTF8);
-
-		return doEvaluateCsv(id, delimiterChar, quoteChar, charset, is);
+	public Response evaluateCsv(@PathParam("id") String id, TableEvaluationRequest tableRequest){
+		return doEvaluateCsv(id, tableRequest);
 	}
 
 	@POST
 	@Path("{id:" + ModelRegistry.ID_REGEX + "}/csv")
 	@Consumes(MediaType.MULTIPART_FORM_DATA)
 	@Produces({MediaType.APPLICATION_JSON, MediaType.TEXT_PLAIN})
-	public Response evaluateCsvForm(@PathParam("id") String id, @QueryParam("delimiterChar") String delimiterChar, @QueryParam("quoteChar") String quoteChar, @FormDataParam("csv") InputStream is){
-		Charset charset = ModelResource.CHARSET_UTF8;
-
-		return doEvaluateCsv(id, delimiterChar, quoteChar, charset, is);
+	public Response evaluateCsvForm(@PathParam("id") String id, @FormDataParam("csv") TableEvaluationRequest tableRequest){
+		return doEvaluateCsv(id, tableRequest);
 	}
 
-	private Response doEvaluateCsv(String id, String delimiterChar, String quoteChar, Charset charset, InputStream is){
-		CsvPreference format;
-
-		TableEvaluationRequest tableRequest;
-
-		try {
-			BufferedReader reader = new BufferedReader(new InputStreamReader(is, charset)){
-
-				@Override
-				public void close(){
-					// The closing of the underlying java.io.InputStream is handled elsewhere
-				}
-			};
-
-			try {
-				if(delimiterChar != null){
-					format = CsvUtil.getFormat(delimiterChar, quoteChar);
-				} else
-
-				{
-					format = CsvUtil.getFormat(reader);
-				}
-
-				tableRequest = CsvUtil.readTable(reader, format);
-			} finally {
-				reader.close();
-			}
-		} catch(Exception e){
-			logger.error("Failed to load CSV document", e);
-
-			throw new BadRequestException(e);
-		}
-
+	private Response doEvaluateCsv(String id, TableEvaluationRequest tableRequest){
 		List<EvaluationRequest> requests = tableRequest.getRequests();
 
 		List<EvaluationResponse> responses = doEvaluate(id, requests, true);
+
+		String charset = tableRequest.getCharset();
 
 		List<String> columns = new ArrayList<>();
 
@@ -355,34 +311,12 @@ public class ModelResource {
 			break responses;
 		}
 
-		TableEvaluationResponse tableResponse = new TableEvaluationResponse();
-		tableResponse.setColumns(columns);
-		tableResponse.setResponses(responses);
+		TableEvaluationResponse tableResponse = new TableEvaluationResponse(tableRequest.getDelimiterChar(), tableRequest.getQuoteChar())
+			.setColumns(columns)
+			.setResponses(responses);
 
-		StreamingOutput entity = new StreamingOutput(){
-
-			@Override
-			public void write(OutputStream os) throws IOException {
-				BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(os, charset)){
-
-					@Override
-					public void close() throws IOException {
-						flush();
-
-						// The closing of the underlying java.io.OutputStream is handled elsewhere
-					}
-				};
-
-				try {
-					CsvUtil.writeTable(tableResponse, writer, format);
-				} finally {
-					writer.close();
-				}
-			}
-		};
-
-		return (Response.ok().entity(entity))
-			.type(MediaType.TEXT_PLAIN_TYPE.withCharset(charset.name()))
+		return (Response.ok().entity(tableResponse))
+			.type(MediaType.TEXT_PLAIN_TYPE.withCharset(charset))
 			.header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + id + ".csv") // XXX
 			.build();
 	}
@@ -582,8 +516,6 @@ public class ModelResource {
 	}
 
 	public static final FieldName DEFAULT_NAME = FieldName.create("_default");
-
-	private static final Charset CHARSET_UTF8 = Charset.forName("UTF-8");
 
 	private static final Logger logger = LoggerFactory.getLogger(ModelResource.class);
 }

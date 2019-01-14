@@ -93,14 +93,6 @@ public class CsvUtil {
 	}
 
 	static
-	private CsvPreference createFormat(char delimiter, char quote){
-		CsvPreference.Builder builder = new CsvPreference.Builder(quote, delimiter, "\n");
-		builder.useEncoder(new DefaultCsvEncoder());
-
-		return builder.build();
-	}
-
-	static
 	private boolean checkFormat(BufferedReader reader, CsvPreference format) throws IOException {
 		CsvListReader parser = new CsvListReader(reader, format){
 
@@ -142,7 +134,7 @@ public class CsvUtil {
 
 		List<String> columns = Arrays.asList(header);
 
-		TableEvaluationRequest tableRequest = new TableEvaluationRequest()
+		TableEvaluationRequest tableRequest = new TableEvaluationRequest((char)format.getDelimiterChar(), format.getQuoteChar())
 			.setColumns(columns);
 
 		String idColumn = tableRequest.getIdColumn();
@@ -175,7 +167,9 @@ public class CsvUtil {
 	}
 
 	static
-	public void writeTable(TableEvaluationResponse tableResponse, BufferedWriter writer, CsvPreference format) throws IOException {
+	public void writeTable(TableEvaluationResponse tableResponse, BufferedWriter writer) throws IOException {
+		CsvPreference format = createFormat(tableResponse.getDelimiterChar(), tableResponse.getQuoteChar());
+
 		CsvMapWriter formatter = new CsvMapWriter(writer, format);
 
 		String idColumn = tableResponse.getIdColumn();
@@ -199,6 +193,14 @@ public class CsvUtil {
 
 		formatter.flush();
 		formatter.close();
+	}
+
+	static
+	private CsvPreference createFormat(char delimiterChar, char quoteChar){
+		CsvPreference.Builder builder = new CsvPreference.Builder(quoteChar, delimiterChar, "\n");
+		builder.useEncoder(new DefaultCsvEncoder());
+
+		return builder.build();
 	}
 
 	static

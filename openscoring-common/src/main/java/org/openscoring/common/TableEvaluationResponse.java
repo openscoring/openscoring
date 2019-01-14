@@ -28,19 +28,18 @@ import org.jpmml.model.ToStringHelper;
 )
 public class TableEvaluationResponse extends SimpleResponse {
 
+	private char delimiterChar;
+
+	private char quoteChar;
+
 	private List<String> columns = null;
 
 	private List<EvaluationResponse> responses = null;
 
 
-	public TableEvaluationResponse(){
-	}
-
-	@Override
-	protected ToStringHelper toStringHelper(){
-		return super.toStringHelper()
-			.add("columns", getColumns())
-			.add("responses", getResponses());
+	public TableEvaluationResponse(char delimiterChar, char quoteChar){
+		setDelimiterChar(delimiterChar);
+		setQuoteChar(quoteChar);
 	}
 
 	public String getIdColumn(){
@@ -55,6 +54,35 @@ public class TableEvaluationResponse extends SimpleResponse {
 		}
 
 		return null;
+	}
+
+	@Override
+	protected ToStringHelper toStringHelper(){
+		return super.toStringHelper()
+			.add("delimiterChar", getDelimiterChar())
+			.add("quoteChar", getQuoteChar())
+			.add("columns", getColumns())
+			.add("responses", getResponses());
+	}
+
+	public char getDelimiterChar(){
+		return this.delimiterChar;
+	}
+
+	public TableEvaluationResponse setDelimiterChar(char delimiterChar){
+		this.delimiterChar = delimiterChar;
+
+		return this;
+	}
+
+	public char getQuoteChar(){
+		return this.quoteChar;
+	}
+
+	public TableEvaluationResponse setQuoteChar(char quoteChar){
+		this.quoteChar = quoteChar;
+
+		return this;
 	}
 
 	public List<String> getColumns(){

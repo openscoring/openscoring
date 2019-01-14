@@ -28,12 +28,20 @@ import org.jpmml.model.ToStringHelper;
 )
 public class TableEvaluationRequest extends SimpleRequest {
 
+	private String charset = null;
+
+	private char delimiterChar;
+
+	private char quoteChar;
+
 	private List<String> columns = null;
 
 	private List<EvaluationRequest> requests = null;
 
 
-	public TableEvaluationRequest(){
+	public TableEvaluationRequest(char delimiterChar, char quoteChar){
+		setDelimiterChar(delimiterChar);
+		setQuoteChar(quoteChar);
 	}
 
 	public String getIdColumn(){
@@ -53,8 +61,41 @@ public class TableEvaluationRequest extends SimpleRequest {
 	@Override
 	protected ToStringHelper toStringHelper(){
 		return super.toStringHelper()
+			.add("charset", getCharset())
+			.add("delimiterChar", getDelimiterChar())
+			.add("quoteChar", getQuoteChar())
 			.add("columns", getColumns())
 			.add("requests", getRequests());
+	}
+
+	public String getCharset(){
+		return this.charset;
+	}
+
+	public TableEvaluationRequest setCharset(String charset){
+		this.charset = charset;
+
+		return this;
+	}
+
+	public char getDelimiterChar(){
+		return this.delimiterChar;
+	}
+
+	public TableEvaluationRequest setDelimiterChar(char delimiterChar){
+		this.delimiterChar = delimiterChar;
+
+		return this;
+	}
+
+	public char getQuoteChar(){
+		return this.quoteChar;
+	}
+
+	public TableEvaluationRequest setQuoteChar(char quoteChar){
+		this.quoteChar = quoteChar;
+
+		return this;
 	}
 
 	public List<String> getColumns(){
