@@ -264,10 +264,10 @@ public class ModelResource {
 	@Path("{id: " + ModelRegistry.ID_REGEX + "}/batch")
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
-	public BatchEvaluationResponse evaluateBatch(@PathParam("id") String id, BatchEvaluationRequest request){
-		BatchEvaluationResponse batchResponse = new BatchEvaluationResponse(request.getId());
+	public BatchEvaluationResponse evaluateBatch(@PathParam("id") String id, BatchEvaluationRequest batchRequest){
+		BatchEvaluationResponse batchResponse = new BatchEvaluationResponse(batchRequest.getId());
 
-		List<EvaluationRequest> requests = request.getRequests();
+		List<EvaluationRequest> requests = batchRequest.getRequests();
 
 		List<EvaluationResponse> responses = doEvaluate(id, requests, false);
 

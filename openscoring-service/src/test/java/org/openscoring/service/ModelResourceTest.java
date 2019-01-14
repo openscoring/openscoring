@@ -125,33 +125,33 @@ public class ModelResourceTest extends JerseyTest {
 
 		download(id);
 
-		BatchEvaluationRequest batchEvaluationRequest = loadRecords(id);
+		BatchEvaluationRequest batchRequest = loadRecords(id);
 
-		EvaluationRequest evaluationRequest = batchEvaluationRequest.getRequest(0);
+		EvaluationRequest request = batchRequest.getRequest(0);
 
-		EvaluationResponse evaluationResponse = evaluate(id, evaluationRequest);
+		EvaluationResponse response = evaluate(id, request);
 
-		assertEquals(evaluationRequest.getId(), evaluationResponse.getId());
+		assertEquals(request.getId(), response.getId());
 
-		EvaluationRequest invalidEvaluationRequest = invalidate(batchEvaluationRequest.getRequest(50));
+		EvaluationRequest invalidRequest = invalidate(batchRequest.getRequest(50));
 
-		List<EvaluationRequest> evaluationRequests = Arrays.asList(batchEvaluationRequest.getRequest(0), invalidEvaluationRequest, batchEvaluationRequest.getRequest(100));
+		List<EvaluationRequest> requests = Arrays.asList(batchRequest.getRequest(0), invalidRequest, batchRequest.getRequest(100));
 
-		batchEvaluationRequest = new BatchEvaluationRequest();
-		batchEvaluationRequest.setRequests(evaluationRequests);
+		batchRequest = new BatchEvaluationRequest();
+		batchRequest.setRequests(requests);
 
-		BatchEvaluationResponse batchEvaluationResponse = evaluateBatch(id, batchEvaluationRequest);
+		BatchEvaluationResponse batchResponse = evaluateBatch(id, batchRequest);
 
-		assertEquals(batchEvaluationRequest.getId(), batchEvaluationResponse.getId());
+		assertEquals(batchRequest.getId(), batchResponse.getId());
 
-		List<EvaluationResponse> evaluationResponses = batchEvaluationResponse.getResponses();
+		List<EvaluationResponse> responses = batchResponse.getResponses();
 
-		assertEquals(evaluationRequests.size(), evaluationResponses.size());
+		assertEquals(requests.size(), responses.size());
 
-		EvaluationResponse invalidEvaluationResponse = evaluationResponses.get(1);
+		EvaluationResponse invalidResponse = batchResponse.getResponse(1);
 
-		assertEquals(invalidEvaluationRequest.getId(), invalidEvaluationResponse.getId());
-		assertNotNull(invalidEvaluationResponse.getMessage());
+		assertEquals(invalidRequest.getId(), invalidResponse.getId());
+		assertNotNull(invalidResponse.getMessage());
 
 		undeploy(id);
 	}
@@ -176,22 +176,22 @@ public class ModelResourceTest extends JerseyTest {
 
 		query(id);
 
-		BatchEvaluationRequest batchEvaluationRequest = loadRecords(id);
+		BatchEvaluationRequest batchRequest = loadRecords(id);
 
-		BatchEvaluationResponse batchEvaluationResponse = evaluateBatch(id, batchEvaluationRequest);
+		BatchEvaluationResponse batchResponse = evaluateBatch(id, batchRequest);
 
-		assertEquals(batchEvaluationRequest.getId(), batchEvaluationResponse.getId());
+		assertEquals(batchRequest.getId(), batchResponse.getId());
 
-		List<EvaluationRequest> evaluationRequests = batchEvaluationRequest.getRequests();
+		List<EvaluationRequest> requests = batchRequest.getRequests();
 
-		List<EvaluationRequest> aggregatedEvaluationRequests = ModelResource.aggregateRequests(FieldName.create("transaction"), evaluationRequests);
+		List<EvaluationRequest> aggregatedRequests = ModelResource.aggregateRequests(FieldName.create("transaction"), requests);
 
-		batchEvaluationRequest = new BatchEvaluationRequest("aggregate");
-		batchEvaluationRequest.setRequests(aggregatedEvaluationRequests);
+		batchRequest = new BatchEvaluationRequest("aggregate");
+		batchRequest.setRequests(aggregatedRequests);
 
-		batchEvaluationResponse = evaluateBatch(id, batchEvaluationRequest);
+		batchResponse = evaluateBatch(id, batchRequest);
 
-		assertEquals(batchEvaluationRequest.getId(), batchEvaluationResponse.getId());
+		assertEquals(batchRequest.getId(), batchResponse.getId());
 
 		evaluateCsv(id);
 
@@ -249,17 +249,15 @@ public class ModelResourceTest extends JerseyTest {
 			assertEquals(OpType.CONTINUOUS, targetField.getOpType());
 		}
 
-		BatchEvaluationRequest batchEvaluationRequest = loadRecords(id);
+		BatchEvaluationRequest batchRequest = loadRecords(id);
 
-		List<EvaluationRequest> evaluationRequests = batchEvaluationRequest.getRequests();
+		EvaluationRequest request = batchRequest.getRequest(0);
 
-		EvaluationRequest evaluationRequest = evaluationRequests.get(0);
+		EvaluationResponse response = evaluate(id, request);
 
-		EvaluationResponse evaluationResponse = evaluate(id, evaluationRequest);
+		assertEquals(request.getId(), response.getId());
 
-		assertEquals(evaluationRequest.getId(), evaluationResponse.getId());
-
-		Map<String, ?> result = evaluationResponse.getResult();
+		Map<String, ?> result = response.getResult();
 
 		assertEquals(2, result.size());
 
@@ -408,7 +406,7 @@ public class ModelResourceTest extends JerseyTest {
 	}
 
 	static
-	private EvaluationRequest invalidate(EvaluationRequest record){
+	private EvaluationRequest invalidate(EvaluationRequest request){
 		Function<String, String> function = new Function<String, String>(){
 
 			@Override
@@ -421,31 +419,31 @@ public class ModelResourceTest extends JerseyTest {
 			}
 		};
 
-		Map<String, ?> arguments = record.getArguments();
+		Map<String, ?> arguments = request.getArguments();
 
 		arguments = (arguments.entrySet()).stream()
 			.collect(Collectors.toMap(entry -> entry.getKey(), entry -> function.apply(entry.getKey())));
 
-		EvaluationRequest invalidRecord = new EvaluationRequest(record.getId());
-		invalidRecord.setArguments(arguments);
+		EvaluationRequest invalidRequest = new EvaluationRequest(request.getId());
+		invalidRequest.setArguments(arguments);
 
-		return invalidRecord;
+		return invalidRequest;
 	}
 
 	static
 	private BatchEvaluationRequest loadRecords(String id) throws Exception {
 
 		try(InputStream is = openCSV(id)){
-			TableEvaluationRequest tableEvaluationRequest;
+			TableEvaluationRequest tableRequest;
 
 			try(BufferedReader reader = new BufferedReader(new InputStreamReader(is, "UTF-8"))){
-				tableEvaluationRequest = CsvUtil.readTable(reader, CsvPreference.TAB_PREFERENCE);
+				tableRequest = CsvUtil.readTable(reader, CsvPreference.TAB_PREFERENCE);
 			}
 
-			BatchEvaluationRequest batchEvaluationRequest = new BatchEvaluationRequest();
-			batchEvaluationRequest.setRequests(tableEvaluationRequest.getRequests());
+			BatchEvaluationRequest batchRequest = new BatchEvaluationRequest();
+			batchRequest.setRequests(tableRequest.getRequests());
 
-			return batchEvaluationRequest;
+			return batchRequest;
 		}
 	}
 
