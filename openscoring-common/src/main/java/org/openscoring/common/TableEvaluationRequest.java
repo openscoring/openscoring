@@ -61,15 +61,19 @@ public class TableEvaluationRequest extends SimpleRequest {
 		return this.columns;
 	}
 
-	public void setColumns(List<String> columns){
+	public TableEvaluationRequest setColumns(List<String> columns){
 		this.columns = columns;
+
+		return this;
 	}
 
 	public List<EvaluationRequest> getRequests(){
 		return this.requests;
 	}
 
-	public void setRequests(List<EvaluationRequest> requests){
+	public TableEvaluationRequest setRequests(List<EvaluationRequest> requests){
 		this.requests = requests;
+
+		return this;
 	}
 }

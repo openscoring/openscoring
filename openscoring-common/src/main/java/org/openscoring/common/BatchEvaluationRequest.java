@@ -51,8 +51,10 @@ public class BatchEvaluationRequest extends SimpleRequest {
 		return this.id;
 	}
 
-	public void setId(String id){
+	public BatchEvaluationRequest setId(String id){
 		this.id = id;
+
+		return this;
 	}
 
 	public EvaluationRequest getRequest(int index){
@@ -65,7 +67,9 @@ public class BatchEvaluationRequest extends SimpleRequest {
 		return this.requests;
 	}
 
-	public void setRequests(List<EvaluationRequest> requests){
+	public BatchEvaluationRequest setRequests(List<EvaluationRequest> requests){
 		this.requests = requests;
+
+		return this;
 	}
 }

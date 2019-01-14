@@ -51,8 +51,10 @@ public class BatchEvaluationResponse extends SimpleResponse {
 		return this.id;
 	}
 
-	public void setId(String id){
+	public BatchEvaluationResponse setId(String id){
 		this.id = id;
+
+		return this;
 	}
 
 	public EvaluationResponse getResponse(int index){
@@ -65,7 +67,9 @@ public class BatchEvaluationResponse extends SimpleResponse {
 		return this.responses;
 	}
 
-	public void setResponses(List<EvaluationResponse> responses){
+	public BatchEvaluationResponse setResponses(List<EvaluationResponse> responses){
 		this.responses = responses;
+
+		return this;
 	}
 }

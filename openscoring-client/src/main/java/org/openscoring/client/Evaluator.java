@@ -66,8 +66,8 @@ public class Evaluator extends ModelApplication {
 
 			@Override
 			public EvaluationResponse perform(WebTarget target) throws Exception {
-				EvaluationRequest request = new EvaluationRequest();
-				request.setArguments(getArguments());
+				EvaluationRequest request = new EvaluationRequest()
+					.setArguments(getArguments());
 
 				Invocation invocation = target.request(MediaType.APPLICATION_JSON).buildPost(Entity.json(request));
 

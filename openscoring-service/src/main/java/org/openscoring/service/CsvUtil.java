@@ -142,8 +142,8 @@ public class CsvUtil {
 
 		List<String> columns = Arrays.asList(header);
 
-		TableEvaluationRequest tableRequest = new TableEvaluationRequest();
-		tableRequest.setColumns(columns);
+		TableEvaluationRequest tableRequest = new TableEvaluationRequest()
+			.setColumns(columns);
 
 		String idColumn = tableRequest.getIdColumn();
 
@@ -161,8 +161,8 @@ public class CsvUtil {
 				id = row.remove(idColumn);
 			}
 
-			EvaluationRequest request = new EvaluationRequest(id);
-			request.setArguments(row);
+			EvaluationRequest request = new EvaluationRequest(id)
+				.setArguments(row);
 
 			requests.add(request);
 		}

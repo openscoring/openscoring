@@ -50,7 +50,9 @@ public class BatchModelResponse extends SimpleResponse {
 		return this.responses;
 	}
 
-	public void setResponses(List<ModelResponse> responses){
+	public BatchModelResponse setResponses(List<ModelResponse> responses){
 		this.responses = responses;
+
+		return this;
 	}
 }

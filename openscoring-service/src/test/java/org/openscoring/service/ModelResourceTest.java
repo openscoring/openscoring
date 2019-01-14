@@ -137,8 +137,8 @@ public class ModelResourceTest extends JerseyTest {
 
 		List<EvaluationRequest> requests = Arrays.asList(batchRequest.getRequest(0), invalidRequest, batchRequest.getRequest(100));
 
-		batchRequest = new BatchEvaluationRequest();
-		batchRequest.setRequests(requests);
+		batchRequest = new BatchEvaluationRequest()
+			.setRequests(requests);
 
 		BatchEvaluationResponse batchResponse = evaluateBatch(id, batchRequest);
 
@@ -186,8 +186,8 @@ public class ModelResourceTest extends JerseyTest {
 
 		List<EvaluationRequest> aggregatedRequests = ModelResource.aggregateRequests(FieldName.create("transaction"), requests);
 
-		batchRequest = new BatchEvaluationRequest("aggregate");
-		batchRequest.setRequests(aggregatedRequests);
+		batchRequest = new BatchEvaluationRequest("aggregate")
+			.setRequests(aggregatedRequests);
 
 		batchResponse = evaluateBatch(id, batchRequest);
 
@@ -424,8 +424,8 @@ public class ModelResourceTest extends JerseyTest {
 		arguments = (arguments.entrySet()).stream()
 			.collect(Collectors.toMap(entry -> entry.getKey(), entry -> function.apply(entry.getKey())));
 
-		EvaluationRequest invalidRequest = new EvaluationRequest(request.getId());
-		invalidRequest.setArguments(arguments);
+		EvaluationRequest invalidRequest = new EvaluationRequest(request.getId())
+			.setArguments(arguments);
 
 		return invalidRequest;
 	}
@@ -440,8 +440,8 @@ public class ModelResourceTest extends JerseyTest {
 				tableRequest = CsvUtil.readTable(reader, CsvPreference.TAB_PREFERENCE);
 			}
 
-			BatchEvaluationRequest batchRequest = new BatchEvaluationRequest();
-			batchRequest.setRequests(tableRequest.getRequests());
+			BatchEvaluationRequest batchRequest = new BatchEvaluationRequest()
+				.setRequests(tableRequest.getRequests());
 
 			return batchRequest;
 		}

@@ -57,7 +57,9 @@ public class SimpleResponse implements Serializable {
 		return this.message;
 	}
 
-	public void setMessage(String message){
+	public SimpleResponse setMessage(String message){
 		this.message = message;
+
+		return this;
 	}
 }

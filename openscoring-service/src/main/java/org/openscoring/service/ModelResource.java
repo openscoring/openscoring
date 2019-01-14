@@ -102,8 +102,6 @@ public class ModelResource {
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
 	public BatchModelResponse queryBatch(){
-		BatchModelResponse batchResponse = new BatchModelResponse();
-
 		List<ModelResponse> responses = new ArrayList<>();
 
 		Collection<Map.Entry<String, Model>> entries = this.modelRegistry.entries();
@@ -122,7 +120,8 @@ public class ModelResource {
 		};
 		Collections.sort(responses, comparator);
 
-		batchResponse.setResponses(responses);
+		BatchModelResponse batchResponse = new BatchModelResponse()
+			.setResponses(responses);
 
 		return batchResponse;
 	}
@@ -265,13 +264,12 @@ public class ModelResource {
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
 	public BatchEvaluationResponse evaluateBatch(@PathParam("id") String id, BatchEvaluationRequest batchRequest){
-		BatchEvaluationResponse batchResponse = new BatchEvaluationResponse(batchRequest.getId());
-
 		List<EvaluationRequest> requests = batchRequest.getRequests();
 
 		List<EvaluationResponse> responses = doEvaluate(id, requests, false);
 
-		batchResponse.setResponses(responses);
+		BatchEvaluationResponse batchResponse = new BatchEvaluationResponse(batchRequest.getId())
+			.setResponses(responses);
 
 		return batchResponse;
 	}
@@ -505,8 +503,8 @@ public class ModelResource {
 			// The value of the "group by" column is a single Object, not a Collection (ie. java.util.List) of Objects
 			arguments.put(key, entry.getKey());
 
-			EvaluationRequest resultRequest = new EvaluationRequest();
-			resultRequest.setArguments(arguments);
+			EvaluationRequest resultRequest = new EvaluationRequest()
+				.setArguments(arguments);
 
 			resultRequests.add(resultRequest);
 		}
@@ -571,10 +569,10 @@ public class ModelResource {
 
 	static
 	private ModelResponse createModelResponse(String id, Model model, boolean expand){
-		ModelResponse response = new ModelResponse(id);
-		response.setMiningFunction(model.getMiningFunction());
-		response.setSummary(model.getSummary());
-		response.setProperties(model.getProperties());
+		ModelResponse response = new ModelResponse(id)
+			.setMiningFunction(model.getMiningFunction())
+			.setSummary(model.getSummary())
+			.setProperties(model.getProperties());
 
 		if(expand){
 			response.setSchema(model.getSchema());

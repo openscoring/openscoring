@@ -51,15 +51,19 @@ public class EvaluationResponse extends SimpleResponse {
 		return this.id;
 	}
 
-	public void setId(String id){
+	public EvaluationResponse setId(String id){
 		this.id = id;
+
+		return this;
 	}
 
 	public Map<String, ?> getResult(){
 		return this.result;
 	}
 
-	public void setResult(Map<String, ?> result){
+	public EvaluationResponse setResult(Map<String, ?> result){
 		this.result = result;
+
+		return this;
 	}
 }

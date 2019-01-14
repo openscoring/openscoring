@@ -61,15 +61,19 @@ public class TableEvaluationResponse extends SimpleResponse {
 		return this.columns;
 	}
 
-	public void setColumns(List<String> columns){
+	public TableEvaluationResponse setColumns(List<String> columns){
 		this.columns = columns;
+
+		return this;
 	}
 
 	public List<EvaluationResponse> getResponses(){
 		return this.responses;
 	}
 
-	public void setResponses(List<EvaluationResponse> responses){
+	public TableEvaluationResponse setResponses(List<EvaluationResponse> responses){
 		this.responses = responses;
+
+		return this;
 	}
 }

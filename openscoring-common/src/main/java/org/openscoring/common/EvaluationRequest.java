@@ -51,15 +51,19 @@ public class EvaluationRequest extends SimpleRequest {
 		return this.id;
 	}
 
-	public void setId(String id){
+	public EvaluationRequest setId(String id){
 		this.id = id;
+
+		return this;
 	}
 
 	public Map<String, ?> getArguments(){
 		return this.arguments;
 	}
 
-	public void setArguments(Map<String, ?> arguments){
+	public EvaluationRequest setArguments(Map<String, ?> arguments){
 		this.arguments = arguments;
+
+		return this;
 	}
 }

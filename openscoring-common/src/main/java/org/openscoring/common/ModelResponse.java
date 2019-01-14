@@ -62,39 +62,49 @@ public class ModelResponse extends SimpleResponse {
 		return this.id;
 	}
 
-	public void setId(String id){
+	public ModelResponse setId(String id){
 		this.id = id;
+
+		return this;
 	}
 
 	public MiningFunction getMiningFunction(){
 		return this.miningFunction;
 	}
 
-	public void setMiningFunction(MiningFunction miningFunction){
+	public ModelResponse setMiningFunction(MiningFunction miningFunction){
 		this.miningFunction = miningFunction;
+
+		return this;
 	}
 
 	public String getSummary(){
 		return this.summary;
 	}
 
-	public void setSummary(String summary){
+	public ModelResponse setSummary(String summary){
 		this.summary = summary;
+
+		return this;
 	}
 
 	public Map<String, Object> getProperties(){
 		return this.properties;
 	}
 
-	public void setProperties(Map<String, Object> properties){
+	public ModelResponse setProperties(Map<String, Object> properties){
 		this.properties = properties;
+
+		return this;
 	}
 
 	public Map<String, List<Field>> getSchema(){
 		return this.schema;
 	}
 
-	public void setSchema(Map<String, List<Field>> schema){
+	public ModelResponse setSchema(Map<String, List<Field>> schema){
 		this.schema = schema;
+
+		return this;
 	}
 }
