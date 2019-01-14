@@ -348,9 +348,9 @@ public class ModelResource {
 				continue;
 			}
 
-			Map<String, ?> result = response.getResult();
+			Map<String, ?> results = response.getResults();
 
-			columns.addAll(result.keySet());
+			columns.addAll(results.keySet());
 
 			break responses;
 		}
@@ -547,7 +547,7 @@ public class ModelResource {
 
 		logger.debug("Evaluation response {} has result: {}", response.getId(), results);
 
-		response.setResult(EvaluatorUtil.decode(results));
+		response.setResults(EvaluatorUtil.decode(results));
 
 		logger.info("Returned {}", response);
 

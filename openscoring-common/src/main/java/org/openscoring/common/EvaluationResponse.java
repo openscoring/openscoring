@@ -30,7 +30,7 @@ public class EvaluationResponse extends SimpleResponse {
 
 	private String id = null;
 
-	private Map<String, ?> result = null;
+	private Map<String, ?> results = null;
 
 
 	public EvaluationResponse(){
@@ -44,7 +44,7 @@ public class EvaluationResponse extends SimpleResponse {
 	protected ToStringHelper toStringHelper(){
 		return super.toStringHelper()
 			.add("id", getId())
-			.add("result", getResult());
+			.add("results", getResults());
 	}
 
 	public String getId(){
@@ -57,12 +57,12 @@ public class EvaluationResponse extends SimpleResponse {
 		return this;
 	}
 
-	public Map<String, ?> getResult(){
-		return this.result;
+	public Map<String, ?> getResults(){
+		return this.results;
 	}
 
-	public EvaluationResponse setResult(Map<String, ?> result){
-		this.result = result;
+	public EvaluationResponse setResults(Map<String, ?> results){
+		this.results = results;
 
 		return this;
 	}

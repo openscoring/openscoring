@@ -257,11 +257,11 @@ public class ModelResourceTest extends JerseyTest {
 
 		assertEquals(request.getId(), response.getId());
 
-		Map<String, ?> result = response.getResult();
+		Map<String, ?> results = response.getResults();
 
-		assertEquals(2, result.size());
+		assertEquals(2, results.size());
 
-		String report = (String)result.get("report(Predicted_mpg)");
+		String report = (String)results.get("report(Predicted_mpg)");
 
 		assertTrue(report.startsWith("<math xmlns=\"http://www.w3.org/1998/Math/MathML\">") && report.endsWith("</math>"));
 

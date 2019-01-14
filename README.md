@@ -358,7 +358,7 @@ Sample response:
 ```json
 {
 	"id" : "record-001",
-	"result" : {
+	"results" : {
 		"Species" : "setosa",
 		"Probability_setosa" : 1.0,
 		"Probability_versicolor" : 0.0,

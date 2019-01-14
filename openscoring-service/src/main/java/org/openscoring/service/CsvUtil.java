@@ -188,7 +188,7 @@ public class CsvUtil {
 		List<EvaluationResponse> responses = tableResponse.getResponses();
 
 		for(EvaluationResponse response : responses){
-			Map<String, Object> row = (Map)response.getResult();
+			Map<String, Object> row = (Map)response.getResults();
 
 			if(idColumn != null){
 				row.put(idColumn, response.getId());
