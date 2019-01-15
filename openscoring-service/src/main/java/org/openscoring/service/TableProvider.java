@@ -42,6 +42,7 @@ import javax.ws.rs.ext.Provider;
 
 import org.openscoring.common.TableEvaluationRequest;
 import org.openscoring.common.TableEvaluationResponse;
+import org.openscoring.common.TableFormat;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.supercsv.prefs.CsvPreference;
@@ -96,6 +97,13 @@ public class TableProvider implements MessageBodyReader<TableEvaluationRequest>,
 			}
 
 			tableRequest = CsvUtil.readTable(reader, format);
+
+			TableFormat tableFormat = new TableFormat()
+				.setCharset(charset)
+				.setDelimiterChar((char)format.getDelimiterChar())
+				.setQuoteChar(format.getQuoteChar());
+
+			tableRequest.setFormat(tableFormat);
 		} catch(Exception e){
 			logger.error("Failed to load CSV document", e);
 
@@ -103,8 +111,6 @@ public class TableProvider implements MessageBodyReader<TableEvaluationRequest>,
 		} finally {
 			reader.close();
 		}
-
-		tableRequest.setCharset(charset);
 
 		return tableRequest;
 	}

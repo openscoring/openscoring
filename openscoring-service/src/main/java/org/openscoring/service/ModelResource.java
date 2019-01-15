@@ -73,6 +73,7 @@ import org.openscoring.common.ModelResponse;
 import org.openscoring.common.SimpleResponse;
 import org.openscoring.common.TableEvaluationRequest;
 import org.openscoring.common.TableEvaluationResponse;
+import org.openscoring.common.TableFormat;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -287,7 +288,7 @@ public class ModelResource {
 
 		List<EvaluationResponse> responses = doEvaluate(id, requests, true);
 
-		String charset = tableRequest.getCharset();
+		TableFormat format = tableRequest.getFormat();
 
 		List<String> columns = new ArrayList<>();
 
@@ -311,12 +312,13 @@ public class ModelResource {
 			break responses;
 		}
 
-		TableEvaluationResponse tableResponse = new TableEvaluationResponse(tableRequest.getDelimiterChar(), tableRequest.getQuoteChar())
+		TableEvaluationResponse tableResponse = new TableEvaluationResponse()
+			.setFormat(format)
 			.setColumns(columns)
 			.setResponses(responses);
 
 		return (Response.ok().entity(tableResponse))
-			.type(MediaType.TEXT_PLAIN_TYPE.withCharset(charset))
+			.type(MediaType.TEXT_PLAIN_TYPE.withCharset(format.getCharset()))
 			.header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + id + ".csv") // XXX
 			.build();
 	}

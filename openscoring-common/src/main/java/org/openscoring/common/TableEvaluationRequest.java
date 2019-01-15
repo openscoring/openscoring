@@ -28,20 +28,14 @@ import org.jpmml.model.ToStringHelper;
 )
 public class TableEvaluationRequest extends SimpleRequest {
 
-	private String charset = null;
-
-	private char delimiterChar;
-
-	private char quoteChar;
+	private TableFormat format = null;
 
 	private List<String> columns = null;
 
 	private List<EvaluationRequest> requests = null;
 
 
-	public TableEvaluationRequest(char delimiterChar, char quoteChar){
-		setDelimiterChar(delimiterChar);
-		setQuoteChar(quoteChar);
+	public TableEvaluationRequest(){
 	}
 
 	public String getIdColumn(){
@@ -61,39 +55,17 @@ public class TableEvaluationRequest extends SimpleRequest {
 	@Override
 	protected ToStringHelper toStringHelper(){
 		return super.toStringHelper()
-			.add("charset", getCharset())
-			.add("delimiterChar", getDelimiterChar())
-			.add("quoteChar", getQuoteChar())
+			.add("format", getFormat())
 			.add("columns", getColumns())
 			.add("requests", getRequests());
 	}
 
-	public String getCharset(){
-		return this.charset;
+	public TableFormat getFormat(){
+		return this.format;
 	}
 
-	public TableEvaluationRequest setCharset(String charset){
-		this.charset = charset;
-
-		return this;
-	}
-
-	public char getDelimiterChar(){
-		return this.delimiterChar;
-	}
-
-	public TableEvaluationRequest setDelimiterChar(char delimiterChar){
-		this.delimiterChar = delimiterChar;
-
-		return this;
-	}
-
-	public char getQuoteChar(){
-		return this.quoteChar;
-	}
-
-	public TableEvaluationRequest setQuoteChar(char quoteChar){
-		this.quoteChar = quoteChar;
+	public TableEvaluationRequest setFormat(TableFormat format){
+		this.format = format;
 
 		return this;
 	}

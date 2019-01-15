@@ -30,6 +30,7 @@ import org.openscoring.common.EvaluationRequest;
 import org.openscoring.common.EvaluationResponse;
 import org.openscoring.common.TableEvaluationRequest;
 import org.openscoring.common.TableEvaluationResponse;
+import org.openscoring.common.TableFormat;
 import org.supercsv.encoder.DefaultCsvEncoder;
 import org.supercsv.io.CsvListReader;
 import org.supercsv.io.CsvMapReader;
@@ -134,7 +135,7 @@ public class CsvUtil {
 
 		List<String> columns = Arrays.asList(header);
 
-		TableEvaluationRequest tableRequest = new TableEvaluationRequest((char)format.getDelimiterChar(), format.getQuoteChar())
+		TableEvaluationRequest tableRequest = new TableEvaluationRequest()
 			.setColumns(columns);
 
 		String idColumn = tableRequest.getIdColumn();
@@ -168,7 +169,9 @@ public class CsvUtil {
 
 	static
 	public void writeTable(TableEvaluationResponse tableResponse, BufferedWriter writer) throws IOException {
-		CsvPreference format = createFormat(tableResponse.getDelimiterChar(), tableResponse.getQuoteChar());
+		TableFormat tableFormat = tableResponse.getFormat();
+
+		CsvPreference format = createFormat(tableFormat.getDelimiterChar(), tableFormat.getQuoteChar());
 
 		CsvMapWriter formatter = new CsvMapWriter(writer, format);
 
