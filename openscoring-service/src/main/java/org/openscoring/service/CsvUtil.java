@@ -30,7 +30,6 @@ import org.openscoring.common.EvaluationRequest;
 import org.openscoring.common.EvaluationResponse;
 import org.openscoring.common.TableEvaluationRequest;
 import org.openscoring.common.TableEvaluationResponse;
-import org.openscoring.common.TableFormat;
 import org.supercsv.encoder.DefaultCsvEncoder;
 import org.supercsv.io.CsvListReader;
 import org.supercsv.io.CsvMapReader;
@@ -91,6 +90,14 @@ public class CsvUtil {
 		}
 
 		throw new IOException("Unrecognized CSV format");
+	}
+
+	static
+	public CsvPreference createFormat(char delimiterChar, char quoteChar){
+		CsvPreference.Builder builder = new CsvPreference.Builder(quoteChar, delimiterChar, "\n");
+		builder.useEncoder(new DefaultCsvEncoder());
+
+		return builder.build();
 	}
 
 	static
@@ -168,11 +175,7 @@ public class CsvUtil {
 	}
 
 	static
-	public void writeTable(TableEvaluationResponse tableResponse, BufferedWriter writer) throws IOException {
-		TableFormat tableFormat = tableResponse.getFormat();
-
-		CsvPreference format = createFormat(tableFormat.getDelimiterChar(), tableFormat.getQuoteChar());
-
+	public void writeTable(TableEvaluationResponse tableResponse, BufferedWriter writer, CsvPreference format) throws IOException {
 		CsvMapWriter formatter = new CsvMapWriter(writer, format);
 
 		String idColumn = tableResponse.getIdColumn();
@@ -196,14 +199,6 @@ public class CsvUtil {
 
 		formatter.flush();
 		formatter.close();
-	}
-
-	static
-	private CsvPreference createFormat(char delimiterChar, char quoteChar){
-		CsvPreference.Builder builder = new CsvPreference.Builder(quoteChar, delimiterChar, "\n");
-		builder.useEncoder(new DefaultCsvEncoder());
-
-		return builder.build();
 	}
 
 	static

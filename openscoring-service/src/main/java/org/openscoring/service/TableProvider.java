@@ -33,6 +33,7 @@ import javax.ws.rs.BadRequestException;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
+import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.UriInfo;
@@ -68,7 +69,12 @@ public class TableProvider implements MessageBodyReader<TableEvaluationRequest>,
 
 	@Override
 	public TableEvaluationRequest readFrom(Class<TableEvaluationRequest> type, Type genericType, Annotation[] annotations, MediaType mediaType, MultivaluedMap<String, String> httpHeaders, InputStream entityStream) throws IOException {
-		String charset = getCharset(mediaType);
+		Map<String, String> parameters = mediaType.getParameters();
+
+		String charset = parameters.get(MediaType.CHARSET_PARAMETER);
+		if(charset == null){
+			charset = "UTF-8";
+		}
 
 		MultivaluedMap<String, String> queryParameters = this.uriInfo.getQueryParameters();
 
@@ -117,7 +123,15 @@ public class TableProvider implements MessageBodyReader<TableEvaluationRequest>,
 
 	@Override
 	public void writeTo(TableEvaluationResponse tableResponse, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType, MultivaluedMap<String, Object> httpHeaders, OutputStream entityStream) throws IOException {
-		String charset = getCharset(mediaType);
+		TableFormat tableFormat = tableResponse.getFormat();
+
+		String charset = tableFormat.getCharset();
+		if(charset == null){
+			charset = "UTF-8";
+		}
+
+		httpHeaders.putSingle(HttpHeaders.CONTENT_TYPE, MediaType.TEXT_PLAIN_TYPE.withCharset(charset));
+		httpHeaders.putSingle(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=results.csv"); // XXX
 
 		BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(entityStream, charset)){
 
@@ -130,22 +144,12 @@ public class TableProvider implements MessageBodyReader<TableEvaluationRequest>,
 		};
 
 		try {
-			CsvUtil.writeTable(tableResponse, writer);
+			CsvPreference format = CsvUtil.createFormat(tableFormat.getDelimiterChar(), tableFormat.getQuoteChar());
+
+			CsvUtil.writeTable(tableResponse, writer, format);
 		} finally {
 			writer.close();
 		}
-	}
-
-	static
-	private String getCharset(MediaType mediaType){
-		Map<String, String> parameters = mediaType.getParameters();
-
-		String charset = parameters.get(MediaType.CHARSET_PARAMETER);
-		if(charset == null){
-			charset = "UTF-8";
-		}
-
-		return charset;
 	}
 
 	private static final Logger logger = LoggerFactory.getLogger(TableProvider.class);

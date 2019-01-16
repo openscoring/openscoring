@@ -73,7 +73,6 @@ import org.openscoring.common.ModelResponse;
 import org.openscoring.common.SimpleResponse;
 import org.openscoring.common.TableEvaluationRequest;
 import org.openscoring.common.TableEvaluationResponse;
-import org.openscoring.common.TableFormat;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -270,25 +269,23 @@ public class ModelResource {
 	@POST
 	@Path("{id:" + ModelRegistry.ID_REGEX + "}/csv")
 	@Consumes(MediaType.TEXT_PLAIN)
-	@Produces({MediaType.APPLICATION_JSON, MediaType.TEXT_PLAIN})
-	public Response evaluateCsv(@PathParam("id") String id, TableEvaluationRequest tableRequest){
+	@Produces(MediaType.TEXT_PLAIN)
+	public TableEvaluationResponse evaluateCsv(@PathParam("id") String id, TableEvaluationRequest tableRequest){
 		return doEvaluateCsv(id, tableRequest);
 	}
 
 	@POST
 	@Path("{id:" + ModelRegistry.ID_REGEX + "}/csv")
 	@Consumes(MediaType.MULTIPART_FORM_DATA)
-	@Produces({MediaType.APPLICATION_JSON, MediaType.TEXT_PLAIN})
-	public Response evaluateCsvForm(@PathParam("id") String id, @FormDataParam("csv") TableEvaluationRequest tableRequest){
+	@Produces(MediaType.TEXT_PLAIN)
+	public TableEvaluationResponse evaluateCsvForm(@PathParam("id") String id, @FormDataParam("csv") TableEvaluationRequest tableRequest){
 		return doEvaluateCsv(id, tableRequest);
 	}
 
-	private Response doEvaluateCsv(String id, TableEvaluationRequest tableRequest){
+	private TableEvaluationResponse doEvaluateCsv(String id, TableEvaluationRequest tableRequest){
 		List<EvaluationRequest> requests = tableRequest.getRequests();
 
 		List<EvaluationResponse> responses = doEvaluate(id, requests, true);
-
-		TableFormat format = tableRequest.getFormat();
 
 		List<String> columns = new ArrayList<>();
 
@@ -313,14 +310,11 @@ public class ModelResource {
 		}
 
 		TableEvaluationResponse tableResponse = new TableEvaluationResponse()
-			.setFormat(format)
+			.setFormat(tableRequest.getFormat())
 			.setColumns(columns)
 			.setResponses(responses);
 
-		return (Response.ok().entity(tableResponse))
-			.type(MediaType.TEXT_PLAIN_TYPE.withCharset(format.getCharset()))
-			.header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + id + ".csv") // XXX
-			.build();
+		return tableResponse;
 	}
 
 	private List<EvaluationResponse> doEvaluate(String id, List<EvaluationRequest> requests, boolean allOrNothing){
