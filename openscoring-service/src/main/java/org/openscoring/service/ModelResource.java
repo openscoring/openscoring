@@ -18,10 +18,6 @@
  */
 package org.openscoring.service;
 
-import java.io.BufferedOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -46,13 +42,10 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
-import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import javax.ws.rs.core.StreamingOutput;
 import javax.ws.rs.core.UriBuilder;
 import javax.ws.rs.core.UriInfo;
-import javax.xml.bind.JAXBException;
 
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.ListMultimap;
@@ -137,8 +130,8 @@ public class ModelResource {
 	)
 	@Consumes({MediaType.APPLICATION_XML, MediaType.TEXT_XML})
 	@Produces(MediaType.APPLICATION_JSON)
-	public Response deploy(@PathParam("id") String id, InputStream is){
-		return doDeploy(id, is);
+	public Response deploy(@PathParam("id") String id, Model model){
+		return doDeploy(id, model);
 	}
 
 	@POST
@@ -147,26 +140,16 @@ public class ModelResource {
 	)
 	@Consumes(MediaType.MULTIPART_FORM_DATA)
 	@Produces(MediaType.APPLICATION_JSON)
-	public Response deployForm(@FormDataParam("id") String id, @FormDataParam("pmml") InputStream is){
+	public Response deployForm(@FormDataParam("id") String id, @FormDataParam("pmml") Model model){
 
 		if(!ModelRegistry.validateId(id)){
 			throw new BadRequestException("Invalid identifier");
 		}
 
-		return doDeploy(id, is);
+		return doDeploy(id, model);
 	}
 
-	private Response doDeploy(String id, InputStream is){
-		Model model;
-
-		try {
-			model = this.modelRegistry.load(is);
-		} catch(Exception e){
-			logger.error("Failed to load PMML document", e);
-
-			throw new BadRequestException(e);
-		}
-
+	private Response doDeploy(String id, Model model){
 		boolean success;
 
 		Model oldModel = this.modelRegistry.get(id);
@@ -202,41 +185,14 @@ public class ModelResource {
 	@RolesAllowed (
 		value = {"admin"}
 	)
-	@Produces({MediaType.APPLICATION_JSON, MediaType.TEXT_XML})
-	public Response download(@PathParam("id") String id){
+	@Produces(MediaType.APPLICATION_XML)
+	public Model download(@PathParam("id") String id){
 		Model model = this.modelRegistry.get(id, true);
 		if(model == null){
 			throw new NotFoundException("Model \"" + id + "\" not found");
 		}
 
-		StreamingOutput entity = new StreamingOutput(){
-
-			@Override
-			public void write(OutputStream os) throws IOException {
-				BufferedOutputStream bufferedOs = new BufferedOutputStream(os){
-
-					@Override
-					public void close() throws IOException {
-						flush();
-
-						// The closing of the underlying java.io.OutputStream is handled elsewhere
-					}
-				};
-
-				try {
-					ModelResource.this.modelRegistry.store(model, bufferedOs);
-				} catch(JAXBException je){
-					throw new InternalServerErrorException(je);
-				} finally {
-					bufferedOs.close();
-				}
-			}
-		};
-
-		return (Response.ok().entity(entity))
-			.type(MediaType.APPLICATION_XML_TYPE.withCharset("UTF-8"))
-			.header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + id + ".pmml.xml") // XXX
-			.build();
+		return model;
 	}
 
 	@POST

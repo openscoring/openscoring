@@ -18,8 +18,6 @@
  */
 package org.openscoring.service;
 
-import java.io.InputStream;
-import java.io.OutputStream;
 import java.util.Collection;
 import java.util.Date;
 import java.util.Map;
@@ -27,76 +25,19 @@ import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
-import javax.inject.Inject;
 import javax.inject.Singleton;
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.Marshaller;
-import javax.xml.transform.Result;
-import javax.xml.transform.stream.StreamResult;
 
-import com.google.common.hash.Hashing;
-import com.google.common.hash.HashingInputStream;
-import com.google.common.io.CountingInputStream;
-import org.dmg.pmml.PMML;
-import org.jpmml.evaluator.Evaluator;
-import org.jpmml.evaluator.HasPMML;
-import org.jpmml.evaluator.LoadingModelEvaluatorBuilder;
-import org.jpmml.model.JAXBUtil;
 import org.jvnet.hk2.annotations.Service;
 
 @Service
 @Singleton
 public class ModelRegistry {
 
-	private LoadingModelEvaluatorBuilder modelEvaluatorBuilder = null;
-
 	private ConcurrentMap<String, Model> models = new ConcurrentHashMap<>();
 
 
-	@Inject
-	public ModelRegistry(LoadingModelEvaluatorBuilder modelEvaluatorBuilder){
-		this.modelEvaluatorBuilder = modelEvaluatorBuilder;
-	}
-
 	public Collection<Map.Entry<String, Model>> entries(){
 		return this.models.entrySet();
-	}
-
-	@SuppressWarnings (
-		value = {"resource"}
-	)
-	public Model load(InputStream is) throws Exception {
-		CountingInputStream countingIs = new CountingInputStream(is);
-
-		HashingInputStream hashingIs = new HashingInputStream(Hashing.md5(), countingIs);
-
-		Evaluator evaluator = this.modelEvaluatorBuilder.clone()
-			.load(hashingIs)
-			.build();
-
-		evaluator.verify();
-
-		Model model = new Model(evaluator);
-		model.putProperty(Model.PROPERTY_FILE_SIZE, countingIs.getCount());
-		model.putProperty(Model.PROPERTY_FILE_MD5SUM, (hashingIs.hash()).toString());
-
-		return model;
-	}
-
-	public void store(Model model, OutputStream os) throws JAXBException {
-		Evaluator evaluator = model.getEvaluator();
-
-		if(evaluator instanceof HasPMML){
-			HasPMML hasPMML = (HasPMML)evaluator;
-
-			PMML pmml = hasPMML.getPMML();
-
-			Result result = new StreamResult(os);
-
-			Marshaller marshaller = JAXBUtil.createMarshaller();
-
-			marshaller.marshal(pmml, result);
-		}
 	}
 
 	public Model get(String id){

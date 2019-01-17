@@ -86,6 +86,9 @@ public class Openscoring extends ResourceConfig {
 		};
 		register(modelRegistryBinder);
 
+		// PMML support
+		register(ModelProvider.class);
+
 		// JSON support
 		register(JacksonJsonProvider.class);
 		register(ObjectMapperProvider.class);
