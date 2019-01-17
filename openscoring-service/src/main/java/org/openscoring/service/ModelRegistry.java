@@ -18,47 +18,31 @@
  */
 package org.openscoring.service;
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.lang.reflect.Method;
 import java.util.Collection;
 import java.util.Date;
-import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
 import javax.inject.Inject;
-import javax.inject.Named;
 import javax.inject.Singleton;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
-import javax.xml.bind.ValidationEvent;
-import javax.xml.bind.ValidationEventHandler;
 import javax.xml.transform.Result;
 import javax.xml.transform.stream.StreamResult;
-import javax.xml.validation.Schema;
 
 import com.google.common.hash.Hashing;
 import com.google.common.hash.HashingInputStream;
 import com.google.common.io.CountingInputStream;
-import com.typesafe.config.Config;
-import org.dmg.pmml.FieldName;
 import org.dmg.pmml.PMML;
-import org.dmg.pmml.Visitor;
 import org.jpmml.evaluator.Evaluator;
-import org.jpmml.evaluator.FieldMapper;
 import org.jpmml.evaluator.HasPMML;
 import org.jpmml.evaluator.LoadingModelEvaluatorBuilder;
-import org.jpmml.evaluator.ModelEvaluatorFactory;
-import org.jpmml.evaluator.OutputFilters;
-import org.jpmml.evaluator.ValueFactoryFactory;
 import org.jpmml.model.JAXBUtil;
-import org.jpmml.model.VisitorBattery;
 import org.jvnet.hk2.annotations.Service;
-import org.xml.sax.SAXException;
 
 @Service
 @Singleton
@@ -70,10 +54,8 @@ public class ModelRegistry {
 
 
 	@Inject
-	public ModelRegistry(@Named("openscoring") Config config){
-		Config modelRegistryConfig = config.getConfig("modelRegistry");
-
-		this.modelEvaluatorBuilder = createModelEvaluatorBuilder(modelRegistryConfig);
+	public ModelRegistry(LoadingModelEvaluatorBuilder modelEvaluatorBuilder){
+		this.modelEvaluatorBuilder = modelEvaluatorBuilder;
 	}
 
 	public Collection<Map.Entry<String, Model>> entries(){
@@ -148,143 +130,6 @@ public class ModelRegistry {
 	static
 	public boolean validateId(String id){
 		return (id != null && (id).matches(ID_REGEX));
-	}
-
-	static
-	private LoadingModelEvaluatorBuilder createModelEvaluatorBuilder(Config modelRegistryConfig){
-		Config modelEvaluatorBuilderConfig = modelRegistryConfig.getConfig("modelEvaluatorBuilder");
-
-		LoadingModelEvaluatorBuilder modelEvaluatorBuilder = new LoadingModelEvaluatorBuilder();
-
-		String modelEvaluatorFactoryClassName = modelEvaluatorBuilderConfig.getString("modelEvaluatorFactoryClass");
-		if(modelEvaluatorFactoryClassName != null){
-			Class<? extends ModelEvaluatorFactory> modelEvaluatorFactoryClazz = loadClass(ModelEvaluatorFactory.class, modelEvaluatorFactoryClassName);
-
-			modelEvaluatorBuilder.setModelEvaluatorFactory(newInstance(modelEvaluatorFactoryClazz));
-		}
-
-		String valueFactoryFactoryClassName = modelEvaluatorBuilderConfig.getString("valueFactoryFactoryClass");
-		if(valueFactoryFactoryClassName != null){
-			Class<? extends ValueFactoryFactory> valueFactoryFactoryClazz = loadClass(ValueFactoryFactory.class, valueFactoryFactoryClassName);
-
-			modelEvaluatorBuilder.setValueFactoryFactory(newInstance(valueFactoryFactoryClazz));
-		}
-
-		modelEvaluatorBuilder.setOutputFilter(OutputFilters.KEEP_FINAL_RESULTS);
-
-		FieldMapper resultMapper = new FieldMapper(){
-
-			@Override
-			public FieldName apply(FieldName name){
-
-				// A "phantom" default target field
-				if(name == null){
-					return ModelResource.DEFAULT_NAME;
-				}
-
-				return name;
-			}
-		};
-
-		modelEvaluatorBuilder.setResultMapper(resultMapper);
-
-		boolean validate = modelEvaluatorBuilderConfig.getBoolean("validate");
-
-		if(validate){
-			Schema schema;
-
-			try {
-				schema = JAXBUtil.getSchema();
-			} catch(SAXException | IOException e){
-				throw new RuntimeException(e);
-			}
-
-			modelEvaluatorBuilder
-				.setSchema(schema)
-				.setValidationEventHandler(new SimpleValidationEventHandler());
-		}
-
-		boolean locatable = modelEvaluatorBuilderConfig.getBoolean("locatable");
-
-		modelEvaluatorBuilder.setLocatable(locatable);
-
-		VisitorBattery visitors = new VisitorBattery();
-
-		List<String> visitorClassNames = modelEvaluatorBuilderConfig.getStringList("visitorClasses");
-		for(String visitorClassName : visitorClassNames){
-			Class<?> clazz = loadClass(Object.class, visitorClassName);
-
-			if((Visitor.class).isAssignableFrom(clazz)){
-				Class<? extends Visitor> visitorClazz = clazz.asSubclass(Visitor.class);
-
-				visitors.add(visitorClazz);
-			} else
-
-			if((VisitorBattery.class).isAssignableFrom(clazz)){
-				Class<? extends VisitorBattery> visitorBatteryClazz = clazz.asSubclass(VisitorBattery.class);
-
-				VisitorBattery visitorBattery = newInstance(visitorBatteryClazz);
-
-				visitors.addAll(visitorBattery);
-			} else
-
-			{
-				throw new IllegalArgumentException(new ClassCastException(clazz.toString()));
-			}
-		}
-
-		modelEvaluatorBuilder.setVisitors(visitors);
-
-		return modelEvaluatorBuilder;
-	}
-
-	static
-	private <E> Class<? extends E> loadClass(Class<? extends E> superClazz, String name){
-
-		try {
-			Class<?> clazz = Class.forName(name);
-
-			return clazz.asSubclass(superClazz);
-		} catch(ClassCastException cce){
-			throw new IllegalArgumentException(cce);
-		} catch(ClassNotFoundException cnfe){
-			throw new IllegalArgumentException(cnfe);
-		}
-	}
-
-	static
-	private <E> E newInstance(Class<? extends E> clazz){
-
-		try {
-			try {
-				Method method = clazz.getDeclaredMethod("newInstance");
-
-				Object result = method.invoke(null);
-
-				return clazz.cast(result);
-			} catch(NoSuchMethodException nsme){
-				return clazz.newInstance();
-			}
-		} catch(ReflectiveOperationException roe){
-			throw new IllegalArgumentException(roe);
-		}
-	}
-
-	static
-	private class SimpleValidationEventHandler implements ValidationEventHandler {
-
-		@Override
-		public boolean handleEvent(ValidationEvent event){
-			int severity = event.getSeverity();
-
-			switch(severity){
-				case ValidationEvent.ERROR:
-				case ValidationEvent.FATAL_ERROR:
-					return false;
-				default:
-					return true;
-			}
-		}
 	}
 
 	public static final String ID_REGEX = "[a-zA-Z0-9][a-zA-Z0-9\\_\\-]*";
