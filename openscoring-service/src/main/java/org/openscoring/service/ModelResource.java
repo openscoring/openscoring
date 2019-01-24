@@ -71,6 +71,8 @@ import org.slf4j.LoggerFactory;
 
 @Path("model")
 @PermitAll
+@Consumes(MediaType.APPLICATION_JSON)
+@Produces(MediaType.APPLICATION_JSON)
 public class ModelResource {
 
 	@Context
@@ -85,7 +87,6 @@ public class ModelResource {
 	}
 
 	@GET
-	@Produces(MediaType.APPLICATION_JSON)
 	public BatchModelResponse queryBatch(){
 		List<ModelResponse> responses = new ArrayList<>();
 
@@ -113,7 +114,6 @@ public class ModelResource {
 
 	@GET
 	@Path(ModelRef.PATH_VALUE_ID)
-	@Produces(MediaType.APPLICATION_JSON)
 	public ModelResponse query(@PathParam("id") ModelRef modelRef){
 		Model model = this.modelRegistry.get(modelRef);
 		if(model == null){
@@ -129,7 +129,6 @@ public class ModelResource {
 		value = {"admin"}
 	)
 	@Consumes({MediaType.APPLICATION_XML, MediaType.TEXT_XML})
-	@Produces(MediaType.APPLICATION_JSON)
 	public Response deploy(@PathParam("id") ModelRef modelRef, Model model){
 		return doDeploy(modelRef, model);
 	}
@@ -139,7 +138,6 @@ public class ModelResource {
 		value = {"admin"}
 	)
 	@Consumes(MediaType.MULTIPART_FORM_DATA)
-	@Produces(MediaType.APPLICATION_JSON)
 	public Response deployForm(@FormDataParam("id") ModelRef modelRef, @FormDataParam("pmml") Model model){
 		return doDeploy(modelRef, model);
 	}
@@ -192,8 +190,6 @@ public class ModelResource {
 
 	@POST
 	@Path(ModelRef.PATH_VALUE_ID)
-	@Consumes(MediaType.APPLICATION_JSON)
-	@Produces(MediaType.APPLICATION_JSON)
 	public EvaluationResponse evaluate(@PathParam("id") ModelRef modelRef, EvaluationRequest request){
 		List<EvaluationRequest> requests = Collections.singletonList(request);
 
@@ -204,8 +200,6 @@ public class ModelResource {
 
 	@POST
 	@Path(ModelRef.PATH_VALUE_ID + "/batch")
-	@Consumes(MediaType.APPLICATION_JSON)
-	@Produces(MediaType.APPLICATION_JSON)
 	public BatchEvaluationResponse evaluateBatch(@PathParam("id") ModelRef modelRef, BatchEvaluationRequest batchRequest){
 		List<EvaluationRequest> requests = batchRequest.getRequests();
 
@@ -219,7 +213,7 @@ public class ModelResource {
 
 	@POST
 	@Path(ModelRef.PATH_VALUE_ID + "/csv")
-	@Consumes(MediaType.TEXT_PLAIN)
+	@Consumes({"application/csv", "text/csv", MediaType.TEXT_PLAIN})
 	@Produces(MediaType.TEXT_PLAIN)
 	public TableEvaluationResponse evaluateCsv(@PathParam("id") ModelRef modelRef, TableEvaluationRequest tableRequest){
 		return doEvaluateCsv(modelRef, tableRequest);
@@ -325,7 +319,6 @@ public class ModelResource {
 	@RolesAllowed (
 		value = {"admin"}
 	)
-	@Produces(MediaType.APPLICATION_JSON)
 	public SimpleResponse undeploy(@PathParam("id") ModelRef modelRef){
 		Model model = this.modelRegistry.get(modelRef);
 		if(model == null){
