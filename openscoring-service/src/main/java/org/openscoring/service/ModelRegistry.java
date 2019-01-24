@@ -27,22 +27,22 @@ import java.util.concurrent.ConcurrentMap;
 
 public class ModelRegistry {
 
-	private ConcurrentMap<String, Model> models = new ConcurrentHashMap<>();
+	private ConcurrentMap<ModelRef, Model> models = new ConcurrentHashMap<>();
 
 
 	public ModelRegistry(){
 	}
 
-	public Collection<Map.Entry<String, Model>> entries(){
+	public Collection<Map.Entry<ModelRef, Model>> entries(){
 		return this.models.entrySet();
 	}
 
-	public Model get(String id){
-		return get(id, false);
+	public Model get(ModelRef modelRef){
+		return get(modelRef, false);
 	}
 
-	public Model get(String id, boolean touch){
-		Model model = this.models.get(id);
+	public Model get(ModelRef modelRef, boolean touch){
+		Model model = this.models.get(modelRef);
 
 		if(model != null && touch){
 			model.putProperty(Model.PROPERTY_ACCESSED_TIMESTAMP, new Date());
@@ -51,24 +51,17 @@ public class ModelRegistry {
 		return model;
 	}
 
-	public boolean put(String id, Model model){
-		Model oldModel = this.models.putIfAbsent(id, Objects.requireNonNull(model));
+	public boolean put(ModelRef modelRef, Model model){
+		Model oldModel = this.models.putIfAbsent(modelRef, Objects.requireNonNull(model));
 
 		return (oldModel == null);
 	}
 
-	public boolean replace(String id, Model oldModel, Model model){
-		return this.models.replace(id, oldModel, Objects.requireNonNull(model));
+	public boolean replace(ModelRef modelRef, Model oldModel, Model model){
+		return this.models.replace(modelRef, oldModel, Objects.requireNonNull(model));
 	}
 
-	public boolean remove(String id, Model model){
-		return this.models.remove(id, model);
+	public boolean remove(ModelRef modelRef, Model model){
+		return this.models.remove(modelRef, model);
 	}
-
-	static
-	public boolean validateId(String id){
-		return (id != null && (id).matches(ID_REGEX));
-	}
-
-	public static final String ID_REGEX = "[a-zA-Z0-9][a-zA-Z0-9\\_\\-]*";
 }

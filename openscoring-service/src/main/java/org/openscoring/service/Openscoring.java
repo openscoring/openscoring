@@ -74,6 +74,9 @@ public class Openscoring extends ResourceConfig {
 		};
 		register(modelRegistryBinder);
 
+		register(ModelRefProvider.class);
+		register(ModelRefConverterProvider.class);
+
 		register(ModelResource.class);
 
 		LoadingModelEvaluatorBuilder loadingModelEvaluatorBuilder = createLoadingModelEvaluatorBuilder(config);

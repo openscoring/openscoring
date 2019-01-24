@@ -89,8 +89,8 @@ public class ModelResource {
 	public BatchModelResponse queryBatch(){
 		List<ModelResponse> responses = new ArrayList<>();
 
-		Collection<Map.Entry<String, Model>> entries = this.modelRegistry.entries();
-		for(Map.Entry<String, Model> entry : entries){
+		Collection<Map.Entry<ModelRef, Model>> entries = this.modelRegistry.entries();
+		for(Map.Entry<ModelRef, Model> entry : entries){
 			ModelResponse response = createModelResponse(entry.getKey(), entry.getValue(), false);
 
 			responses.add(response);
@@ -112,26 +112,26 @@ public class ModelResource {
 	}
 
 	@GET
-	@Path("{id:" + ModelRegistry.ID_REGEX + "}")
+	@Path(ModelRef.PATH_VALUE_ID)
 	@Produces(MediaType.APPLICATION_JSON)
-	public ModelResponse query(@PathParam("id") String id){
-		Model model = this.modelRegistry.get(id);
+	public ModelResponse query(@PathParam("id") ModelRef modelRef){
+		Model model = this.modelRegistry.get(modelRef);
 		if(model == null){
-			throw new NotFoundException("Model \"" + id + "\" not found");
+			throw new NotFoundException("Model \"" + modelRef.getId() + "\" not found");
 		}
 
-		return createModelResponse(id, model, true);
+		return createModelResponse(modelRef, model, true);
 	}
 
 	@PUT
-	@Path("{id:" + ModelRegistry.ID_REGEX + "}")
+	@Path(ModelRef.PATH_VALUE_ID)
 	@RolesAllowed (
 		value = {"admin"}
 	)
 	@Consumes({MediaType.APPLICATION_XML, MediaType.TEXT_XML})
 	@Produces(MediaType.APPLICATION_JSON)
-	public Response deploy(@PathParam("id") String id, Model model){
-		return doDeploy(id, model);
+	public Response deploy(@PathParam("id") ModelRef modelRef, Model model){
+		return doDeploy(modelRef, model);
 	}
 
 	@POST
@@ -140,39 +140,34 @@ public class ModelResource {
 	)
 	@Consumes(MediaType.MULTIPART_FORM_DATA)
 	@Produces(MediaType.APPLICATION_JSON)
-	public Response deployForm(@FormDataParam("id") String id, @FormDataParam("pmml") Model model){
-
-		if(!ModelRegistry.validateId(id)){
-			throw new BadRequestException("Invalid identifier");
-		}
-
-		return doDeploy(id, model);
+	public Response deployForm(@FormDataParam("id") ModelRef modelRef, @FormDataParam("pmml") Model model){
+		return doDeploy(modelRef, model);
 	}
 
-	private Response doDeploy(String id, Model model){
+	private Response doDeploy(ModelRef modelRef, Model model){
 		boolean success;
 
-		Model oldModel = this.modelRegistry.get(id);
+		Model oldModel = this.modelRegistry.get(modelRef);
 		if(oldModel != null){
-			success = this.modelRegistry.replace(id, oldModel, model);
+			success = this.modelRegistry.replace(modelRef, oldModel, model);
 		} else
 
 		{
-			success = this.modelRegistry.put(id, model);
+			success = this.modelRegistry.put(modelRef, model);
 		} // End if
 
 		if(!success){
 			throw new InternalServerErrorException("Concurrent modification");
 		}
 
-		ModelResponse entity = createModelResponse(id, model, true);
+		ModelResponse entity = createModelResponse(modelRef, model, true);
 
 		if(oldModel != null){
 			return (Response.ok().entity(entity)).build();
 		} else
 
 		{
-			UriBuilder uriBuilder = (this.uriInfo.getBaseUriBuilder()).path(ModelResource.class).path(id);
+			UriBuilder uriBuilder = (this.uriInfo.getBaseUriBuilder()).path(ModelResource.class).path(modelRef.getId());
 
 			URI uri = uriBuilder.build();
 
@@ -181,40 +176,40 @@ public class ModelResource {
 	}
 
 	@GET
-	@Path("{id:" + ModelRegistry.ID_REGEX + "}/pmml")
+	@Path(ModelRef.PATH_VALUE_ID + "/pmml")
 	@RolesAllowed (
 		value = {"admin"}
 	)
 	@Produces(MediaType.APPLICATION_XML)
-	public Model download(@PathParam("id") String id){
-		Model model = this.modelRegistry.get(id, true);
+	public Model download(@PathParam("id") ModelRef modelRef){
+		Model model = this.modelRegistry.get(modelRef, true);
 		if(model == null){
-			throw new NotFoundException("Model \"" + id + "\" not found");
+			throw new NotFoundException("Model \"" + modelRef.getId() + "\" not found");
 		}
 
 		return model;
 	}
 
 	@POST
-	@Path("{id:" + ModelRegistry.ID_REGEX + "}")
+	@Path(ModelRef.PATH_VALUE_ID)
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
-	public EvaluationResponse evaluate(@PathParam("id") String id, EvaluationRequest request){
+	public EvaluationResponse evaluate(@PathParam("id") ModelRef modelRef, EvaluationRequest request){
 		List<EvaluationRequest> requests = Collections.singletonList(request);
 
-		List<EvaluationResponse> responses = doEvaluate(id, requests, true);
+		List<EvaluationResponse> responses = doEvaluate(modelRef, requests, true);
 
 		return responses.get(0);
 	}
 
 	@POST
-	@Path("{id: " + ModelRegistry.ID_REGEX + "}/batch")
+	@Path(ModelRef.PATH_VALUE_ID + "/batch")
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
-	public BatchEvaluationResponse evaluateBatch(@PathParam("id") String id, BatchEvaluationRequest batchRequest){
+	public BatchEvaluationResponse evaluateBatch(@PathParam("id") ModelRef modelRef, BatchEvaluationRequest batchRequest){
 		List<EvaluationRequest> requests = batchRequest.getRequests();
 
-		List<EvaluationResponse> responses = doEvaluate(id, requests, false);
+		List<EvaluationResponse> responses = doEvaluate(modelRef, requests, false);
 
 		BatchEvaluationResponse batchResponse = new BatchEvaluationResponse(batchRequest.getId())
 			.setResponses(responses);
@@ -223,25 +218,25 @@ public class ModelResource {
 	}
 
 	@POST
-	@Path("{id:" + ModelRegistry.ID_REGEX + "}/csv")
+	@Path(ModelRef.PATH_VALUE_ID + "/csv")
 	@Consumes(MediaType.TEXT_PLAIN)
 	@Produces(MediaType.TEXT_PLAIN)
-	public TableEvaluationResponse evaluateCsv(@PathParam("id") String id, TableEvaluationRequest tableRequest){
-		return doEvaluateCsv(id, tableRequest);
+	public TableEvaluationResponse evaluateCsv(@PathParam("id") ModelRef modelRef, TableEvaluationRequest tableRequest){
+		return doEvaluateCsv(modelRef, tableRequest);
 	}
 
 	@POST
-	@Path("{id:" + ModelRegistry.ID_REGEX + "}/csv")
+	@Path(ModelRef.PATH_VALUE_ID + "/csv")
 	@Consumes(MediaType.MULTIPART_FORM_DATA)
 	@Produces(MediaType.TEXT_PLAIN)
-	public TableEvaluationResponse evaluateCsvForm(@PathParam("id") String id, @FormDataParam("csv") TableEvaluationRequest tableRequest){
-		return doEvaluateCsv(id, tableRequest);
+	public TableEvaluationResponse evaluateCsvForm(@PathParam("id") ModelRef modelRef, @FormDataParam("csv") TableEvaluationRequest tableRequest){
+		return doEvaluateCsv(modelRef, tableRequest);
 	}
 
-	private TableEvaluationResponse doEvaluateCsv(String id, TableEvaluationRequest tableRequest){
+	private TableEvaluationResponse doEvaluateCsv(ModelRef modelRef, TableEvaluationRequest tableRequest){
 		List<EvaluationRequest> requests = tableRequest.getRequests();
 
-		List<EvaluationResponse> responses = doEvaluate(id, requests, true);
+		List<EvaluationResponse> responses = doEvaluate(modelRef, requests, true);
 
 		List<String> columns = new ArrayList<>();
 
@@ -273,10 +268,10 @@ public class ModelResource {
 		return tableResponse;
 	}
 
-	private List<EvaluationResponse> doEvaluate(String id, List<EvaluationRequest> requests, boolean allOrNothing){
-		Model model = this.modelRegistry.get(id, true);
+	private List<EvaluationResponse> doEvaluate(ModelRef modelRef, List<EvaluationRequest> requests, boolean allOrNothing){
+		Model model = this.modelRegistry.get(modelRef, true);
 		if(model == null){
-			throw new NotFoundException("Model \"" + id + "\" not found");
+			throw new NotFoundException("Model \"" + modelRef.getId() + "\" not found");
 		}
 
 		List<EvaluationResponse> responses = new ArrayList<>();
@@ -326,18 +321,18 @@ public class ModelResource {
 	}
 
 	@DELETE
-	@Path("{id:" + ModelRegistry.ID_REGEX + "}")
+	@Path(ModelRef.PATH_VALUE_ID)
 	@RolesAllowed (
 		value = {"admin"}
 	)
 	@Produces(MediaType.APPLICATION_JSON)
-	public SimpleResponse undeploy(@PathParam("id") String id){
-		Model model = this.modelRegistry.get(id);
+	public SimpleResponse undeploy(@PathParam("id") ModelRef modelRef){
+		Model model = this.modelRegistry.get(modelRef);
 		if(model == null){
-			throw new NotFoundException("Model \"" + id + "\" not found");
+			throw new NotFoundException("Model \"" + modelRef.getId() + "\" not found");
 		}
 
-		boolean success = this.modelRegistry.remove(id, model);
+		boolean success = this.modelRegistry.remove(modelRef, model);
 		if(!success){
 			throw new InternalServerErrorException("Concurrent modification");
 		}
@@ -454,8 +449,8 @@ public class ModelResource {
 	}
 
 	static
-	private ModelResponse createModelResponse(String id, Model model, boolean expand){
-		ModelResponse response = new ModelResponse(id)
+	private ModelResponse createModelResponse(ModelRef modelRef, Model model, boolean expand){
+		ModelResponse response = new ModelResponse(modelRef.getId())
 			.setMiningFunction(model.getMiningFunction())
 			.setSummary(model.getSummary())
 			.setProperties(model.getProperties());
