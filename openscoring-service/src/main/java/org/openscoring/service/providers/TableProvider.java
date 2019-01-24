@@ -16,7 +16,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with Openscoring.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.openscoring.service;
+package org.openscoring.service.providers;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -44,6 +44,7 @@ import javax.ws.rs.ext.Provider;
 import org.openscoring.common.TableEvaluationRequest;
 import org.openscoring.common.TableEvaluationResponse;
 import org.openscoring.common.TableFormat;
+import org.openscoring.service.CsvUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.supercsv.prefs.CsvPreference;

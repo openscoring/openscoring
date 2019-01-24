@@ -47,6 +47,10 @@ import org.jpmml.evaluator.OutputFilters;
 import org.jpmml.evaluator.ValueFactoryFactory;
 import org.jpmml.model.JAXBUtil;
 import org.jpmml.model.VisitorBattery;
+import org.openscoring.service.providers.ModelProvider;
+import org.openscoring.service.providers.ModelRefConverterProvider;
+import org.openscoring.service.providers.ModelRefProvider;
+import org.openscoring.service.providers.TableProvider;
 import org.xml.sax.SAXException;
 
 public class Openscoring extends ResourceConfig {

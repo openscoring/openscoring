@@ -16,7 +16,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with Openscoring.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.openscoring.service;
+package org.openscoring.service.providers;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -34,6 +34,7 @@ import javax.ws.rs.ext.MessageBodyReader;
 import javax.ws.rs.ext.Provider;
 
 import com.google.common.io.CharStreams;
+import org.openscoring.service.ModelRef;
 
 @Provider
 @Consumes({MediaType.TEXT_PLAIN, "text/*"})

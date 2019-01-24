@@ -16,7 +16,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with Openscoring.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.openscoring.service;
+package org.openscoring.service.providers;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -48,6 +48,7 @@ import org.jpmml.evaluator.Evaluator;
 import org.jpmml.evaluator.HasPMML;
 import org.jpmml.evaluator.LoadingModelEvaluatorBuilder;
 import org.jpmml.model.JAXBUtil;
+import org.openscoring.service.Model;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xml.sax.SAXException;

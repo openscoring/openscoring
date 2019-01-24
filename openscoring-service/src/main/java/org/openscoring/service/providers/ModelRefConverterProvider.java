@@ -16,22 +16,27 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with Openscoring.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.openscoring.service;
+package org.openscoring.service.providers;
+
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Type;
 
 import javax.ws.rs.ext.ParamConverter;
+import javax.ws.rs.ext.ParamConverterProvider;
+import javax.ws.rs.ext.Provider;
 
-public class ModelRefConverter implements ParamConverter<ModelRef> {
+import org.openscoring.service.ModelRef;
 
-	@Override
-	public ModelRef fromString(String id){
-		ModelRef modelRef = new ModelRef()
-			.setId(id);
-
-		return modelRef;
-	}
+@Provider
+public class ModelRefConverterProvider implements ParamConverterProvider {
 
 	@Override
-	public String toString(ModelRef modelRef){
-		return modelRef.getId();
+	public <T> ParamConverter<T> getConverter(Class<T> rawType, Type genericType, Annotation annotations[]){
+
+		if((ModelRef.class).equals(rawType)){
+			return (ParamConverter)new ModelRefConverter();
+		}
+
+		return null;
 	}
 }
