@@ -35,8 +35,14 @@ import org.openscoring.service.Openscoring;
 public class Main {
 
 	@Parameter (
+		names = {"--application"},
+		description = "Application class name"
+	)
+	private String applicationClazz = Openscoring.class.getName();
+
+	@Parameter (
 		names = {"--console-war"},
-		description = "Console web application (WAR) file or directory",
+		description = "Web administration console WAR file or directory",
 		hidden = true
 	)
 	private File consoleWar = null;
@@ -124,10 +130,14 @@ public class Main {
 		server.join();
 	}
 
-	private Server createServer(InetSocketAddress address){
+	private Server createServer(InetSocketAddress address) throws Exception {
 		Server server = new Server(address);
 
-		Openscoring application = new Openscoring();
+		Class<?> applicationClazz = Class.forName(this.applicationClazz);
+
+		Class<? extends Openscoring> openscoringClazz = (applicationClazz).asSubclass(Openscoring.class);
+
+		Openscoring application = openscoringClazz.newInstance();
 
 		ServletContainer jerseyServlet = new ServletContainer(application);
 
