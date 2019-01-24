@@ -25,16 +25,13 @@ import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
-import javax.inject.Singleton;
-
-import org.jvnet.hk2.annotations.Service;
-
-@Service
-@Singleton
 public class ModelRegistry {
 
 	private ConcurrentMap<String, Model> models = new ConcurrentHashMap<>();
 
+
+	public ModelRegistry(){
+	}
 
 	public Collection<Map.Entry<String, Model>> entries(){
 		return this.models.entrySet();

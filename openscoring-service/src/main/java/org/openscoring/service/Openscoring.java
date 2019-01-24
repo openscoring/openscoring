@@ -22,7 +22,6 @@ import java.io.IOException;
 import java.lang.reflect.Method;
 import java.util.List;
 
-import javax.inject.Singleton;
 import javax.xml.bind.ValidationEvent;
 import javax.xml.bind.ValidationEventHandler;
 import javax.xml.validation.Schema;
@@ -53,8 +52,6 @@ import org.xml.sax.SAXException;
 public class Openscoring extends ResourceConfig {
 
 	public Openscoring(){
-		super(ModelResource.class);
-
 		Config config = ConfigFactory.load();
 
 		Binder configBinder = new AbstractBinder(){
@@ -66,6 +63,19 @@ public class Openscoring extends ResourceConfig {
 		};
 		register(configBinder);
 
+		ModelRegistry modelRegistry = new ModelRegistry();
+
+		Binder modelRegistryBinder = new AbstractBinder(){
+
+			@Override
+			public void configure(){
+				bind(modelRegistry).to(ModelRegistry.class).named("openscoring");
+			}
+		};
+		register(modelRegistryBinder);
+
+		register(ModelResource.class);
+
 		LoadingModelEvaluatorBuilder loadingModelEvaluatorBuilder = createLoadingModelEvaluatorBuilder(config);
 
 		Binder loadingModelEvaluatorBuilderBinder = new AbstractBinder(){
@@ -76,15 +86,6 @@ public class Openscoring extends ResourceConfig {
 			}
 		};
 		register(loadingModelEvaluatorBuilderBinder);
-
-		Binder modelRegistryBinder = new AbstractBinder(){
-
-			@Override
-			public void configure(){
-				bind(ModelRegistry.class).to(ModelRegistry.class).in(Singleton.class);
-			}
-		};
-		register(modelRegistryBinder);
 
 		// PMML support
 		register(ModelProvider.class);
