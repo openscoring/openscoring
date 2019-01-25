@@ -40,18 +40,6 @@ public class NetworkSecurityContext implements SecurityContext {
 	public boolean isTrusted(String address);
 
 	@Override
-	public String getAuthenticationScheme(){
-		return "NETWORK";
-	}
-
-	@Override
-	public boolean isSecure(){
-		ServletRequest request = getRequest();
-
-		return request.isSecure();
-	}
-
-	@Override
 	public Principal getUserPrincipal(){
 		return Anonymous.INSTANCE;
 	}
@@ -77,6 +65,18 @@ public class NetworkSecurityContext implements SecurityContext {
 		return false;
 	}
 
+	@Override
+	public boolean isSecure(){
+		ServletRequest request = getRequest();
+
+		return request.isSecure();
+	}
+
+	@Override
+	public String getAuthenticationScheme(){
+		return "REMOTE_ADDR";
+	}
+
 	public ServletRequest getRequest(){
 		return this.request;
 	}
@@ -93,7 +93,7 @@ public class NetworkSecurityContext implements SecurityContext {
 
 		@Override
 		public String getName(){
-			return "ANONYMOUS";
+			return null;
 		}
 
 		private static final Anonymous INSTANCE = new Anonymous();
