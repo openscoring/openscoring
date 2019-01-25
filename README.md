@@ -267,7 +267,6 @@ Sample response:
 				"values" : [ "[0.1, 2.5]" ]
 			}
 		],
-		"groupFields" : [],
 		"targetFields" : [
 			{
 				"id" : "Species",

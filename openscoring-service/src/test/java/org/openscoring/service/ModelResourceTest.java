@@ -95,10 +95,12 @@ public class ModelResourceTest extends JerseyTest {
 		Map<String, List<Field>> schema = modelResponse.getSchema();
 
 		List<Field> inputFields = schema.get("inputFields");
+		List<Field> groupFields = schema.get("groupFields");
 		List<Field> targetFields = schema.get("targetFields");
 		List<Field> outputFields = schema.get("outputFields");
 
 		assertEquals(4, inputFields.size());
+		assertNull(groupFields);
 		assertEquals(1, targetFields.size());
 		assertEquals(4, outputFields.size());
 
@@ -168,10 +170,12 @@ public class ModelResourceTest extends JerseyTest {
 
 		List<Field> inputFields = schema.get("inputFields");
 		List<Field> groupFields = schema.get("groupFields");
+		List<Field> targetFields = schema.get("targetFields");
 		List<Field> outputFields = schema.get("outputFields");
 
 		assertEquals(1, inputFields.size());
 		assertEquals(1, groupFields.size());
+		assertNull(targetFields);
 		assertEquals(3, outputFields.size());
 
 		query(id);
@@ -211,10 +215,12 @@ public class ModelResourceTest extends JerseyTest {
 		Map<String, List<Field>> schema = modelResponse.getSchema();
 
 		List<Field> inputFields = schema.get("inputFields");
+		List<Field> groupFields = schema.get("groupFields");
 		List<Field> targetFields = schema.get("targetFields");
 		List<Field> outputFields = schema.get("outputFields");
 
 		assertEquals(7, inputFields.size());
+		assertNull(groupFields);
 		assertEquals(1, targetFields.size());
 		assertEquals(1, outputFields.size());
 

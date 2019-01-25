@@ -33,6 +33,8 @@ import org.dmg.pmml.Interval;
 import org.dmg.pmml.Value;
 import org.jpmml.evaluator.Evaluator;
 import org.jpmml.evaluator.HasGroupFields;
+import org.jpmml.evaluator.HasInputFields;
+import org.jpmml.evaluator.HasResultFields;
 import org.jpmml.evaluator.InputField;
 import org.jpmml.evaluator.ModelField;
 import org.jpmml.evaluator.OutputField;
@@ -48,27 +50,37 @@ public class ModelUtil {
 	public Map<String, List<Field>> encodeSchema(Evaluator evaluator){
 		Map<String, List<Field>> result = new LinkedHashMap<>();
 
-		List<InputField> inputFields = evaluator.getInputFields();
+		if(evaluator instanceof HasInputFields){
+			HasInputFields hasInputFields = (HasInputFields)evaluator;
 
-		result.put("inputFields", encodeModelFields(inputFields));
-
-		List<InputField> groupFields = Collections.emptyList();
+			List<InputField> inputFields = hasInputFields.getInputFields();
+			if(!inputFields.isEmpty()){
+				result.put("inputFields", encodeModelFields(inputFields));
+			}
+		} // End if
 
 		if(evaluator instanceof HasGroupFields){
 			HasGroupFields hasGroupFields = (HasGroupFields)evaluator;
 
-			groupFields = hasGroupFields.getGroupFields();
+			List<InputField> groupFields = hasGroupFields.getGroupFields();
+			if(!groupFields.isEmpty()){
+				result.put("groupFields", encodeModelFields(groupFields));
+			}
+		} // End if
+
+		if(evaluator instanceof HasResultFields){
+			HasResultFields hasResultFields = (HasResultFields)evaluator;
+
+			List<TargetField> targetFields = hasResultFields.getTargetFields();
+			if(!targetFields.isEmpty()){
+				result.put("targetFields", encodeModelFields(targetFields));
+			}
+
+			List<OutputField> outputFields = hasResultFields.getOutputFields();
+			if(!outputFields.isEmpty()){
+				result.put("outputFields", encodeModelFields(outputFields));
+			}
 		}
-
-		result.put("groupFields", encodeModelFields(groupFields));
-
-		List<TargetField> targetFields = evaluator.getTargetFields();
-
-		result.put("targetFields", encodeModelFields(targetFields));
-
-		List<OutputField> outputFields = evaluator.getOutputFields();
-
-		result.put("outputFields", encodeModelFields(outputFields));
 
 		return result;
 	}
