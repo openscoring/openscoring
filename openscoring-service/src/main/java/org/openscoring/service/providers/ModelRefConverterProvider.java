@@ -21,6 +21,8 @@ package org.openscoring.service.providers;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.SecurityContext;
 import javax.ws.rs.ext.ParamConverter;
 import javax.ws.rs.ext.ParamConverterProvider;
 import javax.ws.rs.ext.Provider;
@@ -30,13 +32,32 @@ import org.openscoring.service.ModelRef;
 @Provider
 public class ModelRefConverterProvider implements ParamConverterProvider {
 
+	@Context
+	private SecurityContext securityContext = null;
+
+
 	@Override
 	public <T> ParamConverter<T> getConverter(Class<T> rawType, Type genericType, Annotation annotations[]){
 
 		if((ModelRef.class).equals(rawType)){
-			return (ParamConverter)new ModelRefConverter();
+			ParamConverter paramConverter = new ModelRefConverter(){
+
+				private SecurityContext securityContext = ModelRefConverterProvider.this.getSecurityContext();;
+
+
+				@Override
+				public SecurityContext getSecurityContext(){
+					return this.securityContext;
+				}
+			};
+
+			return paramConverter;
 		}
 
 		return null;
+	}
+
+	public SecurityContext getSecurityContext(){
+		return this.securityContext;
 	}
 }

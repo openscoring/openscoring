@@ -18,18 +18,27 @@
  */
 package org.openscoring.service;
 
+import java.security.Principal;
 import java.util.Objects;
 
 public class ModelRef {
 
+	private Principal owner = null;
+
 	private String id = null;
 
 
+	public ModelRef(){
+	}
+
 	@Override
 	public int hashCode(){
-		String id = getId();
+		int result = 1;
 
-		return Objects.hashCode(id);
+		result = (31 * result) + Objects.hashCode(getOwner());
+		result = (31 * result) + Objects.hash(getId());
+
+		return result;
 	}
 
 	@Override
@@ -38,10 +47,20 @@ public class ModelRef {
 		if(object instanceof ModelRef){
 			ModelRef that = (ModelRef)object;
 
-			return Objects.equals(this.getId(), that.getId());
+			return Objects.equals(this.getOwner(), that.getOwner()) && Objects.equals(this.getId(), that.getId());
 		}
 
 		return false;
+	}
+
+	public Principal getOwner(){
+		return this.owner;
+	}
+
+	public ModelRef setOwner(Principal owner){
+		this.owner = owner;
+
+		return this;
 	}
 
 	public String getId(){

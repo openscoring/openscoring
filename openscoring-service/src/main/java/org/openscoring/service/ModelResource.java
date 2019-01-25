@@ -19,6 +19,7 @@
 package org.openscoring.service;
 
 import java.net.URI;
+import java.security.Principal;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -26,6 +27,7 @@ import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 import javax.annotation.security.PermitAll;
 import javax.annotation.security.RolesAllowed;
@@ -44,6 +46,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.SecurityContext;
 import javax.ws.rs.core.UriBuilder;
 import javax.ws.rs.core.UriInfo;
 
@@ -87,12 +90,21 @@ public class ModelResource {
 	}
 
 	@GET
-	public BatchModelResponse queryBatch(){
+	public BatchModelResponse queryBatch(@Context SecurityContext securityContext){
+		Principal owner = securityContext.getUserPrincipal();
+
 		List<ModelResponse> responses = new ArrayList<>();
 
 		Collection<Map.Entry<ModelRef, Model>> entries = this.modelRegistry.entries();
 		for(Map.Entry<ModelRef, Model> entry : entries){
-			ModelResponse response = createModelResponse(entry.getKey(), entry.getValue(), false);
+			ModelRef modelRef = entry.getKey();
+			Model model = entry.getValue();
+
+			if(!Objects.equals(owner, modelRef.getOwner())){
+				continue;
+			}
+
+			ModelResponse response = createModelResponse(modelRef, model, false);
 
 			responses.add(response);
 		}

@@ -18,15 +18,23 @@
  */
 package org.openscoring.service.providers;
 
+import javax.ws.rs.core.SecurityContext;
 import javax.ws.rs.ext.ParamConverter;
 
 import org.openscoring.service.ModelRef;
 
+abstract
 public class ModelRefConverter implements ParamConverter<ModelRef> {
+
+	abstract
+	public SecurityContext getSecurityContext();
 
 	@Override
 	public ModelRef fromString(String id){
+		SecurityContext securityContext = getSecurityContext();
+
 		ModelRef modelRef = new ModelRef()
+			.setOwner(securityContext.getUserPrincipal())
 			.setId(id);
 
 		return modelRef;

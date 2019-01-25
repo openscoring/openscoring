@@ -28,8 +28,10 @@ import java.util.Map;
 
 import javax.ws.rs.BadRequestException;
 import javax.ws.rs.Consumes;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
+import javax.ws.rs.core.SecurityContext;
 import javax.ws.rs.ext.MessageBodyReader;
 import javax.ws.rs.ext.Provider;
 
@@ -39,6 +41,10 @@ import org.openscoring.service.ModelRef;
 @Provider
 @Consumes({MediaType.TEXT_PLAIN, "text/*"})
 public class ModelRefProvider implements MessageBodyReader<ModelRef> {
+
+	@Context
+	private SecurityContext securityContext = null;
+
 
 	@Override
 	public boolean isReadable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType){
@@ -64,9 +70,16 @@ public class ModelRefProvider implements MessageBodyReader<ModelRef> {
 			throw new BadRequestException("Invalid identifier");
 		}
 
+		SecurityContext securityContext = getSecurityContext();
+
 		ModelRef modelRef = new ModelRef()
+			.setOwner(securityContext.getUserPrincipal())
 			.setId(id);
 
 		return modelRef;
+	}
+
+	public SecurityContext getSecurityContext(){
+		return this.securityContext;
 	}
 }
