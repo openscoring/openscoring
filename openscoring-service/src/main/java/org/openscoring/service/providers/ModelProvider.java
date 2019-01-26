@@ -29,9 +29,11 @@ import javax.ws.rs.BadRequestException;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.InternalServerErrorException;
 import javax.ws.rs.Produces;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
+import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.ext.MessageBodyReader;
 import javax.ws.rs.ext.MessageBodyWriter;
 import javax.ws.rs.ext.Provider;
@@ -60,6 +62,9 @@ import org.xml.sax.SAXException;
 @Produces(MediaType.APPLICATION_XML)
 public class ModelProvider implements MessageBodyReader<Model>, MessageBodyWriter<Model> {
 
+	@Context
+	private UriInfo uriInfo = null;
+
 	private LoadingModelEvaluatorBuilder modelEvaluatorBuilder = null;
 
 
@@ -80,6 +85,10 @@ public class ModelProvider implements MessageBodyReader<Model>, MessageBodyWrite
 
 	@Override
 	public Model readFrom(Class<Model> type, Type genericType, Annotation[] annotations, MediaType mediaType, MultivaluedMap<String, String> httpHeaders, InputStream entityStream) throws IOException {
+		MultivaluedMap<String, String> queryParameters = this.uriInfo.getQueryParameters();
+
+		String modelName = queryParameters.getFirst("modelName");
+
 		CountingInputStream countingIs = new CountingInputStream(entityStream);
 
 		HashingInputStream hashingIs = new HashingInputStream(Hashing.md5(), countingIs);
@@ -88,7 +97,7 @@ public class ModelProvider implements MessageBodyReader<Model>, MessageBodyWrite
 
 		try {
 			evaluatorBuilder = this.modelEvaluatorBuilder.clone()
-				.load(hashingIs);
+				.load(hashingIs, modelName);
 		} catch(SAXException | JAXBException e){
 			logger.error("Failed to load the PMML document", e);
 

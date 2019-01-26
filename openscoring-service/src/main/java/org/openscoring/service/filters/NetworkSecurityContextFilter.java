@@ -49,7 +49,7 @@ import org.slf4j.LoggerFactory;
 public class NetworkSecurityContextFilter implements ContainerRequestFilter {
 
 	@Context
-	private HttpServletRequest request;
+	private HttpServletRequest request = null;
 
 	private Set<String> trustedAddresses = NetworkSecurityContextFilter.localAddresses;
 

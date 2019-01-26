@@ -70,17 +70,17 @@ public class TableProvider implements MessageBodyReader<TableEvaluationRequest>,
 
 	@Override
 	public TableEvaluationRequest readFrom(Class<TableEvaluationRequest> type, Type genericType, Annotation[] annotations, MediaType mediaType, MultivaluedMap<String, String> httpHeaders, InputStream entityStream) throws IOException {
+		MultivaluedMap<String, String> queryParameters = this.uriInfo.getQueryParameters();
+
+		String delimiterChar = queryParameters.getFirst("delimiterChar");
+		String quoteChar = queryParameters.getFirst("quoteChar");
+
 		Map<String, String> parameters = mediaType.getParameters();
 
 		String charset = parameters.get(MediaType.CHARSET_PARAMETER);
 		if(charset == null){
 			charset = "UTF-8";
 		}
-
-		MultivaluedMap<String, String> queryParameters = this.uriInfo.getQueryParameters();
-
-		String delimiterChar = queryParameters.getFirst("delimiterChar");
-		String quoteChar = queryParameters.getFirst("quoteChar");
 
 		BufferedReader reader = new BufferedReader(new InputStreamReader(entityStream, charset)){
 
