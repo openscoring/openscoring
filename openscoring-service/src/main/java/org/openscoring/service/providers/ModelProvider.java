@@ -45,8 +45,10 @@ import com.google.common.hash.HashingInputStream;
 import com.google.common.io.CountingInputStream;
 import org.dmg.pmml.PMML;
 import org.jpmml.evaluator.Evaluator;
+import org.jpmml.evaluator.EvaluatorBuilder;
 import org.jpmml.evaluator.HasPMML;
 import org.jpmml.evaluator.LoadingModelEvaluatorBuilder;
+import org.jpmml.evaluator.PMMLException;
 import org.jpmml.model.JAXBUtil;
 import org.openscoring.service.Model;
 import org.slf4j.Logger;
@@ -78,22 +80,35 @@ public class ModelProvider implements MessageBodyReader<Model>, MessageBodyWrite
 
 	@Override
 	public Model readFrom(Class<Model> type, Type genericType, Annotation[] annotations, MediaType mediaType, MultivaluedMap<String, String> httpHeaders, InputStream entityStream) throws IOException {
-		Evaluator evaluator;
-
 		CountingInputStream countingIs = new CountingInputStream(entityStream);
 
 		HashingInputStream hashingIs = new HashingInputStream(Hashing.md5(), countingIs);
 
-		try {
-			evaluator = this.modelEvaluatorBuilder.clone()
-				.load(hashingIs)
-				.build();
+		EvaluatorBuilder evaluatorBuilder;
 
-			evaluator.verify();
+		try {
+			evaluatorBuilder = this.modelEvaluatorBuilder.clone()
+				.load(hashingIs);
 		} catch(SAXException | JAXBException e){
-			logger.error("Failed to load PMML document", e);
+			logger.error("Failed to load the PMML document", e);
 
 			throw new BadRequestException(e);
+		} catch(PMMLException pe){
+			logger.error("Failed to find a scorable model element", pe);
+
+			throw new BadRequestException(pe);
+		}
+
+		Evaluator evaluator;
+
+		try {
+			evaluator = evaluatorBuilder.build();
+
+			evaluator.verify();
+		} catch(PMMLException pe){
+			logger.error("Failed to build a model evaluator", pe);
+
+			throw new BadRequestException(pe);
 		}
 
 		Model model = new Model(evaluator);

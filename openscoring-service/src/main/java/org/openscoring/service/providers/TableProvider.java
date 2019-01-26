@@ -112,7 +112,7 @@ public class TableProvider implements MessageBodyReader<TableEvaluationRequest>,
 
 			tableRequest.setFormat(tableFormat);
 		} catch(Exception e){
-			logger.error("Failed to load CSV document", e);
+			logger.error("Failed to load the CSV document", e);
 
 			throw new BadRequestException(e);
 		} finally {
