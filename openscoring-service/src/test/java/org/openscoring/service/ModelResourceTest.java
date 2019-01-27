@@ -79,6 +79,27 @@ public class ModelResourceTest extends JerseyTest {
 	}
 
 	@Test
+	public void badContent() throws Exception {
+		String pmmlOpenTag = "<PMML xmlns=\"http://www.dmg.org/PMML-4_3\" version=\"4.3\">";
+		String headerTag = "<Header/>";
+		String dataDictionaryTag = "<DataDictionary><DataField name=\"x\" dataType=\"double\" optype=\"continuous\"/></DataDictionary>";
+		String treeModelTag = "<TreeModel functionName=\"regression\"><MiningSchema><MiningField name=\"x\"/><MiningField name=\"x\"/></MiningSchema><Node><False/></Node></TreeModel>";
+		String pmmlCloseTag = "</PMML>";
+
+		ModelResponse modelResponse = deployBadString("invalid_pmml", pmmlOpenTag);
+
+		assertNotNull(modelResponse.getMessage());
+
+		modelResponse = deployBadString("empty_pmml", pmmlOpenTag + headerTag + dataDictionaryTag + pmmlCloseTag);
+
+		assertNotNull(modelResponse.getMessage());
+
+		modelResponse = deployBadString("invalid_model", pmmlOpenTag + headerTag + dataDictionaryTag + treeModelTag + pmmlCloseTag);
+
+		assertNotNull(modelResponse.getMessage());
+	}
+
+	@Test
 	public void decisionTreeIris() throws Exception {
 		String id = "DecisionTreeIris";
 
@@ -284,6 +305,17 @@ public class ModelResourceTest extends JerseyTest {
 		}
 
 		assertEquals(201, response.getStatus());
+		assertNotNull(response.getHeaderString(Headers.SERVICE));
+
+		return response.readEntity(ModelResponse.class);
+	}
+
+	private ModelResponse deployBadString(String id, String string){
+		Entity<String> entity = Entity.entity(string, MediaType.APPLICATION_XML);
+
+		Response response = target("model/" + id).request(MediaType.APPLICATION_JSON).put(entity);
+
+		assertEquals(400, response.getStatus());
 		assertNotNull(response.getHeaderString(Headers.SERVICE));
 
 		return response.readEntity(ModelResponse.class);
