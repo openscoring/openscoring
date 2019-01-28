@@ -47,6 +47,7 @@ import org.jpmml.evaluator.OutputFilters;
 import org.jpmml.evaluator.ValueFactoryFactory;
 import org.jpmml.model.JAXBUtil;
 import org.jpmml.model.VisitorBattery;
+import org.openscoring.service.filters.ApplicationHeaderFilter;
 import org.openscoring.service.providers.ModelProvider;
 import org.openscoring.service.providers.ModelRefConverterProvider;
 import org.openscoring.service.providers.ModelRefProvider;
@@ -120,6 +121,9 @@ public class Openscoring extends ResourceConfig {
 		register(EncodingFilter.class);
 		register(GZipEncoder.class);
 		register(DeflateEncoder.class);
+
+		// Application identification
+		register(ApplicationHeaderFilter.class);
 
 		Config applicationConfig = config.getConfig("application");
 
