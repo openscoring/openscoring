@@ -24,6 +24,7 @@ import java.net.InetSocketAddress;
 import com.beust.jcommander.JCommander;
 import com.beust.jcommander.Parameter;
 import com.beust.jcommander.ParameterException;
+import org.eclipse.jetty.server.Handler;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.handler.ContextHandlerCollection;
 import org.eclipse.jetty.servlet.ServletContextHandler;
@@ -35,10 +36,16 @@ import org.openscoring.service.Openscoring;
 public class Main {
 
 	@Parameter (
-		names = {"--application"},
+		names = {"--application-class", "--application"},
 		description = "Application class name"
 	)
 	private String applicationClazz = Openscoring.class.getName();
+
+	@Parameter (
+		names = {"--application-path"},
+		description = "Application context path"
+	)
+	private String applicationPath = "/openscoring";
 
 	@Parameter (
 		names = {"--console-war"},
@@ -48,10 +55,11 @@ public class Main {
 	private File consoleWar = null;
 
 	@Parameter (
-		names = {"--context-path"},
-		description = "Context path"
+		names = {"--console-path"},
+		description = "Web administration console context path",
+		hidden = true
 	)
-	private String contextPath = "/openscoring";
+	private String consolePath = "/console";
 
 	@Parameter (
 		names = {"--help"},
@@ -133,6 +141,22 @@ public class Main {
 	private Server createServer(InetSocketAddress address) throws Exception {
 		Server server = new Server(address);
 
+		ContextHandlerCollection handlerCollection = new ContextHandlerCollection();
+
+		Handler applicationHandler = createApplicationHandler();
+		handlerCollection.addHandler(applicationHandler);
+
+		Handler adminConsoleHandler = createAdminConsoleHandler();
+		if(adminConsoleHandler != null){
+			handlerCollection.addHandler(adminConsoleHandler);
+		}
+
+		server.setHandler(handlerCollection);
+
+		return server;
+	}
+
+	private Handler createApplicationHandler() throws Exception {
 		Class<?> applicationClazz = Class.forName(this.applicationClazz);
 
 		Class<? extends Openscoring> openscoringClazz = (applicationClazz).asSubclass(Openscoring.class);
@@ -141,25 +165,22 @@ public class Main {
 
 		ServletContainer jerseyServlet = new ServletContainer(application);
 
-		ServletContextHandler servletHandler = new ServletContextHandler();
-		servletHandler.setContextPath(this.contextPath);
+		ServletHolder servletHolder = new ServletHolder(jerseyServlet);
 
-		servletHandler.addServlet(new ServletHolder(jerseyServlet), "/*");
+		ServletContextHandler servletHandler = new ServletContextHandler(null, this.applicationPath);
+		servletHandler.addServlet(servletHolder, "/*");
 
-		ContextHandlerCollection handlerCollection = new ContextHandlerCollection();
+		return servletHandler;
+	}
 
-		handlerCollection.addHandler(servletHandler);
+	private Handler createAdminConsoleHandler() throws Exception {
 
 		if(this.consoleWar != null){
-			WebAppContext consoleHandler = new WebAppContext();
-			consoleHandler.setContextPath(this.contextPath + "/console"); // XXX
-			consoleHandler.setWar(this.consoleWar.getAbsolutePath());
+			WebAppContext webappHandler = new WebAppContext(null, this.consoleWar.getAbsolutePath(), this.consolePath);
 
-			handlerCollection.addHandler(consoleHandler);
+			return webappHandler;
 		}
 
-		server.setHandler(handlerCollection);
-
-		return server;
+		return null;
 	}
 }
