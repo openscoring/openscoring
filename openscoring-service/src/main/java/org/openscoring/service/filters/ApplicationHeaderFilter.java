@@ -38,20 +38,20 @@ import org.slf4j.LoggerFactory;
 @Priority (
 	Priorities.HEADER_DECORATOR
 )
-public class ServiceIdentificationFilter implements ContainerResponseFilter {
+public class ApplicationHeaderFilter implements ContainerResponseFilter {
 
 	@Override
 	public void filter(ContainerRequestContext requestContext, ContainerResponseContext responseContext){
 		MultivaluedMap<String, Object> headers = responseContext.getHeaders();
 
-		List<Object> services = headers.get(Headers.SERVICE);
-		if(services == null){
-			services = new ArrayList<>();
+		List<Object> applications = headers.get(Headers.APPLICATION);
+		if(applications == null){
+			applications = new ArrayList<>();
 
-			headers.put(Headers.SERVICE, services);
+			headers.put(Headers.APPLICATION, applications);
 		}
 
-		services.add(ServiceIdentificationFilter.nameAndVersion);
+		applications.add(ApplicationHeaderFilter.nameAndVersion);
 	}
 
 	static
@@ -60,12 +60,12 @@ public class ServiceIdentificationFilter implements ContainerResponseFilter {
 
 		String result = (_package.getSpecificationTitle() + "/" + _package.getSpecificationVersion());
 
-		logger.info("Service name and version: {}", result);
+		logger.info("Application name and version: {}", result);
 
 		return result;
 	}
 
-	private static final Logger logger = LoggerFactory.getLogger(ServiceIdentificationFilter.class);
+	private static final Logger logger = LoggerFactory.getLogger(ApplicationHeaderFilter.class);
 
 	private static final String nameAndVersion = discoverNameAndVersion();
 }

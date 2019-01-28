@@ -20,5 +20,5 @@ package org.openscoring.common;
 
 public interface Headers {
 
-	String SERVICE = "Service";
+	String APPLICATION = "X-Application";
 }

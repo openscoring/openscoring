@@ -305,7 +305,7 @@ public class ModelResourceTest extends JerseyTest {
 		}
 
 		assertEquals(201, response.getStatus());
-		assertNotNull(response.getHeaderString(Headers.SERVICE));
+		assertNotNull(response.getHeaderString(Headers.APPLICATION));
 
 		return response.readEntity(ModelResponse.class);
 	}
@@ -316,7 +316,7 @@ public class ModelResourceTest extends JerseyTest {
 		Response response = target("model/" + id).request(MediaType.APPLICATION_JSON).put(entity);
 
 		assertEquals(400, response.getStatus());
-		assertNotNull(response.getHeaderString(Headers.SERVICE));
+		assertNotNull(response.getHeaderString(Headers.APPLICATION));
 
 		return response.readEntity(ModelResponse.class);
 	}
@@ -337,7 +337,7 @@ public class ModelResourceTest extends JerseyTest {
 		}
 
 		assertEquals(201, response.getStatus());
-		assertNotNull(response.getHeaderString(Headers.SERVICE));
+		assertNotNull(response.getHeaderString(Headers.APPLICATION));
 
 		URI location = response.getLocation();
 
@@ -430,7 +430,7 @@ public class ModelResourceTest extends JerseyTest {
 		Response response = target("model/" + id).request(MediaType.APPLICATION_JSON).delete();
 
 		assertEquals(200, response.getStatus());
-		assertNotNull(response.getHeaderString(Headers.SERVICE));
+		assertNotNull(response.getHeaderString(Headers.APPLICATION));
 
 		return response.readEntity(SimpleResponse.class);
 	}
