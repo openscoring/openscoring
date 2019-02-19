@@ -40,10 +40,10 @@ import org.glassfish.jersey.server.ResourceConfig;
 import org.glassfish.jersey.server.filter.EncodingFilter;
 import org.glassfish.jersey.server.filter.HttpMethodOverrideFilter;
 import org.glassfish.jersey.server.filter.RolesAllowedDynamicFeature;
-import org.jpmml.evaluator.FieldMapper;
 import org.jpmml.evaluator.LoadingModelEvaluatorBuilder;
 import org.jpmml.evaluator.ModelEvaluatorFactory;
 import org.jpmml.evaluator.OutputFilters;
+import org.jpmml.evaluator.ResultMapper;
 import org.jpmml.evaluator.ValueFactoryFactory;
 import org.jpmml.model.JAXBUtil;
 import org.jpmml.model.VisitorBattery;
@@ -157,7 +157,8 @@ public class Openscoring extends ResourceConfig {
 
 		modelEvaluatorBuilder.setOutputFilter(OutputFilters.KEEP_FINAL_RESULTS);
 
-		FieldMapper resultMapper = new FieldMapper(){
+		// Jackson does not support the JSON serialization of <code>null</code> map keys
+		ResultMapper resultMapper = new ResultMapper(){
 
 			@Override
 			public FieldName apply(FieldName name){
