@@ -107,4 +107,6 @@ public class ModelResponse extends SimpleResponse {
 
 		return this;
 	}
+
+	public static final String DEFAULT_TARGET_NAME = "_default";
 }

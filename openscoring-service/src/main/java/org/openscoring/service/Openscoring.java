@@ -47,6 +47,7 @@ import org.jpmml.evaluator.ResultMapper;
 import org.jpmml.evaluator.ValueFactoryFactory;
 import org.jpmml.model.JAXBUtil;
 import org.jpmml.model.VisitorBattery;
+import org.openscoring.common.ModelResponse;
 import org.openscoring.service.filters.ApplicationHeaderFilter;
 import org.openscoring.service.providers.ModelProvider;
 import org.openscoring.service.providers.ModelRefConverterProvider;
@@ -160,12 +161,15 @@ public class Openscoring extends ResourceConfig {
 		// Jackson does not support the JSON serialization of <code>null</code> map keys
 		ResultMapper resultMapper = new ResultMapper(){
 
+			private FieldName defaultTargetName = FieldName.create(ModelResponse.DEFAULT_TARGET_NAME);
+
+
 			@Override
 			public FieldName apply(FieldName name){
 
 				// A "phantom" default target field
 				if(name == null){
-					return ModelResource.DEFAULT_NAME;
+					return this.defaultTargetName;
 				}
 
 				return name;

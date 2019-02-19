@@ -451,7 +451,5 @@ public class ModelResource {
 		return response;
 	}
 
-	public static final FieldName DEFAULT_NAME = FieldName.create("_default");
-
 	private static final Logger logger = LoggerFactory.getLogger(ModelResource.class);
 }

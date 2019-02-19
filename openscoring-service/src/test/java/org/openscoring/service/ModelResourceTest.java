@@ -270,7 +270,7 @@ public class ModelResourceTest extends JerseyTest {
 		{
 			Field targetField = targetFields.get(0);
 
-			assertEquals("_default", targetField.getId());
+			assertEquals(ModelResponse.DEFAULT_TARGET_NAME, targetField.getId());
 
 			assertEquals(DataType.DOUBLE, targetField.getDataType());
 			assertEquals(OpType.CONTINUOUS, targetField.getOpType());
