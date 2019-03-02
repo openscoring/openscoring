@@ -57,8 +57,13 @@ import org.xml.sax.SAXException;
 
 public class Openscoring extends ResourceConfig {
 
+	private Config config = null;
+
+
 	public Openscoring(){
 		Config config = ConfigFactory.load();
+
+		setConfig(config);
 
 		Binder configBinder = new AbstractBinder(){
 
@@ -134,6 +139,14 @@ public class Openscoring extends ResourceConfig {
 
 			register(clazz);
 		}
+	}
+
+	public Config getConfig(){
+		return this.config;
+	}
+
+	private void setConfig(Config config){
+		this.config = config;
 	}
 
 	static
