@@ -85,11 +85,6 @@ public class Openscoring extends ResourceConfig {
 		};
 		register(modelRegistryBinder);
 
-		register(ModelRefProvider.class);
-		register(ModelRefConverterProvider.class);
-
-		register(ModelResource.class);
-
 		LoadingModelEvaluatorBuilder loadingModelEvaluatorBuilder = createLoadingModelEvaluatorBuilder(config);
 
 		Binder loadingModelEvaluatorBuilderBinder = new AbstractBinder(){
@@ -101,15 +96,22 @@ public class Openscoring extends ResourceConfig {
 		};
 		register(loadingModelEvaluatorBuilderBinder);
 
+		Config applicationConfig = config.getConfig("application");
+
+		register(ModelResource.class);
+
+		register(loadClass(ModelRefProvider.class, applicationConfig));
+		register(loadClass(ModelRefConverterProvider.class, applicationConfig));
+
 		// PMML support
-		register(ModelProvider.class);
+		register(loadClass(ModelProvider.class, applicationConfig));
 
 		// JSON support
 		register(JacksonJsonProvider.class);
 		register(ObjectMapperProvider.class);
 
 		// CSV support
-		register(TableProvider.class);
+		register(loadClass(TableProvider.class, applicationConfig));
 
 		// Convert exceptions to JSON objects
 		register(WebApplicationExceptionMapper.class);
@@ -130,8 +132,6 @@ public class Openscoring extends ResourceConfig {
 
 		// Application identification
 		register(ApplicationHeaderFilter.class);
-
-		Config applicationConfig = config.getConfig("application");
 
 		List<String> componentClassNames = applicationConfig.getStringList("componentClasses");
 		for(String componentClassName : componentClassNames){
@@ -155,19 +155,11 @@ public class Openscoring extends ResourceConfig {
 
 		LoadingModelEvaluatorBuilder modelEvaluatorBuilder = new LoadingModelEvaluatorBuilder();
 
-		String modelEvaluatorFactoryClassName = modelEvaluatorBuilderConfig.getString("modelEvaluatorFactoryClass");
-		if(modelEvaluatorFactoryClassName != null){
-			Class<? extends ModelEvaluatorFactory> modelEvaluatorFactoryClazz = loadClass(ModelEvaluatorFactory.class, modelEvaluatorFactoryClassName);
+		Class<? extends ModelEvaluatorFactory> modelEvaluatorFactoryClazz = loadClass(ModelEvaluatorFactory.class, modelEvaluatorBuilderConfig);
+		modelEvaluatorBuilder.setModelEvaluatorFactory(newInstance(modelEvaluatorFactoryClazz));
 
-			modelEvaluatorBuilder.setModelEvaluatorFactory(newInstance(modelEvaluatorFactoryClazz));
-		}
-
-		String valueFactoryFactoryClassName = modelEvaluatorBuilderConfig.getString("valueFactoryFactoryClass");
-		if(valueFactoryFactoryClassName != null){
-			Class<? extends ValueFactoryFactory> valueFactoryFactoryClazz = loadClass(ValueFactoryFactory.class, valueFactoryFactoryClassName);
-
-			modelEvaluatorBuilder.setValueFactoryFactory(newInstance(valueFactoryFactoryClazz));
-		}
+		Class<? extends ValueFactoryFactory> valueFactoryFactoryClazz = loadClass(ValueFactoryFactory.class, modelEvaluatorBuilderConfig);
+		modelEvaluatorBuilder.setValueFactoryFactory(newInstance(valueFactoryFactoryClazz));
 
 		modelEvaluatorBuilder.setOutputFilter(OutputFilters.KEEP_FINAL_RESULTS);
 
@@ -242,7 +234,20 @@ public class Openscoring extends ResourceConfig {
 	}
 
 	static
-	private <E> Class<? extends E> loadClass(Class<? extends E> superClazz, String name){
+	protected <E> Class<? extends E> loadClass(Class<? extends E> superClazz, Config config){
+		String path = superClazz.getSimpleName();
+
+		if(path.length() > 0){
+			path = path.substring(0, 1).toLowerCase() + path.substring(1);
+		}
+
+		path += "Class";
+
+		return loadClass(superClazz, config.getString(path));
+	}
+
+	static
+	protected <E> Class<? extends E> loadClass(Class<? extends E> superClazz, String name){
 
 		try {
 			Class<?> clazz = Class.forName(name);
@@ -256,7 +261,7 @@ public class Openscoring extends ResourceConfig {
 	}
 
 	static
-	private <E> E newInstance(Class<? extends E> clazz){
+	protected <E> E newInstance(Class<? extends E> clazz){
 
 		try {
 			try {

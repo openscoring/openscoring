@@ -23,11 +23,14 @@ import javax.ws.rs.ext.ParamConverter;
 
 import org.openscoring.service.ModelRef;
 
-abstract
 public class ModelRefConverter implements ParamConverter<ModelRef> {
 
-	abstract
-	public SecurityContext getSecurityContext();
+	private SecurityContext securityContext = null;
+
+
+	public ModelRefConverter(SecurityContext securityContext){
+		setSecurityContext(securityContext);
+	}
 
 	@Override
 	public ModelRef fromString(String id){
@@ -43,5 +46,13 @@ public class ModelRefConverter implements ParamConverter<ModelRef> {
 	@Override
 	public String toString(ModelRef modelRef){
 		return modelRef.getId();
+	}
+
+	public SecurityContext getSecurityContext(){
+		return this.securityContext;
+	}
+
+	private void setSecurityContext(SecurityContext securityContext){
+		this.securityContext = securityContext;
 	}
 }

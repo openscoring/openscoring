@@ -40,18 +40,9 @@ public class ModelRefConverterProvider implements ParamConverterProvider {
 	public <T> ParamConverter<T> getConverter(Class<T> rawType, Type genericType, Annotation annotations[]){
 
 		if((ModelRef.class).equals(rawType)){
-			ParamConverter paramConverter = new ModelRefConverter(){
+			ParamConverter<ModelRef> paramConverter = new ModelRefConverter(getSecurityContext());
 
-				private SecurityContext securityContext = ModelRefConverterProvider.this.getSecurityContext();;
-
-
-				@Override
-				public SecurityContext getSecurityContext(){
-					return this.securityContext;
-				}
-			};
-
-			return paramConverter;
+			return (ParamConverter)paramConverter;
 		}
 
 		return null;
