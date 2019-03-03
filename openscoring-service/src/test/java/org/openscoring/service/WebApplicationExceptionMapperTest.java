@@ -18,10 +18,14 @@
  */
 package org.openscoring.service;
 
+import java.io.EOFException;
+import java.io.IOException;
+
 import javax.ws.rs.BadRequestException;
 import javax.ws.rs.NotFoundException;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;
+import javax.xml.bind.UnmarshalException;
 
 import org.junit.Test;
 import org.openscoring.common.SimpleResponse;
@@ -37,6 +41,14 @@ public class WebApplicationExceptionMapperTest {
 
 		assertEquals("Bad Request", getMessage(new BadRequestException(new IllegalArgumentException())));
 		assertEquals("Bad \"id\" value", getMessage(new BadRequestException(new IllegalArgumentException("Bad \"id\" value"))));
+
+		assertEquals("Bad Request", getMessage(new BadRequestException(new UnmarshalException(new IOException()))));
+		assertEquals("Resource \"id\" is incomplete", getMessage(new BadRequestException(new UnmarshalException(new EOFException("Resource \"id\" is incomplete")))));
+
+		UnmarshalException selfRefException = new UnmarshalException((Throwable)null);
+		selfRefException.setLinkedException(new UnmarshalException(selfRefException));
+
+		assertEquals("Bad Request", getMessage(new BadRequestException(selfRefException)));
 	}
 
 	static

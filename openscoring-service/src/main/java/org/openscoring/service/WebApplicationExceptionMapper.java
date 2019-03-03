@@ -18,6 +18,9 @@
  */
 package org.openscoring.service;
 
+import java.util.IdentityHashMap;
+import java.util.Map;
+
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -35,19 +38,30 @@ public class WebApplicationExceptionMapper implements ExceptionMapper<WebApplica
 
 		Throwable throwable = exception;
 
-		for(Throwable cause = throwable.getCause(); (cause != null && cause != throwable); throwable = cause){
-			// Empty block
+		Map<Throwable, Throwable> throwableMap = new IdentityHashMap<>();
+
+		while(true){
+			Throwable cause = throwable.getCause();
+			throwableMap.put(throwable, cause);
+
+			if((cause == null) || throwableMap.containsKey(cause)){
+				break;
+			}
+
+			throwable = cause;
 		}
 
 		String message = throwable.getMessage();
-		if(message == null || ("").equals(message)){
+		if((message == null) || ("").equals(message)){
 			Response.Status status = (Response.Status)response.getStatusInfo();
 
 			message = status.getReasonPhrase();
 		} // End if
 
 		// Strip the HTTP status code prefix
-		message = message.replaceFirst("HTTP\\s(\\d)+\\s", "");
+		if(message.startsWith("HTTP ")){
+			message = message.replaceFirst("^HTTP (\\d)+ ", "");
+		}
 
 		SimpleResponse entity = new SimpleResponse();
 		entity.setMessage(message);
