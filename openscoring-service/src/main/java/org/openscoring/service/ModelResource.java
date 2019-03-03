@@ -72,9 +72,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 @Path("model")
-@PermitAll
 @Consumes(MediaType.APPLICATION_JSON)
 @Produces(MediaType.APPLICATION_JSON)
+@PermitAll
 public class ModelResource {
 
 	@Context
@@ -136,19 +136,19 @@ public class ModelResource {
 
 	@PUT
 	@Path(ModelRef.PATH_VALUE_ID)
+	@Consumes({MediaType.APPLICATION_XML, MediaType.TEXT_XML})
 	@RolesAllowed (
 		value = {"admin"}
 	)
-	@Consumes({MediaType.APPLICATION_XML, MediaType.TEXT_XML})
 	public Response deploy(@PathParam("id") ModelRef modelRef, Model model){
 		return doDeploy(modelRef, model);
 	}
 
 	@POST
+	@Consumes(MediaType.MULTIPART_FORM_DATA)
 	@RolesAllowed (
 		value = {"admin"}
 	)
-	@Consumes(MediaType.MULTIPART_FORM_DATA)
 	public Response deployForm(@FormDataParam("id") ModelRef modelRef, @FormDataParam("pmml") Model model){
 		return doDeploy(modelRef, model);
 	}
@@ -186,10 +186,10 @@ public class ModelResource {
 
 	@GET
 	@Path(ModelRef.PATH_VALUE_ID + "/pmml")
+	@Produces(MediaType.APPLICATION_XML)
 	@RolesAllowed (
 		value = {"admin"}
 	)
-	@Produces(MediaType.APPLICATION_XML)
 	public Model download(@PathParam("id") ModelRef modelRef){
 		Model model = this.modelRegistry.get(modelRef, true);
 		if(model == null){
