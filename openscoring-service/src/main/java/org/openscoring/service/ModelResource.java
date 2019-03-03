@@ -37,7 +37,6 @@ import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.InternalServerErrorException;
-import javax.ws.rs.NotFoundException;
 import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
@@ -129,7 +128,7 @@ public class ModelResource {
 	public ModelResponse query(@PathParam("id") ModelRef modelRef){
 		Model model = this.modelRegistry.get(modelRef);
 		if(model == null){
-			throw new NotFoundException("Model \"" + modelRef.getId() + "\" not found");
+			throw new ModelNotFoundException(modelRef);
 		}
 
 		return createModelResponse(modelRef, model, true);
@@ -194,7 +193,7 @@ public class ModelResource {
 	public Model download(@PathParam("id") ModelRef modelRef){
 		Model model = this.modelRegistry.get(modelRef, true);
 		if(model == null){
-			throw new NotFoundException("Model \"" + modelRef.getId() + "\" not found");
+			throw new ModelNotFoundException(modelRef);
 		}
 
 		return model;
@@ -277,7 +276,7 @@ public class ModelResource {
 	private List<EvaluationResponse> doEvaluate(ModelRef modelRef, List<EvaluationRequest> requests, boolean allOrNothing){
 		Model model = this.modelRegistry.get(modelRef, true);
 		if(model == null){
-			throw new NotFoundException("Model \"" + modelRef.getId() + "\" not found");
+			throw new ModelNotFoundException(modelRef);
 		}
 
 		List<EvaluationResponse> responses = new ArrayList<>();
@@ -334,7 +333,7 @@ public class ModelResource {
 	public SimpleResponse undeploy(@PathParam("id") ModelRef modelRef){
 		Model model = this.modelRegistry.get(modelRef);
 		if(model == null){
-			throw new NotFoundException("Model \"" + modelRef.getId() + "\" not found");
+			throw new ModelNotFoundException(modelRef);
 		}
 
 		boolean success = this.modelRegistry.remove(modelRef, model);
