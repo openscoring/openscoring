@@ -68,6 +68,7 @@ import org.openscoring.common.ModelResponse;
 import org.openscoring.common.SimpleResponse;
 import org.openscoring.common.TableEvaluationRequest;
 import org.openscoring.common.TableEvaluationResponse;
+import org.openscoring.service.annotations.Endpoint;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -89,6 +90,9 @@ public class ModelResource {
 	}
 
 	@GET
+	@Endpoint (
+		family = Endpoint.Family.INFORMATION
+	)
 	public BatchModelResponse queryBatch(@Context SecurityContext securityContext){
 		Principal owner = securityContext.getUserPrincipal();
 
@@ -125,6 +129,9 @@ public class ModelResource {
 
 	@GET
 	@Path(ModelRef.PATH_VALUE_ID)
+	@Endpoint (
+		family = Endpoint.Family.INFORMATION
+	)
 	public ModelResponse query(@PathParam("id") ModelRef modelRef){
 		Model model = this.modelRegistry.get(modelRef);
 		if(model == null){
@@ -140,6 +147,9 @@ public class ModelResource {
 	@RolesAllowed (
 		value = {"admin"}
 	)
+	@Endpoint (
+		family = Endpoint.Family.MANAGEMENT
+	)
 	public Response deploy(@PathParam("id") ModelRef modelRef, Model model){
 		return doDeploy(modelRef, model);
 	}
@@ -148,6 +158,9 @@ public class ModelResource {
 	@Consumes(MediaType.MULTIPART_FORM_DATA)
 	@RolesAllowed (
 		value = {"admin"}
+	)
+	@Endpoint (
+		family = Endpoint.Family.MANAGEMENT
 	)
 	public Response deployForm(@FormDataParam("id") ModelRef modelRef, @FormDataParam("pmml") Model model){
 		return doDeploy(modelRef, model);
@@ -190,6 +203,9 @@ public class ModelResource {
 	@RolesAllowed (
 		value = {"admin"}
 	)
+	@Endpoint (
+		family = Endpoint.Family.MANAGEMENT
+	)
 	public Model download(@PathParam("id") ModelRef modelRef){
 		Model model = this.modelRegistry.get(modelRef, true);
 		if(model == null){
@@ -201,6 +217,9 @@ public class ModelResource {
 
 	@POST
 	@Path(ModelRef.PATH_VALUE_ID)
+	@Endpoint (
+		family = Endpoint.Family.EVALUATION
+	)
 	public EvaluationResponse evaluate(@PathParam("id") ModelRef modelRef, EvaluationRequest request){
 		List<EvaluationRequest> requests = Collections.singletonList(request);
 
@@ -211,6 +230,9 @@ public class ModelResource {
 
 	@POST
 	@Path(ModelRef.PATH_VALUE_ID + "/batch")
+	@Endpoint (
+		family = Endpoint.Family.EVALUATION
+	)
 	public BatchEvaluationResponse evaluateBatch(@PathParam("id") ModelRef modelRef, BatchEvaluationRequest batchRequest){
 		List<EvaluationRequest> requests = batchRequest.getRequests();
 
@@ -226,6 +248,9 @@ public class ModelResource {
 	@Path(ModelRef.PATH_VALUE_ID + "/csv")
 	@Consumes({"application/csv", "text/csv", MediaType.TEXT_PLAIN})
 	@Produces(MediaType.TEXT_PLAIN)
+	@Endpoint (
+		family = Endpoint.Family.EVALUATION
+	)
 	public TableEvaluationResponse evaluateCsv(@PathParam("id") ModelRef modelRef, TableEvaluationRequest tableRequest){
 		return doEvaluateCsv(modelRef, tableRequest);
 	}
@@ -234,6 +259,9 @@ public class ModelResource {
 	@Path(ModelRef.PATH_VALUE_ID + "/csv")
 	@Consumes(MediaType.MULTIPART_FORM_DATA)
 	@Produces(MediaType.TEXT_PLAIN)
+	@Endpoint (
+		family = Endpoint.Family.EVALUATION
+	)
 	public TableEvaluationResponse evaluateCsvForm(@PathParam("id") ModelRef modelRef, @FormDataParam("csv") TableEvaluationRequest tableRequest){
 		return doEvaluateCsv(modelRef, tableRequest);
 	}
@@ -329,6 +357,9 @@ public class ModelResource {
 	@Path(ModelRef.PATH_VALUE_ID)
 	@RolesAllowed (
 		value = {"admin"}
+	)
+	@Endpoint (
+		family = Endpoint.Family.MANAGEMENT
 	)
 	public SimpleResponse undeploy(@PathParam("id") ModelRef modelRef){
 		Model model = this.modelRegistry.get(modelRef);
