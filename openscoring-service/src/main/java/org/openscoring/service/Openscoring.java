@@ -59,6 +59,10 @@ public class Openscoring extends ResourceConfig {
 
 	private Config config = null;
 
+	private ModelRegistry modelRegistry = null;
+
+	private LoadingModelEvaluatorBuilder loadingModelEvaluatorBuilder = null;
+
 
 	public Openscoring(){
 		Config config = ConfigFactory.load();
@@ -74,7 +78,9 @@ public class Openscoring extends ResourceConfig {
 		};
 		register(configBinder);
 
-		ModelRegistry modelRegistry = new ModelRegistry();
+		ModelRegistry modelRegistry = createModelRegistry(config);
+
+		setModelRegistry(modelRegistry);
 
 		Binder modelRegistryBinder = new AbstractBinder(){
 
@@ -86,6 +92,8 @@ public class Openscoring extends ResourceConfig {
 		register(modelRegistryBinder);
 
 		LoadingModelEvaluatorBuilder loadingModelEvaluatorBuilder = createLoadingModelEvaluatorBuilder(config);
+
+		setLoadingModelEvaluatorBuilder(loadingModelEvaluatorBuilder);
 
 		Binder loadingModelEvaluatorBuilderBinder = new AbstractBinder(){
 
@@ -147,6 +155,29 @@ public class Openscoring extends ResourceConfig {
 
 	private void setConfig(Config config){
 		this.config = config;
+	}
+
+	public ModelRegistry getModelRegistry(){
+		return this.modelRegistry;
+	}
+
+	private void setModelRegistry(ModelRegistry modelRegistry){
+		this.modelRegistry = modelRegistry;
+	}
+
+	public LoadingModelEvaluatorBuilder getLoadingModelEvaluatorBuilder(){
+		return this.loadingModelEvaluatorBuilder;
+	}
+
+	private void setLoadingModelEvaluatorBuilder(LoadingModelEvaluatorBuilder loadingModelEvaluatorBuilder){
+		this.loadingModelEvaluatorBuilder = loadingModelEvaluatorBuilder;
+	}
+
+	static
+	private ModelRegistry createModelRegistry(Config config){
+		ModelRegistry modelRegistry = new ModelRegistry();
+
+		return modelRegistry;
 	}
 
 	static
