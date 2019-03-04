@@ -26,7 +26,7 @@ import org.jpmml.model.ToStringHelper;
 @JsonInclude (
 	value = JsonInclude.Include.NON_EMPTY
 )
-public class TableEvaluationRequest extends SimpleRequest {
+public class TableEvaluationRequest extends SimpleRequest implements BatchRequest<EvaluationRequest> {
 
 	private TableFormat format = null;
 
@@ -80,6 +80,7 @@ public class TableEvaluationRequest extends SimpleRequest {
 		return this;
 	}
 
+	@Override
 	public List<EvaluationRequest> getRequests(){
 		return this.requests;
 	}

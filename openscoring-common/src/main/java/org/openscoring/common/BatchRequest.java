@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015 Villu Ruusmann
+ * Copyright (c) 2019 Villu Ruusmann
  *
  * This file is part of Openscoring
  *
@@ -20,34 +20,26 @@ package org.openscoring.common;
 
 import java.util.List;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
-import org.jpmml.model.ToStringHelper;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
-@JsonInclude (
-	value = JsonInclude.Include.NON_EMPTY
+@JsonIgnoreProperties (
+	ignoreUnknown = true
 )
-public class BatchModelResponse extends SimpleResponse implements BatchResponse<ModelResponse> {
+public interface BatchRequest<E extends SimpleRequest> {
 
-	private List<ModelResponse> responses = null;
+	List<E> getRequests();
 
+	default
+	int getSize(){
+		List<E> requests = getRequests();
 
-	public BatchModelResponse(){
+		return requests.size();
 	}
 
-	@Override
-	protected ToStringHelper toStringHelper(){
-		return super.toStringHelper()
-			.add("responses", getResponses());
-	}
+	default
+	E getRequest(int index){
+		List<E> requests = getRequests();
 
-	@Override
-	public List<ModelResponse> getResponses(){
-		return this.responses;
-	}
-
-	public BatchModelResponse setResponses(List<ModelResponse> responses){
-		this.responses = responses;
-
-		return this;
+		return requests.get(index);
 	}
 }

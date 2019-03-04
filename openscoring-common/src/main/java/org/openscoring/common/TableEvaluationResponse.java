@@ -26,7 +26,7 @@ import org.jpmml.model.ToStringHelper;
 @JsonInclude (
 	value = JsonInclude.Include.NON_EMPTY
 )
-public class TableEvaluationResponse extends SimpleResponse {
+public class TableEvaluationResponse extends SimpleResponse implements BatchResponse<EvaluationResponse> {
 
 	private TableFormat format = null;
 
@@ -80,6 +80,7 @@ public class TableEvaluationResponse extends SimpleResponse {
 		return this;
 	}
 
+	@Override
 	public List<EvaluationResponse> getResponses(){
 		return this.responses;
 	}

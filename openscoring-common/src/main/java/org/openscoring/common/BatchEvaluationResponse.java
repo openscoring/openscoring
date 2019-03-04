@@ -26,7 +26,7 @@ import org.jpmml.model.ToStringHelper;
 @JsonInclude (
 	value = JsonInclude.Include.NON_EMPTY
 )
-public class BatchEvaluationResponse extends SimpleResponse {
+public class BatchEvaluationResponse extends SimpleResponse implements BatchResponse<EvaluationResponse> {
 
 	private String id = null;
 
@@ -57,12 +57,7 @@ public class BatchEvaluationResponse extends SimpleResponse {
 		return this;
 	}
 
-	public EvaluationResponse getResponse(int index){
-		List<EvaluationResponse> responses = getResponses();
-
-		return responses.get(index);
-	}
-
+	@Override
 	public List<EvaluationResponse> getResponses(){
 		return this.responses;
 	}
