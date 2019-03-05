@@ -54,6 +54,7 @@ import org.openscoring.common.ModelResponse;
 import org.openscoring.common.SimpleResponse;
 import org.openscoring.common.TableEvaluationRequest;
 import org.openscoring.common.providers.ObjectMapperProvider;
+import org.openscoring.service.providers.CsvUtil;
 import org.supercsv.prefs.CsvPreference;
 
 import static org.junit.Assert.assertEquals;

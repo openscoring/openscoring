@@ -16,13 +16,14 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with Openscoring.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.openscoring.service;
+package org.openscoring.service.providers;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.StringReader;
 
 import org.junit.Test;
+import org.openscoring.service.providers.CsvUtil;
 import org.supercsv.prefs.CsvPreference;
 
 import static org.junit.Assert.assertNotSame;
