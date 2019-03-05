@@ -65,7 +65,7 @@
 						<configuration>
 							<classifier>sources</classifier>
 							<includes>org/openscoring/common/**</includes>
-							<excludes>META-INF/MANIFEST.MF</excludes>
+							<excludes>META-INF/MANIFEST.MF,org/openscoring/common/providers/**</excludes>
 							<excludeTransitive>true</excludeTransitive>
 							<outputDirectory>${project.build.directory}/openscoring-common-sources</outputDirectory>
 							<type>java-source</type>
