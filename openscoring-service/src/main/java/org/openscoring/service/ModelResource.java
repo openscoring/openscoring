@@ -69,6 +69,7 @@ import org.openscoring.common.SimpleResponse;
 import org.openscoring.common.TableEvaluationRequest;
 import org.openscoring.common.TableEvaluationResponse;
 import org.openscoring.service.annotations.Endpoint;
+import org.openscoring.service.exceptions.ModelNotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

@@ -16,9 +16,11 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with Openscoring.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.openscoring.service;
+package org.openscoring.service.exceptions;
 
 import javax.ws.rs.NotFoundException;
+
+import org.openscoring.service.ModelRef;
 
 public class ModelNotFoundException extends NotFoundException {
 
