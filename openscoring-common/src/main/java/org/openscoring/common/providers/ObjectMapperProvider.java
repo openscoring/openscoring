@@ -21,6 +21,8 @@ package org.openscoring.common.providers;
 import javax.ws.rs.ext.ContextResolver;
 import javax.ws.rs.ext.Provider;
 
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.annotation.PropertyAccessor;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import org.jpmml.model.PMMLModule;
@@ -34,6 +36,10 @@ public class ObjectMapperProvider implements ContextResolver<ObjectMapper> {
 	public ObjectMapperProvider(){
 		ObjectMapper objectMapper = new ObjectMapper();
 		objectMapper.registerModule(new PMMLModule());
+		objectMapper.setVisibility(PropertyAccessor.FIELD, JsonAutoDetect.Visibility.ANY);
+		objectMapper.setVisibility(PropertyAccessor.GETTER, JsonAutoDetect.Visibility.NONE);
+		objectMapper.setVisibility(PropertyAccessor.IS_GETTER, JsonAutoDetect.Visibility.NONE);
+		objectMapper.setVisibility(PropertyAccessor.SETTER, JsonAutoDetect.Visibility.NONE);
 		objectMapper.enable(SerializationFeature.INDENT_OUTPUT);
 		objectMapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
 
