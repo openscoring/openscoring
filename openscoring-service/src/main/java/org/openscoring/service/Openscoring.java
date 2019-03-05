@@ -48,6 +48,7 @@ import org.jpmml.evaluator.ValueFactoryFactory;
 import org.jpmml.model.JAXBUtil;
 import org.jpmml.model.VisitorBattery;
 import org.openscoring.common.ModelResponse;
+import org.openscoring.common.providers.ObjectMapperProvider;
 import org.openscoring.service.filters.ApplicationHeaderFilter;
 import org.openscoring.service.providers.ModelProvider;
 import org.openscoring.service.providers.ModelRefConverterProvider;

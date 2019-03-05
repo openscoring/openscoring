@@ -26,6 +26,7 @@ import com.beust.jcommander.Parameter;
 import com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider;
 import org.glassfish.jersey.client.ClientConfig;
 import org.openscoring.common.SimpleResponse;
+import org.openscoring.common.providers.ObjectMapperProvider;
 
 abstract
 public class ModelApplication extends Application {
