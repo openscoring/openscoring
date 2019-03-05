@@ -31,6 +31,7 @@ import java.util.stream.Collectors;
 
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.core.Application;
+import javax.ws.rs.core.Form;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
@@ -437,7 +438,9 @@ public class ModelResourceTest extends JerseyTest {
 	}
 
 	private SimpleResponse undeployForm(String id){
-		Response response = target("model/" + id).request(MediaType.APPLICATION_JSON).header("X-HTTP-Method-Override", "DELETE").post(null);
+		Entity<Form> entity = Entity.form(new Form());
+
+		Response response = target("model/" + id).request(MediaType.APPLICATION_JSON).header("X-HTTP-Method-Override", "DELETE").post(entity);
 
 		assertEquals(200, response.getStatus());
 

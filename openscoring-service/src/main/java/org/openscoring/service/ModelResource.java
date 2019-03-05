@@ -364,6 +364,23 @@ public class ModelResource {
 		family = Endpoint.Family.MANAGEMENT
 	)
 	public SimpleResponse undeploy(@PathParam("id") ModelRef modelRef){
+		return doUndeploy(modelRef);
+	}
+
+	@DELETE
+	@Path(ModelRef.PATH_VALUE_ID)
+	@Consumes({MediaType.APPLICATION_FORM_URLENCODED, MediaType.MULTIPART_FORM_DATA})
+	@RolesAllowed (
+		value = {"admin"}
+	)
+	@Endpoint (
+		family = Endpoint.Family.MANAGEMENT
+	)
+	public SimpleResponse undeployForm(@PathParam("id") ModelRef modelRef){
+		return doUndeploy(modelRef);
+	}
+
+	private SimpleResponse doUndeploy(ModelRef modelRef){
 		Model model = this.modelRegistry.get(modelRef);
 		if(model == null){
 			throw new ModelNotFoundException(modelRef);
