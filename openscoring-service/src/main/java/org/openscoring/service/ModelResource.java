@@ -155,7 +155,8 @@ public class ModelResource {
 		return doDeploy(modelRef, model);
 	}
 
-	@POST
+	@PUT
+	@Path(ModelRef.PATH_VALUE_ID)
 	@Consumes(MediaType.MULTIPART_FORM_DATA)
 	@RolesAllowed (
 		value = {"admin"}
@@ -163,7 +164,7 @@ public class ModelResource {
 	@Endpoint (
 		family = Endpoint.Family.MANAGEMENT
 	)
-	public Response deployForm(@FormDataParam("id") ModelRef modelRef, @FormDataParam("pmml") Model model){
+	public Response deployForm(@PathParam("id") ModelRef modelRef, @FormDataParam("pmml") Model model){
 		return doDeploy(modelRef, model);
 	}
 

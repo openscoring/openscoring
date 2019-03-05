@@ -328,12 +328,11 @@ public class ModelResourceTest extends JerseyTest {
 
 		try(InputStream is = openPMML(id)){
 			FormDataMultiPart formData = new FormDataMultiPart();
-			formData.field("id", id);
 			formData.bodyPart(new FormDataBodyPart("pmml", is, MediaType.APPLICATION_XML_TYPE));
 
 			Entity<FormDataMultiPart> entity = Entity.entity(formData, MediaType.MULTIPART_FORM_DATA);
 
-			response = target("model").request(MediaType.APPLICATION_JSON).post(entity);
+			response = target("model/" + id).queryParam("_method", "PUT").request(MediaType.APPLICATION_JSON).post(entity);
 
 			formData.close();
 		}

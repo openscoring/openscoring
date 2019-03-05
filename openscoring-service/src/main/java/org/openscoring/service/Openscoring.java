@@ -52,7 +52,6 @@ import org.openscoring.common.providers.ObjectMapperProvider;
 import org.openscoring.service.filters.ApplicationHeaderFilter;
 import org.openscoring.service.providers.ModelProvider;
 import org.openscoring.service.providers.ModelRefConverterProvider;
-import org.openscoring.service.providers.ModelRefProvider;
 import org.openscoring.service.providers.TableProvider;
 import org.xml.sax.SAXException;
 
@@ -109,7 +108,7 @@ public class Openscoring extends ResourceConfig {
 
 		register(ModelResource.class);
 
-		register(loadClass(ModelRefProvider.class, applicationConfig));
+		// Convert path variables to ModelRef objects
 		register(loadClass(ModelRefConverterProvider.class, applicationConfig));
 
 		// PMML support
