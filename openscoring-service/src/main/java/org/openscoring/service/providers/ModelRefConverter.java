@@ -36,9 +36,7 @@ public class ModelRefConverter implements ParamConverter<ModelRef> {
 	public ModelRef fromString(String id){
 		SecurityContext securityContext = getSecurityContext();
 
-		ModelRef modelRef = new ModelRef()
-			.setOwner(securityContext.getUserPrincipal())
-			.setId(id);
+		ModelRef modelRef = new ModelRef(securityContext.getUserPrincipal(), id);
 
 		return modelRef;
 	}

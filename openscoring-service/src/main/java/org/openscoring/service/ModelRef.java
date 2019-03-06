@@ -28,7 +28,14 @@ public class ModelRef {
 	private String id = null;
 
 
-	public ModelRef(){
+	public ModelRef(ModelRef modelRef){
+		setOwner(modelRef.getOwner());
+		setId(modelRef.getId());
+	}
+
+	public ModelRef(Principal owner, String id){
+		setOwner(owner);
+		setId(id);
 	}
 
 	@Override
@@ -57,20 +64,16 @@ public class ModelRef {
 		return this.owner;
 	}
 
-	public ModelRef setOwner(Principal owner){
-		this.owner = owner;
-
-		return this;
+	private void setOwner(Principal owner){
+		this.owner = Objects.requireNonNull(owner);
 	}
 
 	public String getId(){
 		return this.id;
 	}
 
-	public ModelRef setId(String id){
+	private void setId(String id){
 		this.id = Objects.requireNonNull(id);
-
-		return this;
 	}
 
 	static

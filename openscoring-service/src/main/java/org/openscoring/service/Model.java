@@ -22,6 +22,7 @@ import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 import org.dmg.pmml.MiningFunction;
 import org.jpmml.evaluator.Evaluator;
@@ -36,7 +37,10 @@ public class Model {
 	private Map<String, List<Field>> schema = null;
 
 
-	protected Model(){
+	public Model(Model model){
+		setEvaluator(model.getEvaluator());
+		setProperties(model.getProperties());
+		setSchema(model.getSchema());
 	}
 
 	public Model(Evaluator evaluator){
@@ -56,7 +60,7 @@ public class Model {
 	}
 
 	private void setEvaluator(Evaluator evaluator){
-		this.evaluator = evaluator;
+		this.evaluator = Objects.requireNonNull(evaluator);
 	}
 
 	public MiningFunction getMiningFunction(){
@@ -82,7 +86,7 @@ public class Model {
 	}
 
 	private void setProperties(Map<String, Object> properties){
-		this.properties = properties;
+		this.properties = Objects.requireNonNull(properties);
 	}
 
 	public Map<String, List<Field>> getSchema(){
@@ -90,7 +94,7 @@ public class Model {
 	}
 
 	private void setSchema(Map<String, List<Field>> schema){
-		this.schema = schema;
+		this.schema = Objects.requireNonNull(schema);
 	}
 
 	public static final String PROPERTY_CREATED_TIMESTAMP = "created.timestamp";
