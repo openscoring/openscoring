@@ -18,23 +18,32 @@
  */
 package org.openscoring.service;
 
-import java.util.Collection;
+import java.security.Principal;
 import java.util.Date;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
+import java.util.function.Function;
 
 public class ModelRegistry {
 
-	private ConcurrentMap<ModelRef, Model> models = new ConcurrentHashMap<>();
+	private ConcurrentMap<Principal, ConcurrentMap<String, Model>> models = new ConcurrentHashMap<>();
+
+	private Function<Principal, ConcurrentMap<String, Model>> initializer = new Function<Principal, ConcurrentMap<String, Model>>(){
+
+		@Override
+		public ConcurrentMap<String, Model> apply(Principal principal){
+			return new ConcurrentHashMap<>();
+		}
+	};
 
 
 	public ModelRegistry(){
 	}
 
-	public Collection<Map.Entry<ModelRef, Model>> entries(){
-		return this.models.entrySet();
+	public Map<String, Model> getModels(Principal owner){
+		return this.models.computeIfAbsent(owner, getInitializer());
 	}
 
 	public Model get(ModelRef modelRef){
@@ -42,8 +51,9 @@ public class ModelRegistry {
 	}
 
 	public Model get(ModelRef modelRef, boolean touch){
-		Model model = this.models.get(modelRef);
+		Map<String, Model> models = getModels(modelRef.getOwner());
 
+		Model model = models.get(modelRef.getId());
 		if(model != null && touch){
 			model.putProperty(Model.PROPERTY_ACCESSED_TIMESTAMP, new Date());
 		}
@@ -52,16 +62,30 @@ public class ModelRegistry {
 	}
 
 	public boolean put(ModelRef modelRef, Model model){
-		Model oldModel = this.models.putIfAbsent(modelRef, Objects.requireNonNull(model));
+		Map<String, Model> models = getModels(modelRef.getOwner());
+
+		Model oldModel = models.putIfAbsent(modelRef.getId(), Objects.requireNonNull(model));
 
 		return (oldModel == null);
 	}
 
 	public boolean replace(ModelRef modelRef, Model oldModel, Model model){
-		return this.models.replace(modelRef, oldModel, Objects.requireNonNull(model));
+		Map<String, Model> models = getModels(modelRef.getOwner());
+
+		return models.replace(modelRef.getId(), oldModel, Objects.requireNonNull(model));
 	}
 
 	public boolean remove(ModelRef modelRef, Model model){
-		return this.models.remove(modelRef, model);
+		Map<String, Model> models = getModels(modelRef.getOwner());
+
+		return models.remove(modelRef.getId(), model);
+	}
+
+	public Function<Principal, ConcurrentMap<String, Model>> getInitializer(){
+		return this.initializer;
+	}
+
+	public void setInitializer(Function<Principal, ConcurrentMap<String, Model>> initializer){
+		this.initializer = Objects.requireNonNull(initializer);
 	}
 }

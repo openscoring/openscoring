@@ -27,7 +27,6 @@ import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 
 import javax.annotation.security.PermitAll;
 import javax.annotation.security.RolesAllowed;
@@ -99,16 +98,11 @@ public class ModelResource {
 
 		List<ModelResponse> responses = new ArrayList<>();
 
-		Collection<Map.Entry<ModelRef, Model>> entries = this.modelRegistry.entries();
-		for(Map.Entry<ModelRef, Model> entry : entries){
-			ModelRef modelRef = entry.getKey();
-			Model model = entry.getValue();
+		Map<String, Model> models = this.modelRegistry.getModels(owner);
 
-			if(!Objects.equals(owner, modelRef.getOwner())){
-				continue;
-			}
-
-			ModelResponse response = createModelResponse(modelRef, model, false);
+		Collection<Map.Entry<String, Model>> entries = models.entrySet();
+		for(Map.Entry<String, Model> entry : entries){
+			ModelResponse response = createModelResponse(entry.getKey(), entry.getValue(), false);
 
 			responses.add(response);
 		}
@@ -139,7 +133,7 @@ public class ModelResource {
 			throw new ModelNotFoundException(modelRef);
 		}
 
-		return createModelResponse(modelRef, model, true);
+		return createModelResponse(modelRef.getId(), model, true);
 	}
 
 	@PUT
@@ -184,7 +178,7 @@ public class ModelResource {
 			throw new InternalServerErrorException("Concurrent modification");
 		}
 
-		ModelResponse entity = createModelResponse(modelRef, model, true);
+		ModelResponse entity = createModelResponse(modelRef.getId(), model, true);
 
 		if(oldModel != null){
 			return (Response.ok().entity(entity)).build();
@@ -487,8 +481,8 @@ public class ModelResource {
 	}
 
 	static
-	private ModelResponse createModelResponse(ModelRef modelRef, Model model, boolean expand){
-		ModelResponse response = new ModelResponse(modelRef.getId())
+	private ModelResponse createModelResponse(String id, Model model, boolean expand){
+		ModelResponse response = new ModelResponse(id)
 			.setMiningFunction(model.getMiningFunction())
 			.setSummary(model.getSummary())
 			.setProperties(model.getProperties());
