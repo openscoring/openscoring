@@ -39,6 +39,7 @@ import org.jpmml.evaluator.InputField;
 import org.jpmml.evaluator.ModelField;
 import org.jpmml.evaluator.OutputField;
 import org.jpmml.evaluator.TargetField;
+import org.jpmml.evaluator.TypeUtil;
 import org.openscoring.common.Field;
 
 public class ModelUtil {
@@ -168,7 +169,7 @@ public class ModelUtil {
 
 			return values.stream()
 				.filter(value -> (Value.Property.VALID).equals(value.getProperty()))
-				.map(Value::getValue)
+				.map(pmmlValue -> TypeUtil.format(pmmlValue.getValue()))
 				.collect(Collectors.toList());
 		}
 
