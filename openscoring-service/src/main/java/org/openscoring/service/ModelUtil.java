@@ -132,8 +132,8 @@ public class ModelUtil {
 
 				@Override
 				public String apply(Interval interval){
-					Double leftMargin = interval.getLeftMargin();
-					Double rightMargin = interval.getRightMargin();
+					Number leftMargin = interval.getLeftMargin();
+					Number rightMargin = interval.getRightMargin();
 
 					String value = (leftMargin != null ? leftMargin : Double.NEGATIVE_INFINITY) + ", " + (rightMargin != null ? rightMargin : Double.POSITIVE_INFINITY);
 
