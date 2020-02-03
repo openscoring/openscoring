@@ -568,29 +568,13 @@ public class ModelResource {
 
 		Map<FieldName, ?> results = evaluator.evaluate(arguments);
 
-		// Jackson does not support the JSON serialization of <code>null</code> map keys
-		results = replaceNullKey(results);
-
 		logger.debug("Evaluation response {} has result: {}", response.getId(), results);
 
-		response.setResult(EvaluatorUtil.decode(results));
+		response.setResult(EvaluatorUtil.decodeAll(results));
 
 		logger.info("Returned {}", response);
 
 		return response;
-	}
-
-	static
-	private <V> Map<FieldName, V> replaceNullKey(Map<FieldName, V> map){
-
-		if(map.containsKey(null)){
-			Map<FieldName, V> result = new LinkedHashMap<>(map);
-			result.put(ModelResource.DEFAULT_NAME, result.remove(null));
-
-			return result;
-		}
-
-		return map;
 	}
 
 	static

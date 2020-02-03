@@ -49,10 +49,10 @@ import org.dmg.pmml.FieldName;
 import org.dmg.pmml.PMML;
 import org.dmg.pmml.Visitor;
 import org.jpmml.evaluator.Evaluator;
-import org.jpmml.evaluator.FieldMapper;
 import org.jpmml.evaluator.HasPMML;
 import org.jpmml.evaluator.LoadingModelEvaluatorBuilder;
 import org.jpmml.evaluator.ModelEvaluatorFactory;
+import org.jpmml.evaluator.ResultMapper;
 import org.jpmml.evaluator.ValueFactoryFactory;
 import org.jpmml.model.JAXBUtil;
 import org.jpmml.model.VisitorBattery;
@@ -88,7 +88,8 @@ public class ModelRegistry {
 			modelEvaluatorBuilder.setValueFactoryFactory(newInstance(valueFactoryFactoryClazz));
 		}
 
-		FieldMapper resultMapper = new FieldMapper(){
+		// Jackson does not support the JSON serialization of <code>null</code> map keys
+		ResultMapper resultMapper = new ResultMapper(){
 
 			@Override
 			public FieldName apply(FieldName name){

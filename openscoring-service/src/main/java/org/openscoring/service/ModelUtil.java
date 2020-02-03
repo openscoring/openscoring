@@ -37,6 +37,7 @@ import org.jpmml.evaluator.InputField;
 import org.jpmml.evaluator.ModelField;
 import org.jpmml.evaluator.OutputField;
 import org.jpmml.evaluator.TargetField;
+import org.jpmml.evaluator.TypeUtil;
 import org.openscoring.common.Field;
 
 public class ModelUtil {
@@ -119,8 +120,8 @@ public class ModelUtil {
 
 				@Override
 				public String apply(Interval interval){
-					Double leftMargin = interval.getLeftMargin();
-					Double rightMargin = interval.getRightMargin();
+					Number leftMargin = interval.getLeftMargin();
+					Number rightMargin = interval.getRightMargin();
 
 					String value = (leftMargin != null ? leftMargin : Double.NEGATIVE_INFINITY) + ", " + (rightMargin != null ? rightMargin : Double.POSITIVE_INFINITY);
 
@@ -156,7 +157,7 @@ public class ModelUtil {
 
 			return values.stream()
 				.filter(value -> (Value.Property.VALID).equals(value.getProperty()))
-				.map(Value::getValue)
+				.map(value -> TypeUtil.format(value.getValue()))
 				.collect(Collectors.toList());
 		}
 
