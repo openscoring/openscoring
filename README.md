@@ -11,10 +11,10 @@ REST web service for scoring PMML models.
     + [Binary release](#binary-release)
     + [Source code snapshot](#source-code-snapshot)
 - [Usage](#usage)
-    + [Client side](#client-side)
     + [Server side](#server-side)
         * [Advanced configuration](#advanced-configuration)
         * [Logging](#logging)
+    + [Client side](#client-side)
 - [REST API](#rest-api)
     + [Overview](#overview)
     + [Model deployment](#model-deployment)
@@ -84,24 +84,6 @@ The build produces two uber-JAR files and a WAR file:
 
 The example PMML file `DecisionTreeIris.pmml` along with example JSON and CSV files can be found in the `openscoring-service/src/etc` directory.
 
-### Client side
-
-Replay the life cycle of a sample `DecisionTreeIris` model (in "REST API", see below) by launching the following Java application classes from the uber-JAR file:
-```
-java -cp openscoring-client-executable-${version}.jar org.openscoring.client.Deployer --model http://localhost:8080/openscoring/model/DecisionTreeIris --file DecisionTreeIris.pmml
-
-java -cp openscoring-client-executable-${version}.jar org.openscoring.client.Evaluator --model http://localhost:8080/openscoring/model/DecisionTreeIris -XSepal_Length=5.1 -XSepal_Width=3.5 -XPetal_Length=1.4 -XPetal_Width=0.2
-
-java -cp openscoring-client-executable-${version}.jar org.openscoring.client.CsvEvaluator --model http://localhost:8080/openscoring/model/DecisionTreeIris --input input.csv --output output.csv
-
-java -cp openscoring-client-executable-${version}.jar org.openscoring.client.Undeployer --model http://localhost:8080/openscoring/model/DecisionTreeIris
-```
-
-The deployment and undeployment of models can be automated by launching the `org.openscoring.client.DirectoryDeployer` Java application class from the uber-JAR file, which listens for PMML file addition and removal events on the specified directory ("PMML directory watchdog"):
-```
-java -cp openscoring-client-executable-${version}.jar org.openscoring.client.DirectoryDeployer --model-collection http://localhost:8080/openscoring/model --dir pmml
-```
-
 ### Server side
 
 Launch the executable uber-JAR file:
@@ -134,6 +116,24 @@ networkSecurityContextFilter {
 Copy the sample Java Logging API configuration file `openscoring-server/logging.properties.sample` to a new file `logging.properties`, and customize its content to current needs. Use the `java.util.logging.config.file` system property to impose changes on the JVM:
 ```
 java -Djava.util.logging.config.file=logging.properties -jar target/openscoring-server-executable-${version}.jar
+```
+
+### Client side
+
+Replay the life cycle of a sample `DecisionTreeIris` model (in "REST API", see below) by launching the following Java application classes from the uber-JAR file:
+```
+java -cp openscoring-client-executable-${version}.jar org.openscoring.client.Deployer --model http://localhost:8080/openscoring/model/DecisionTreeIris --file DecisionTreeIris.pmml
+
+java -cp openscoring-client-executable-${version}.jar org.openscoring.client.Evaluator --model http://localhost:8080/openscoring/model/DecisionTreeIris -XSepal_Length=5.1 -XSepal_Width=3.5 -XPetal_Length=1.4 -XPetal_Width=0.2
+
+java -cp openscoring-client-executable-${version}.jar org.openscoring.client.CsvEvaluator --model http://localhost:8080/openscoring/model/DecisionTreeIris --input input.csv --output output.csv
+
+java -cp openscoring-client-executable-${version}.jar org.openscoring.client.Undeployer --model http://localhost:8080/openscoring/model/DecisionTreeIris
+```
+
+The deployment and undeployment of models can be automated by launching the `org.openscoring.client.DirectoryDeployer` Java application class from the uber-JAR file, which listens for PMML file addition and removal events on the specified directory ("PMML directory watchdog"):
+```
+java -cp openscoring-client-executable-${version}.jar org.openscoring.client.DirectoryDeployer --model-collection http://localhost:8080/openscoring/model --dir pmml
 ```
 
 # REST API #
@@ -533,10 +533,14 @@ Sample response:
 
 # License #
 
-Openscoring is dual-licensed under the [GNU Affero General Public License (AGPL) version 3.0](http://www.gnu.org/licenses/agpl-3.0.html), and a commercial license.
+Openscoring is licensed under the terms and conditions of the [GNU Affero General Public License, Version 3.0](https://www.gnu.org/licenses/agpl-3.0.html).
+For a quick summary of your rights ("Can") and obligations ("Cannot" and "Must") under AGPLv3, please refer to [TLDRLegal](https://tldrlegal.com/license/gnu-affero-general-public-license-v3-(agpl-3.0)).
+
+If you would like to use Openscoring in a proprietary software project, then it is possible to enter into a licensing agreement which makes it available under the terms and conditions of the [BSD 3-Clause License](https://opensource.org/licenses/BSD-3-Clause) instead.
+Please initiate the conversation by submitting the [Request for Quotation](https://openscoring.io/rfq/) web form, or sending an e-mail.
 
 # Additional information #
 
 Openscoring is developed and maintained by Openscoring Ltd, Estonia.
 
-Interested in using Openscoring software in your application? Please contact [info@openscoring.io](mailto:info@openscoring.io)
+Interested in using [Java PMML API](https://github.com/jpmml) or [Openscoring REST API](https://github.com/openscoring) software in your company? Please contact [info@openscoring.io](mailto:info@openscoring.io)
