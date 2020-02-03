@@ -169,7 +169,7 @@ public class ModelUtil {
 
 			return values.stream()
 				.filter(value -> (Value.Property.VALID).equals(value.getProperty()))
-				.map(pmmlValue -> TypeUtil.format(pmmlValue.getValue()))
+				.map(value -> TypeUtil.format(value.getValue()))
 				.collect(Collectors.toList());
 		}
 

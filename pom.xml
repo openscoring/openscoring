@@ -164,22 +164,22 @@
 			<dependency>
 				<groupId>org.eclipse.jetty</groupId>
 				<artifactId>jetty-annotations</artifactId>
-				<version>9.4.20.v20190813</version>
+				<version>9.4.26.v20200117</version>
 			</dependency>
 			<dependency>
 				<groupId>org.eclipse.jetty</groupId>
 				<artifactId>jetty-server</artifactId>
-				<version>9.4.20.v20190813</version>
+				<version>9.4.26.v20200117</version>
 			</dependency>
 			<dependency>
 				<groupId>org.eclipse.jetty</groupId>
 				<artifactId>jetty-servlet</artifactId>
-				<version>9.4.20.v20190813</version>
+				<version>9.4.26.v20200117</version>
 			</dependency>
 			<dependency>
 				<groupId>org.eclipse.jetty</groupId>
 				<artifactId>jetty-webapp</artifactId>
-				<version>9.4.20.v20190813</version>
+				<version>9.4.26.v20200117</version>
 			</dependency>
 
 			<dependency>
@@ -222,38 +222,38 @@
 			<dependency>
 				<groupId>org.jpmml</groupId>
 				<artifactId>pmml-evaluator</artifactId>
-				<version>1.4.12</version>
+				<version>1.4.15</version>
 			</dependency>
 			<dependency>
 				<groupId>org.jpmml</groupId>
 				<artifactId>pmml-evaluator-extension</artifactId>
-				<version>1.4.12</version>
+				<version>1.4.15</version>
 			</dependency>
 
 			<dependency>
 				<groupId>org.jpmml</groupId>
 				<artifactId>pmml-model</artifactId>
-				<version>1.4.14</version>
+				<version>1.4.15</version>
 			</dependency>
 			<dependency>
 				<groupId>org.jpmml</groupId>
 				<artifactId>pmml-model-gwt</artifactId>
-				<version>1.4.14</version>
+				<version>1.4.15</version>
 			</dependency>
 			<dependency>
 				<groupId>org.jpmml</groupId>
 				<artifactId>pmml-model-jackson</artifactId>
-				<version>1.4.14</version>
+				<version>1.4.15</version>
 			</dependency>
 			<dependency>
 				<groupId>org.jpmml</groupId>
 				<artifactId>pmml-model-metro</artifactId>
-				<version>1.4.14</version>
+				<version>1.4.15</version>
 			</dependency>
 			<dependency>
 				<groupId>org.jpmml</groupId>
 				<artifactId>pmml-model-moxy</artifactId>
-				<version>1.4.14</version>
+				<version>1.4.15</version>
 			</dependency>
 
 			<dependency>
