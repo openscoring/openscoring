@@ -83,5 +83,5 @@ public class ModelRef {
 
 	public static final String PATH_VALUE_ID = "{id:" + ModelRef.REGEX_ID + "}";
 
-	private static final String REGEX_ID = "[a-zA-Z0-9][a-zA-Z0-9\\_\\-]*";
+	private static final String REGEX_ID = "[a-zA-Z0-9][a-zA-Z0-9\\-\\.\\_]*";
 }
