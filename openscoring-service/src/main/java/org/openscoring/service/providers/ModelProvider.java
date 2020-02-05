@@ -45,9 +45,11 @@ import javax.xml.transform.stream.StreamResult;
 import com.google.common.hash.Hashing;
 import com.google.common.hash.HashingInputStream;
 import com.google.common.io.CountingInputStream;
+import org.dmg.pmml.Header;
 import org.dmg.pmml.PMML;
 import org.jpmml.evaluator.Evaluator;
 import org.jpmml.evaluator.EvaluatorBuilder;
+import org.jpmml.evaluator.HasModel;
 import org.jpmml.evaluator.HasPMML;
 import org.jpmml.evaluator.LoadingModelEvaluatorBuilder;
 import org.jpmml.evaluator.PMMLException;
@@ -123,6 +125,14 @@ public class ModelProvider implements MessageBodyReader<Model>, MessageBodyWrite
 		Model model = new Model(evaluator);
 		model.putProperty(Model.PROPERTY_FILE_SIZE, countingIs.getCount());
 		model.putProperty(Model.PROPERTY_FILE_MD5SUM, (hashingIs.hash()).toString());
+
+		HasModel<?> hasModel = (HasModel<?>)evaluator;
+
+		PMML pmml = hasModel.getPMML();
+
+		Header header = pmml.getHeader();
+
+		model.putProperty(Model.PROPERTY_MODEL_VERSION, header != null ? header.getModelVersion() : null);
 
 		return model;
 	}
