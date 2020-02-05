@@ -36,6 +36,7 @@ import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.InternalServerErrorException;
+import javax.ws.rs.NotFoundException;
 import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
@@ -68,7 +69,6 @@ import org.openscoring.common.SimpleResponse;
 import org.openscoring.common.TableEvaluationRequest;
 import org.openscoring.common.TableEvaluationResponse;
 import org.openscoring.service.annotations.Endpoint;
-import org.openscoring.service.exceptions.ModelNotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -130,7 +130,9 @@ public class ModelResource {
 	public ModelResponse query(@PathParam("id") ModelRef modelRef){
 		Model model = this.modelRegistry.get(modelRef);
 		if(model == null){
-			throw new ModelNotFoundException(modelRef);
+			logger.error("Not found");
+
+			throw new NotFoundException();
 		}
 
 		return createModelResponse(modelRef.getId(), model, true);
@@ -175,7 +177,9 @@ public class ModelResource {
 		} // End if
 
 		if(!success){
-			throw new InternalServerErrorException("Concurrent modification");
+			logger.error("Concurrent modification");
+
+			throw new InternalServerErrorException();
 		}
 
 		ModelResponse entity = createModelResponse(modelRef.getId(), model, true);
@@ -205,7 +209,9 @@ public class ModelResource {
 	public Model download(@PathParam("id") ModelRef modelRef){
 		Model model = this.modelRegistry.get(modelRef, true);
 		if(model == null){
-			throw new ModelNotFoundException(modelRef);
+			logger.error("Not found");
+
+			throw new NotFoundException();
 		}
 
 		return model;
@@ -300,7 +306,9 @@ public class ModelResource {
 	private List<EvaluationResponse> doEvaluate(ModelRef modelRef, List<EvaluationRequest> requests, boolean allOrNothing){
 		Model model = this.modelRegistry.get(modelRef, true);
 		if(model == null){
-			throw new ModelNotFoundException(modelRef);
+			logger.error("Not found");
+
+			throw new NotFoundException();
 		}
 
 		List<EvaluationResponse> responses = new ArrayList<>();
@@ -377,12 +385,16 @@ public class ModelResource {
 	private SimpleResponse doUndeploy(ModelRef modelRef){
 		Model model = this.modelRegistry.get(modelRef);
 		if(model == null){
-			throw new ModelNotFoundException(modelRef);
+			logger.error("Not found");
+
+			throw new NotFoundException();
 		}
 
 		boolean success = this.modelRegistry.remove(modelRef, model);
 		if(!success){
-			throw new InternalServerErrorException("Concurrent modification");
+			logger.error("Concurrent modification");
+
+			throw new InternalServerErrorException();
 		}
 
 		SimpleResponse response = new SimpleResponse();
