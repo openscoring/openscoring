@@ -116,6 +116,8 @@ java -Djava.util.logging.config.file=logging.properties -jar target/openscoring-
 
 ### Client side
 
+##### Java
+
 Replay the life cycle of a sample `DecisionTreeIris` model (in "REST API", see below) by launching the following Java application classes from the uber-JAR file:
 ```
 java -cp openscoring-client-executable-${version}.jar org.openscoring.client.Deployer --model http://localhost:8080/openscoring/model/DecisionTreeIris --file DecisionTreeIris.pmml
@@ -131,6 +133,14 @@ The deployment and undeployment of models can be automated by launching the `org
 ```
 java -cp openscoring-client-executable-${version}.jar org.openscoring.client.DirectoryDeployer --model-collection http://localhost:8080/openscoring/model --dir pmml
 ```
+
+##### Python
+
+See the [Openscoring-Python](https://github.com/openscoring/openscoring-python) project.
+
+##### R
+
+See the [Openscoring-R](https://github.com/openscoring/openscoring-r) project.
 
 # REST API #
 
