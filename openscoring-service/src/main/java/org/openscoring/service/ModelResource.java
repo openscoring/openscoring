@@ -142,7 +142,7 @@ public class ModelResource {
 	@Path(ModelRef.PATH_VALUE_ID)
 	@Consumes({MediaType.APPLICATION_XML, MediaType.TEXT_XML})
 	@RolesAllowed (
-		value = {"admin"}
+		value = {Roles.ADMIN}
 	)
 	@Endpoint (
 		family = Endpoint.Family.MANAGEMENT
@@ -155,7 +155,7 @@ public class ModelResource {
 	@Path(ModelRef.PATH_VALUE_ID)
 	@Consumes(MediaType.MULTIPART_FORM_DATA)
 	@RolesAllowed (
-		value = {"admin"}
+		value = {Roles.ADMIN}
 	)
 	@Endpoint (
 		family = Endpoint.Family.MANAGEMENT
@@ -201,7 +201,7 @@ public class ModelResource {
 	@Path(ModelRef.PATH_VALUE_ID + "/pmml")
 	@Produces(MediaType.APPLICATION_XML)
 	@RolesAllowed (
-		value = {"admin"}
+		value = {Roles.ADMIN}
 	)
 	@Endpoint (
 		family = Endpoint.Family.MANAGEMENT
@@ -360,7 +360,7 @@ public class ModelResource {
 	@DELETE
 	@Path(ModelRef.PATH_VALUE_ID)
 	@RolesAllowed (
-		value = {"admin"}
+		value = {Roles.ADMIN}
 	)
 	@Endpoint (
 		family = Endpoint.Family.MANAGEMENT
@@ -373,7 +373,7 @@ public class ModelResource {
 	@Path(ModelRef.PATH_VALUE_ID)
 	@Consumes({MediaType.APPLICATION_FORM_URLENCODED, MediaType.MULTIPART_FORM_DATA})
 	@RolesAllowed (
-		value = {"admin"}
+		value = {Roles.ADMIN}
 	)
 	@Endpoint (
 		family = Endpoint.Family.MANAGEMENT

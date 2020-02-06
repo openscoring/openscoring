@@ -23,6 +23,7 @@ import java.security.Principal;
 import javax.servlet.ServletRequest;
 import javax.ws.rs.core.SecurityContext;
 
+import org.openscoring.service.Roles;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -48,7 +49,7 @@ public class NetworkSecurityContext implements SecurityContext {
 	public boolean isUserInRole(String role){
 		ServletRequest request = getRequest();
 
-		if(("admin").equals(role)){
+		if((Roles.ADMIN).equals(role)){
 			String address = null;
 
 			if(request != null){
