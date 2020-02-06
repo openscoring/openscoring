@@ -100,10 +100,10 @@ Copy the sample Typesafe's Config configuration file `openscoring-server/applica
 java -Dconfig.file=application.conf -jar openscoring-server-executable-${version}.jar
 ```
 
-The local configuration overrides the default configuration that is defined in the reference REST web service configuration file `openscoring-service/src/main/reference.conf`. For example, the following local configuration would selectively override the list-valued `networkSecurityContextFilter.trustedAddresses` property (treats any local or remote IP address as a trusted IP address):
+The local configuration overrides the default configuration that is defined in the reference REST web service configuration file `openscoring-service/src/main/reference.conf`. For example, the following local configuration would selectively override the list-valued `networkSecurityContextFilter.adminAddresses` property (treats any local or remote IP address as an admin IP address):
 ```
 networkSecurityContextFilter {
-	trustedAddresses = ["*"]
+	adminAddresses = ["*"]
 }
 ```
 

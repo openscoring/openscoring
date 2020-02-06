@@ -51,16 +51,16 @@ public class NetworkSecurityContextFilter implements ContainerRequestFilter {
 	@Context
 	private HttpServletRequest request = null;
 
-	private Set<String> trustedAddresses = NetworkSecurityContextFilter.localAddresses;
+	private Set<String> adminAddresses = NetworkSecurityContextFilter.localAddresses;
 
 
 	@Inject
 	public NetworkSecurityContextFilter(@Named("openscoring") Config config){
 		Config filterConfig = config.getConfig("networkSecurityContextFilter");
 
-		List<String> trustedAddresses = filterConfig.getStringList("trustedAddresses");
-		if(trustedAddresses.size() > 0){
-			this.trustedAddresses = ImmutableSet.copyOf(trustedAddresses);
+		List<String> adminAddresses = filterConfig.getStringList("adminAddresses");
+		if(adminAddresses.size() > 0){
+			this.adminAddresses = ImmutableSet.copyOf(adminAddresses);
 		}
 	}
 
@@ -68,12 +68,12 @@ public class NetworkSecurityContextFilter implements ContainerRequestFilter {
 	public void filter(ContainerRequestContext requestContext){
 		SecurityContext securityContext = new NetworkSecurityContext(this.request){
 
-			private Set<String> trustedAddresses = NetworkSecurityContextFilter.this.trustedAddresses;
+			private Set<String> adminAddresses = NetworkSecurityContextFilter.this.adminAddresses;
 
 
 			@Override
-			public boolean isTrusted(String address){
-				return (this.trustedAddresses).contains(address) || (this.trustedAddresses).contains("*");
+			public boolean isAdmin(String address){
+				return (this.adminAddresses).contains(address) || (this.adminAddresses).contains("*");
 			}
 		};
 

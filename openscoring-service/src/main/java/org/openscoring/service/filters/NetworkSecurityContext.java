@@ -38,7 +38,7 @@ public class NetworkSecurityContext implements SecurityContext {
 	}
 
 	abstract
-	public boolean isTrusted(String address);
+	public boolean isAdmin(String address);
 
 	@Override
 	public Principal getUserPrincipal(){
@@ -56,7 +56,7 @@ public class NetworkSecurityContext implements SecurityContext {
 				address = request.getRemoteAddr();
 			}
 
-			boolean trusted = isTrusted(address);
+			boolean trusted = isAdmin(address);
 
 			logger.info("Admin role {} to network address {}", (trusted ? "granted" : "denied"), address);
 
