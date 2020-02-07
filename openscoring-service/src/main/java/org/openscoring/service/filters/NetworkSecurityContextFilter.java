@@ -21,8 +21,8 @@ package org.openscoring.service.filters;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.security.Principal;
+import java.util.Collections;
 import java.util.LinkedHashSet;
-import java.util.List;
 import java.util.Set;
 
 import javax.annotation.Priority;
@@ -53,17 +53,21 @@ public class NetworkSecurityContextFilter implements ContainerRequestFilter {
 	@Context
 	private HttpServletRequest request = null;
 
-	private Set<String> adminAddresses = NetworkSecurityContextFilter.localAddresses;
+	private Set<String> adminAddresses = Collections.emptySet();
 
 
 	@Inject
 	public NetworkSecurityContextFilter(@Named("openscoring") Config config){
 		Config filterConfig = config.getConfig("networkSecurityContextFilter");
 
-		List<String> adminAddresses = filterConfig.getStringList("adminAddresses");
-		if(adminAddresses.size() > 0){
-			this.adminAddresses = ImmutableSet.copyOf(adminAddresses);
+		Set<String> adminAddresses = new LinkedHashSet<>();
+		adminAddresses.addAll(filterConfig.getStringList("adminAddresses"));
+
+		if(adminAddresses.remove("localhost")){
+			adminAddresses.addAll(NetworkSecurityContextFilter.localAddresses);
 		}
+
+		this.adminAddresses = ImmutableSet.copyOf(adminAddresses);
 
 		logger.info("Admin network addresses: {}", this.adminAddresses);
 	}
