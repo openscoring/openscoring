@@ -20,6 +20,7 @@ package org.openscoring.service.filters;
 
 import java.io.IOException;
 import java.net.InetAddress;
+import java.security.Principal;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
@@ -38,6 +39,7 @@ import javax.ws.rs.ext.Provider;
 
 import com.google.common.collect.ImmutableSet;
 import com.typesafe.config.Config;
+import org.openscoring.service.Roles;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -62,22 +64,68 @@ public class NetworkSecurityContextFilter implements ContainerRequestFilter {
 		if(adminAddresses.size() > 0){
 			this.adminAddresses = ImmutableSet.copyOf(adminAddresses);
 		}
+
+		logger.info("Admin network addresses: {}", this.adminAddresses);
 	}
 
 	@Override
 	public void filter(ContainerRequestContext requestContext){
-		SecurityContext securityContext = new NetworkSecurityContext(this.request){
+		HttpServletRequest request = getRequest();
 
-			private Set<String> adminAddresses = NetworkSecurityContextFilter.this.adminAddresses;
-
+		SecurityContext securityContext = new SecurityContext(){
 
 			@Override
-			public boolean isAdmin(String address){
-				return (this.adminAddresses).contains(address) || (this.adminAddresses).contains("*");
+			public Principal getUserPrincipal(){
+				return Anonymous.INSTANCE;
+			}
+
+			@Override
+			public boolean isUserInRole(String role){
+				String address = getAddress();
+
+				if((Roles.ADMIN).equals(role)){
+					Set<String> adminAddresses = getAdminAddresses();
+
+					return (adminAddresses).contains(address) || (adminAddresses).contains("*");
+				}
+
+				return false;
+			}
+
+			@Override
+			public boolean isSecure(){
+
+				if(request != null){
+					return request.isSecure();
+				}
+
+				return false;
+			}
+
+			@Override
+			public String getAuthenticationScheme(){
+				return "REMOTE_ADDR";
+			}
+
+			private String getAddress(){
+
+				if(request != null){
+					return request.getRemoteAddr();
+				}
+
+				return null;
 			}
 		};
 
 		requestContext.setSecurityContext(securityContext);
+	}
+
+	private HttpServletRequest getRequest(){
+		return this.request;
+	}
+
+	private Set<String> getAdminAddresses(){
+		return this.adminAddresses;
 	}
 
 	static
