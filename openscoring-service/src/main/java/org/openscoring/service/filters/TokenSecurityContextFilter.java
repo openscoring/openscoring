@@ -24,17 +24,17 @@ import java.security.Principal;
 import java.security.SecureRandom;
 import java.util.Base64;
 import java.util.Base64.Encoder;
+import java.util.Map;
 
 import javax.annotation.Priority;
 import javax.inject.Inject;
 import javax.inject.Named;
-import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Priorities;
 import javax.ws.rs.container.ContainerRequestContext;
 import javax.ws.rs.container.ContainerRequestFilter;
 import javax.ws.rs.container.PreMatching;
-import javax.ws.rs.core.Context;
+import javax.ws.rs.core.Cookie;
+import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.SecurityContext;
 import javax.ws.rs.ext.Provider;
 
@@ -50,9 +50,6 @@ import org.slf4j.LoggerFactory;
 	value = Priorities.AUTHENTICATION
 )
 public class TokenSecurityContextFilter implements ContainerRequestFilter {
-
-	@Context
-	private HttpServletRequest request = null;
 
 	private String adminToken = null;
 
@@ -74,7 +71,7 @@ public class TokenSecurityContextFilter implements ContainerRequestFilter {
 
 	@Override
 	public void filter(ContainerRequestContext requestContext) throws IOException {
-		HttpServletRequest request = getRequest();
+		SecurityContext requestSecurityContext = requestContext.getSecurityContext();
 
 		SecurityContext securityContext = new SecurityContext(){
 
@@ -98,12 +95,7 @@ public class TokenSecurityContextFilter implements ContainerRequestFilter {
 
 			@Override
 			public boolean isSecure(){
-
-				if(request != null){
-					return request.isSecure();
-				}
-
-				return false;
+				return requestSecurityContext != null && requestSecurityContext.isSecure();
 			}
 
 			@Override
@@ -112,23 +104,17 @@ public class TokenSecurityContextFilter implements ContainerRequestFilter {
 			}
 
 			private String getToken(){
+				Map<String, Cookie> cookies = requestContext.getCookies();
+				MultivaluedMap<String, String> headers = requestContext.getHeaders();
 
-				if(request != null){
-					Cookie[] cookies = request.getCookies();
-					if(cookies != null){
+				Cookie tokenCookie = cookies.get("token");
+				if(tokenCookie != null){
+					return tokenCookie.getValue();
+				}
 
-						for(Cookie cookie : cookies){
-
-							if(("token").equals(cookie.getName())){
-								return cookie.getValue();
-							}
-						}
-					}
-
-					String authorizationHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
-					if(authorizationHeader != null && authorizationHeader.startsWith("Bearer ")){
-						return authorizationHeader.substring("Bearer ".length());
-					}
+				String authorizationHeader = headers.getFirst(HttpHeaders.AUTHORIZATION);
+				if(authorizationHeader != null && authorizationHeader.startsWith("Bearer ")){
+					return authorizationHeader.substring("Bearer ".length());
 				}
 
 				return null;
@@ -136,10 +122,6 @@ public class TokenSecurityContextFilter implements ContainerRequestFilter {
 		};
 
 		requestContext.setSecurityContext(securityContext);
-	}
-
-	private HttpServletRequest getRequest(){
-		return this.request;
 	}
 
 	private String getAdminToken(){

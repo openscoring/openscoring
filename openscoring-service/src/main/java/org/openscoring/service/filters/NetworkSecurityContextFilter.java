@@ -76,6 +76,8 @@ public class NetworkSecurityContextFilter implements ContainerRequestFilter {
 	public void filter(ContainerRequestContext requestContext){
 		HttpServletRequest request = getRequest();
 
+		SecurityContext requestSecurityContext = requestContext.getSecurityContext();
+
 		SecurityContext securityContext = new SecurityContext(){
 
 			@Override
@@ -98,12 +100,7 @@ public class NetworkSecurityContextFilter implements ContainerRequestFilter {
 
 			@Override
 			public boolean isSecure(){
-
-				if(request != null){
-					return request.isSecure();
-				}
-
-				return false;
+				return requestSecurityContext != null && requestSecurityContext.isSecure();
 			}
 
 			@Override
@@ -113,11 +110,11 @@ public class NetworkSecurityContextFilter implements ContainerRequestFilter {
 
 			private String getAddress(){
 
-				if(request != null){
-					return request.getRemoteAddr();
+				if(request == null){
+					return null;
 				}
 
-				return null;
+				return request.getRemoteAddr();
 			}
 		};
 
