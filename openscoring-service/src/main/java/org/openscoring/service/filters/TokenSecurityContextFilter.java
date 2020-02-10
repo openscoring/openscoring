@@ -51,6 +51,8 @@ import org.slf4j.LoggerFactory;
 )
 public class TokenSecurityContextFilter implements ContainerRequestFilter {
 
+	private String userToken = null;
+
 	private String adminToken = null;
 
 
@@ -58,14 +60,10 @@ public class TokenSecurityContextFilter implements ContainerRequestFilter {
 	public TokenSecurityContextFilter(@Named("openscoring") Config config){
 		Config filterConfig = config.getConfig("tokenSecurityContextFilter");
 
-		String adminToken = filterConfig.getString("adminToken");
+		this.userToken = prepareToken(filterConfig, "userToken");
+		this.adminToken = prepareToken(filterConfig, "adminToken");
 
-		if((adminToken).equals("random")){
-			adminToken = generateRandomToken(32);
-		}
-
-		this.adminToken = adminToken;
-
+		logger.info("User token: {}", this.userToken);
 		logger.info("Admin token: {}", this.adminToken);
 	}
 
@@ -84,13 +82,20 @@ public class TokenSecurityContextFilter implements ContainerRequestFilter {
 			public boolean isUserInRole(String role){
 				String token = getToken();
 
-				if((Roles.ADMIN).equals(role)){
-					String adminToken = getAdminToken();
+				String roleToken;
 
-					return (adminToken).equals(token);
+				switch(role){
+					case Roles.USER:
+						roleToken = getUserToken();
+						break;
+					case Roles.ADMIN:
+						roleToken = getAdminToken();
+						break;
+					default:
+						return false;
 				}
 
-				return false;
+				return (roleToken).equals(token) || (roleToken).equals("");
 			}
 
 			@Override
@@ -124,8 +129,23 @@ public class TokenSecurityContextFilter implements ContainerRequestFilter {
 		requestContext.setSecurityContext(securityContext);
 	}
 
+	private String getUserToken(){
+		return this.userToken;
+	}
+
 	private String getAdminToken(){
 		return this.adminToken;
+	}
+
+	static
+	private String prepareToken(Config config, String path){
+		String result = config.getString(path);
+
+		if((result).equals("random")){
+			result = generateRandomToken(32);
+		}
+
+		return result;
 	}
 
 	static

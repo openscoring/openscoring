@@ -116,7 +116,7 @@ public class ModelResourceTest extends JerseyTest {
 
 		assertEquals("Iris", extractSuffix(id));
 
-		BatchModelResponse batchModelResponse = queryBatch();
+		BatchModelResponse batchModelResponse = queryBatch(ModelResourceTest.USER_TOKEN);
 
 		List<ModelResponse> modelResponses = batchModelResponse.getResponses();
 
@@ -151,7 +151,7 @@ public class ModelResourceTest extends JerseyTest {
 			}
 		}
 
-		batchModelResponse = queryBatch();
+		batchModelResponse = queryBatch(ModelResourceTest.ADMIN_TOKEN);
 
 		modelResponses = batchModelResponse.getResponses();
 
@@ -174,7 +174,7 @@ public class ModelResourceTest extends JerseyTest {
 		batchRequest = new BatchEvaluationRequest()
 			.setRequests(requests);
 
-		BatchEvaluationResponse batchResponse = evaluateBatch(id, batchRequest);
+		BatchEvaluationResponse batchResponse = evaluateBatch(id, ModelResourceTest.ADMIN_TOKEN, batchRequest);
 
 		assertEquals(batchRequest.getId(), batchResponse.getId());
 
@@ -214,7 +214,7 @@ public class ModelResourceTest extends JerseyTest {
 
 		BatchEvaluationRequest batchRequest = loadRecords(id);
 
-		BatchEvaluationResponse batchResponse = evaluateBatch(id, batchRequest);
+		BatchEvaluationResponse batchResponse = evaluateBatch(id, ModelResourceTest.USER_TOKEN, batchRequest);
 
 		assertEquals(batchRequest.getId(), batchResponse.getId());
 
@@ -225,7 +225,7 @@ public class ModelResourceTest extends JerseyTest {
 		batchRequest = new BatchEvaluationRequest("aggregate")
 			.setRequests(aggregatedRequests);
 
-		batchResponse = evaluateBatch(id, batchRequest);
+		batchResponse = evaluateBatch(id, ModelResourceTest.USER_TOKEN, batchRequest);
 
 		assertEquals(batchRequest.getId(), batchResponse.getId());
 
@@ -314,7 +314,7 @@ public class ModelResourceTest extends JerseyTest {
 
 			response = target("model/" + id)
 				.request(MediaType.APPLICATION_JSON)
-				.header(HttpHeaders.AUTHORIZATION, "Bearer secret")
+				.header(HttpHeaders.AUTHORIZATION, "Bearer " + ModelResourceTest.ADMIN_TOKEN)
 				.put(entity);
 		}
 
@@ -329,7 +329,7 @@ public class ModelResourceTest extends JerseyTest {
 
 		Response response = target("model/" + id)
 			.request(MediaType.APPLICATION_JSON)
-			.header(HttpHeaders.AUTHORIZATION, "Bearer secret")
+			.header(HttpHeaders.AUTHORIZATION, "Bearer " + ModelResourceTest.ADMIN_TOKEN)
 			.put(entity);
 
 		assertEquals(400, response.getStatus());
@@ -350,7 +350,7 @@ public class ModelResourceTest extends JerseyTest {
 			response = target("model/" + id)
 				.queryParam("_method", "PUT")
 				.request(MediaType.APPLICATION_JSON)
-				.header(HttpHeaders.AUTHORIZATION, "Bearer secret")
+				.header(HttpHeaders.AUTHORIZATION, "Bearer " + ModelResourceTest.ADMIN_TOKEN)
 				.post(entity);
 
 			formData.close();
@@ -366,9 +366,10 @@ public class ModelResourceTest extends JerseyTest {
 		return response.readEntity(ModelResponse.class);
 	}
 
-	private BatchModelResponse queryBatch(){
+	private BatchModelResponse queryBatch(String token){
 		Response response = target("model")
 			.request(MediaType.APPLICATION_JSON)
+			.cookie("token", token)
 			.get();
 
 		assertEquals(200, response.getStatus());
@@ -379,6 +380,7 @@ public class ModelResourceTest extends JerseyTest {
 	private ModelResponse query(String id){
 		Response response = target("model/" + id)
 			.request(MediaType.APPLICATION_JSON)
+			.header(HttpHeaders.AUTHORIZATION, "Bearer " + ModelResourceTest.USER_TOKEN)
 			.get();
 
 		assertEquals(200, response.getStatus());
@@ -389,7 +391,7 @@ public class ModelResourceTest extends JerseyTest {
 	private Response download(String id){
 		Response response = target("model/" + id + "/pmml")
 			.request(MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML)
-			.cookie("token", "secret")
+			.cookie("token", ModelResourceTest.ADMIN_TOKEN)
 			.get();
 
 		assertEquals(200, response.getStatus());
@@ -403,7 +405,7 @@ public class ModelResourceTest extends JerseyTest {
 
 		Response response = target("model/" + id)
 			.request(MediaType.APPLICATION_JSON)
-			.header(HttpHeaders.AUTHORIZATION, "Bearer secret")
+			.header(HttpHeaders.AUTHORIZATION, "Bearer " + ModelResourceTest.USER_TOKEN)
 			.post(entity);
 
 		assertEquals(200, response.getStatus());
@@ -411,11 +413,12 @@ public class ModelResourceTest extends JerseyTest {
 		return response.readEntity(EvaluationResponse.class);
 	}
 
-	private BatchEvaluationResponse evaluateBatch(String id, BatchEvaluationRequest batchRequest){
+	private BatchEvaluationResponse evaluateBatch(String id, String token, BatchEvaluationRequest batchRequest){
 		Entity<BatchEvaluationRequest> entity = Entity.json(batchRequest);
 
 		Response response = target("model/" + id + "/batch")
 			.request(MediaType.APPLICATION_JSON)
+			.cookie("token", token)
 			.post(entity);
 
 		assertEquals(200, response.getStatus());
@@ -433,6 +436,7 @@ public class ModelResourceTest extends JerseyTest {
 				.queryParam("delimiterChar", "\\t")
 				.queryParam("quoteChar", "\\\"")
 				.request(MediaType.APPLICATION_JSON, MediaType.TEXT_PLAIN)
+				.header(HttpHeaders.AUTHORIZATION, "Bearer " + ModelResourceTest.USER_TOKEN)
 				.post(entity);
 		}
 
@@ -453,6 +457,7 @@ public class ModelResourceTest extends JerseyTest {
 
 			response = target("model/" + id + "/csv")
 				.request(MediaType.APPLICATION_JSON, MediaType.TEXT_PLAIN)
+				.header(HttpHeaders.AUTHORIZATION, "Bearer " + ModelResourceTest.USER_TOKEN)
 				.post(entity);
 
 			formData.close();
@@ -467,7 +472,7 @@ public class ModelResourceTest extends JerseyTest {
 	private SimpleResponse undeploy(String id){
 		Response response = target("model/" + id)
 			.request(MediaType.APPLICATION_JSON)
-			.header(HttpHeaders.AUTHORIZATION, "Bearer secret")
+			.header(HttpHeaders.AUTHORIZATION, "Bearer " + ModelResourceTest.ADMIN_TOKEN)
 			.delete();
 
 		assertEquals(200, response.getStatus());
@@ -481,7 +486,7 @@ public class ModelResourceTest extends JerseyTest {
 
 		Response response = target("model/" + id)
 			.request(MediaType.APPLICATION_JSON)
-			.header(HttpHeaders.AUTHORIZATION, "Bearer secret")
+			.header(HttpHeaders.AUTHORIZATION, "Bearer " + ModelResourceTest.ADMIN_TOKEN)
 			.header("X-HTTP-Method-Override", "DELETE")
 			.post(entity);
 
@@ -555,6 +560,9 @@ public class ModelResourceTest extends JerseyTest {
 
 		throw new IllegalArgumentException();
 	}
+
+	private static String USER_TOKEN = "little secret";
+	private static String ADMIN_TOKEN = "big secret";
 
 	private static final String CHARSET_UTF_8 = "UTF-8";
 	private static final String CHARSET_ISO_8859_1 = "ISO-8859-1";

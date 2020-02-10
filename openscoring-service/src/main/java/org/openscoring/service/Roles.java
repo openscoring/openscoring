@@ -20,5 +20,13 @@ package org.openscoring.service;
 
 public interface Roles {
 
+	/**
+	 * A role with read-only access.
+	 */
+	String USER = "user";
+
+	/**
+	 * A role with read and write access.
+	 */
 	String ADMIN = "admin";
 }

@@ -53,6 +53,8 @@ public class NetworkSecurityContextFilter implements ContainerRequestFilter {
 	@Context
 	private HttpServletRequest request = null;
 
+	private Set<String> userAddresses = Collections.emptySet();
+
 	private Set<String> adminAddresses = Collections.emptySet();
 
 
@@ -60,15 +62,10 @@ public class NetworkSecurityContextFilter implements ContainerRequestFilter {
 	public NetworkSecurityContextFilter(@Named("openscoring") Config config){
 		Config filterConfig = config.getConfig("networkSecurityContextFilter");
 
-		Set<String> adminAddresses = new LinkedHashSet<>();
-		adminAddresses.addAll(filterConfig.getStringList("adminAddresses"));
+		this.userAddresses = prepareAddresses(filterConfig, "userAddresses");
+		this.adminAddresses = prepareAddresses(filterConfig, "adminAddresses");
 
-		if(adminAddresses.remove("localhost")){
-			adminAddresses.addAll(NetworkSecurityContextFilter.localAddresses);
-		}
-
-		this.adminAddresses = ImmutableSet.copyOf(adminAddresses);
-
+		logger.info("User network addresses: {}", this.userAddresses);
 		logger.info("Admin network addresses: {}", this.adminAddresses);
 	}
 
@@ -89,13 +86,20 @@ public class NetworkSecurityContextFilter implements ContainerRequestFilter {
 			public boolean isUserInRole(String role){
 				String address = getAddress();
 
-				if((Roles.ADMIN).equals(role)){
-					Set<String> adminAddresses = getAdminAddresses();
+				Set<String> roleAddresses;
 
-					return (adminAddresses).contains(address) || (adminAddresses).contains("*");
+				switch(role){
+					case Roles.USER:
+						roleAddresses = getUserAddresses();
+						break;
+					case Roles.ADMIN:
+						roleAddresses = getAdminAddresses();
+						break;
+					default:
+						return false;
 				}
 
-				return false;
+				return (roleAddresses).contains(address) || (roleAddresses).contains("*");
 			}
 
 			@Override
@@ -125,8 +129,24 @@ public class NetworkSecurityContextFilter implements ContainerRequestFilter {
 		return this.request;
 	}
 
+	private Set<String> getUserAddresses(){
+		return this.userAddresses;
+	}
+
 	private Set<String> getAdminAddresses(){
 		return this.adminAddresses;
+	}
+
+	static
+	private Set<String> prepareAddresses(Config config, String path){
+		Set<String> result = new LinkedHashSet<>();
+		result.addAll(config.getStringList(path));
+
+		if(result.remove("localhost")){
+			result.addAll(NetworkSecurityContextFilter.localAddresses);
+		}
+
+		return ImmutableSet.copyOf(result);
 	}
 
 	static

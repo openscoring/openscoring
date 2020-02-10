@@ -28,7 +28,6 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.annotation.security.PermitAll;
 import javax.annotation.security.RolesAllowed;
 import javax.inject.Inject;
 import javax.ws.rs.BadRequestException;
@@ -75,7 +74,9 @@ import org.slf4j.LoggerFactory;
 @Path("model")
 @Consumes(MediaType.APPLICATION_JSON)
 @Produces(MediaType.APPLICATION_JSON)
-@PermitAll
+@RolesAllowed (
+	value = {Roles.USER, Roles.ADMIN}
+)
 public class ModelResource {
 
 	@Context
