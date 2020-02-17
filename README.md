@@ -29,6 +29,8 @@ REST web service for scoring PMML models.
         * [POST /model/${id}/csv](#post-modelidcsv)
     + [Model undeployment](#model-undeployment)
         * [DELETE /model/${id}](#delete-modelid)
+- [Documentation](#documentation)
+- [Support](#support)
 - [License](#license)
 - [Additional information](#additional-information)
 
@@ -474,6 +476,14 @@ Sample cURL invocation that employs the `_method` query parameter:
 ```
 curl -X POST http://localhost:8080/openscoring/model/DecisionTreeIris?_method=DELETE
 ```
+
+# Documentation #
+
+* [Deploying Apache Spark ML pipeline models on Openscoring REST web service](https://openscoring.io/blog/2020/02/16/deploying_sparkml_pipeline_openscoring_rest/)
+
+# Support #
+
+Limited public support is available via the [JPMML mailing list](https://groups.google.com/forum/#!forum/jpmml).
 
 # License #
 
