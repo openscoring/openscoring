@@ -52,7 +52,6 @@ import org.jpmml.evaluator.EvaluatorBuilder;
 import org.jpmml.evaluator.HasModel;
 import org.jpmml.evaluator.HasPMML;
 import org.jpmml.evaluator.LoadingModelEvaluatorBuilder;
-import org.jpmml.evaluator.PMMLException;
 import org.jpmml.model.JAXBUtil;
 import org.openscoring.service.Model;
 import org.slf4j.Logger;
@@ -104,7 +103,7 @@ public class ModelProvider implements MessageBodyReader<Model>, MessageBodyWrite
 			logger.error("Failed to load the PMML document", e);
 
 			throw new BadRequestException(e);
-		} catch(PMMLException pe){
+		} catch(/*PMML*/Exception pe){
 			logger.error("Failed to find a scorable model element", pe);
 
 			throw new BadRequestException(pe);
@@ -116,7 +115,7 @@ public class ModelProvider implements MessageBodyReader<Model>, MessageBodyWrite
 			evaluator = evaluatorBuilder.build();
 
 			evaluator.verify();
-		} catch(PMMLException pe){
+		} catch(/*PMML*/Exception pe){
 			logger.error("Failed to build a model evaluator", pe);
 
 			throw new BadRequestException(pe);

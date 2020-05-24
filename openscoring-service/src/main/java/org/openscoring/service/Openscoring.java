@@ -46,7 +46,7 @@ import org.jpmml.evaluator.OutputFilters;
 import org.jpmml.evaluator.ResultMapper;
 import org.jpmml.evaluator.ValueFactoryFactory;
 import org.jpmml.model.JAXBUtil;
-import org.jpmml.model.VisitorBattery;
+import org.jpmml.model.visitors.VisitorBattery;
 import org.openscoring.common.ModelResponse;
 import org.openscoring.common.providers.ObjectMapperProvider;
 import org.openscoring.service.filters.ApplicationHeaderFilter;
