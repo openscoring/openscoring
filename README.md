@@ -1,4 +1,4 @@
-Openscoring [![Build Status](https://travis-ci.org/openscoring/openscoring.png?branch=master)](https://travis-ci.org/openscoring/openscoring)
+Openscoring [![Build Status](https://github.com/openscoring/openscoring/workflows/maven/badge.svg)](https://github.com/openscoring/openscoring/actions?query=workflow%3A%22maven%22)
 ===========
 
 REST web service for scoring PMML models.
