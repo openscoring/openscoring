@@ -59,11 +59,11 @@ Openscoring client and server uber-JAR files are distributed via the [GitHub rel
 
 This README file corresponds to latest source code snapshot. In order to follow its instructions as closely as possible, it's recommended to download the latest binary release.
 
-The current version is **2.0.3** (8 November, 2020):
+The current version is **2.0.4** (20 December, 2020):
 
-* [openscoring-client-executable-2.0.3.jar](https://github.com/openscoring/openscoring/releases/download/2.0.3/openscoring-client-executable-2.0.3.jar)
-* [openscoring-server-executable-2.0.3.jar](https://github.com/openscoring/openscoring/releases/download/2.0.3/openscoring-server-executable-2.0.3.jar)
-* [openscoring-webapp-2.0.3.war](https://search.maven.org/remotecontent?filepath=org/openscoring/openscoring-webapp/2.0.3/openscoring-webapp-2.0.3.war)
+* [openscoring-client-executable-2.0.4.jar](https://github.com/openscoring/openscoring/releases/download/2.0.4/openscoring-client-executable-2.0.4.jar)
+* [openscoring-server-executable-2.0.4.jar](https://github.com/openscoring/openscoring/releases/download/2.0.4/openscoring-server-executable-2.0.4.jar)
+* [openscoring-webapp-2.0.4.war](https://search.maven.org/remotecontent?filepath=org/openscoring/openscoring-webapp/2.0.4/openscoring-webapp-2.0.4.war)
 
 ### Source code snapshot
 
