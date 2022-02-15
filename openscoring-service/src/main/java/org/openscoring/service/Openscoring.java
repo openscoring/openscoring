@@ -22,14 +22,13 @@ import java.io.IOException;
 import java.lang.reflect.Method;
 import java.util.List;
 
-import javax.xml.bind.ValidationEvent;
-import javax.xml.bind.ValidationEventHandler;
 import javax.xml.validation.Schema;
 
 import com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider;
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
-import org.dmg.pmml.FieldName;
+import jakarta.xml.bind.ValidationEvent;
+import jakarta.xml.bind.ValidationEventHandler;
 import org.dmg.pmml.Visitor;
 import org.glassfish.hk2.utilities.Binder;
 import org.glassfish.hk2.utilities.binding.AbstractBinder;
@@ -197,15 +196,12 @@ public class Openscoring extends ResourceConfig {
 		// Jackson does not support the JSON serialization of <code>null</code> map keys
 		ResultMapper resultMapper = new ResultMapper(){
 
-			private FieldName defaultTargetName = FieldName.create(ModelResponse.DEFAULT_TARGET_NAME);
-
-
 			@Override
-			public FieldName apply(FieldName name){
+			public String apply(String name){
 
 				// A "phantom" default target field
 				if(name == null){
-					return this.defaultTargetName;
+					return ModelResponse.DEFAULT_TARGET_NAME;
 				}
 
 				return name;

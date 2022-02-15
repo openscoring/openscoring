@@ -27,16 +27,6 @@
 		<dependency>
 			<groupId>org.openscoring</groupId>
 			<artifactId>openscoring-service</artifactId>
-			<exclusions>
-				<exclusion>
-					<groupId>org.jpmml</groupId>
-					<artifactId>pmml-model-metro</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>org.jpmml</groupId>
-					<artifactId>pmml-model-moxy</artifactId>
-				</exclusion>
-			</exclusions>
 		</dependency>
 
 		<dependency>

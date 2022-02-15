@@ -26,7 +26,6 @@ import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import org.dmg.pmml.FieldName;
 import org.dmg.pmml.HasContinuousDomain;
 import org.dmg.pmml.HasDiscreteDomain;
 import org.dmg.pmml.Interval;
@@ -94,9 +93,9 @@ public class ModelUtil {
 			public Field apply(ModelField modelField){
 				org.dmg.pmml.Field<?> pmmlField = modelField.getField();
 
-				FieldName name = modelField.getName();
+				String fieldName = modelField.getName();
 
-				Field field = new Field(name.getValue());
+				Field field = new Field(fieldName);
 				field.setName(modelField.getDisplayName());
 				field.setOpType(modelField.getOpType());
 				field.setDataType(modelField.getDataType());

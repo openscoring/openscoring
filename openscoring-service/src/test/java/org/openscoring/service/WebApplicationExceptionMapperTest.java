@@ -25,8 +25,8 @@ import javax.ws.rs.BadRequestException;
 import javax.ws.rs.NotFoundException;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;
-import javax.xml.bind.UnmarshalException;
 
+import jakarta.xml.bind.UnmarshalException;
 import org.junit.Test;
 import org.openscoring.common.SimpleResponse;
 

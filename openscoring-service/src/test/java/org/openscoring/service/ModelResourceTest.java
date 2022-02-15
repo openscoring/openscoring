@@ -37,7 +37,6 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import org.dmg.pmml.DataType;
-import org.dmg.pmml.FieldName;
 import org.dmg.pmml.OpType;
 import org.glassfish.jersey.client.ClientConfig;
 import org.glassfish.jersey.media.multipart.FormDataBodyPart;
@@ -220,7 +219,7 @@ public class ModelResourceTest extends JerseyTest {
 
 		List<EvaluationRequest> requests = batchRequest.getRequests();
 
-		List<EvaluationRequest> aggregatedRequests = ModelResource.aggregateRequests(FieldName.create("transaction"), requests);
+		List<EvaluationRequest> aggregatedRequests = ModelResource.aggregateRequests("transaction", requests);
 
 		batchRequest = new BatchEvaluationRequest("aggregate")
 			.setRequests(aggregatedRequests);

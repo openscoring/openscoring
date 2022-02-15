@@ -50,7 +50,6 @@ import javax.ws.rs.core.UriInfo;
 
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.ListMultimap;
-import org.dmg.pmml.FieldName;
 import org.glassfish.jersey.media.multipart.FormDataParam;
 import org.jpmml.evaluator.EvaluationException;
 import org.jpmml.evaluator.Evaluator;
@@ -404,17 +403,15 @@ public class ModelResource {
 	}
 
 	static
-	protected List<EvaluationRequest> aggregateRequests(FieldName groupName, List<EvaluationRequest> requests){
+	protected List<EvaluationRequest> aggregateRequests(String groupName, List<EvaluationRequest> requests){
 		Map<Object, ListMultimap<String, Object>> groupedArguments = new LinkedHashMap<>();
-
-		String key = groupName.getValue();
 
 		for(EvaluationRequest request : requests){
 			Map<String, ?> requestArguments = request.getArguments();
 
-			Object value = requestArguments.get(key);
-			if(value == null && !requestArguments.containsKey(key)){
-				logger.warn("Evaluation request {} does not specify a group field {}", request.getId(), key);
+			Object value = requestArguments.get(groupName);
+			if(value == null && !requestArguments.containsKey(groupName)){
+				logger.warn("Evaluation request {} does not specify a group field {}", request.getId(), groupName);
 			}
 
 			ListMultimap<String, Object> groupedArgumentMap = groupedArguments.get(value);
@@ -443,7 +440,7 @@ public class ModelResource {
 			arguments.putAll((entry.getValue()).asMap());
 
 			// The value of the "group by" column is a single Object, not a Collection (ie. java.util.List) of Objects
-			arguments.put(key, entry.getKey());
+			arguments.put(groupName, entry.getKey());
 
 			EvaluationRequest resultRequest = new EvaluationRequest()
 				.setArguments(arguments);
@@ -462,17 +459,15 @@ public class ModelResource {
 
 		EvaluationResponse response = new EvaluationResponse(request.getId());
 
-		Map<FieldName, FieldValue> arguments = new LinkedHashMap<>();
+		Map<String, FieldValue> arguments = new LinkedHashMap<>();
 
 		List<InputField> inputFields = evaluator.getInputFields();
 		for(InputField inputField : inputFields){
-			FieldName inputName = inputField.getName();
+			String inputName = inputField.getName();
 
-			String key = inputName.getValue();
-
-			Object value = requestArguments.get(key);
-			if(value == null && !requestArguments.containsKey(key)){
-				logger.warn("Evaluation request {} does not specify an input field {}", request.getId(), key);
+			Object value = requestArguments.get(inputName);
+			if(value == null && !requestArguments.containsKey(inputName)){
+				logger.warn("Evaluation request {} does not specify an input field {}", request.getId(), inputName);
 			}
 
 			FieldValue inputValue = inputField.prepare(value);
@@ -482,7 +477,7 @@ public class ModelResource {
 
 		logger.debug("Evaluation request {} has prepared arguments: {}", request.getId(), arguments);
 
-		Map<FieldName, ?> results = evaluator.evaluate(arguments);
+		Map<String, ?> results = evaluator.evaluate(arguments);
 
 		logger.debug("Evaluation response {} has result: {}", response.getId(), results);
 
