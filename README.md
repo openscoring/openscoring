@@ -59,11 +59,11 @@ Openscoring client and server uber-JAR files are distributed via the [GitHub rel
 
 This README file corresponds to latest source code snapshot. In order to follow its instructions as closely as possible, it's recommended to download the latest binary release.
 
-The current version is **2.0.4** (20 December, 2020):
+The current version is **2.0.5** (23 October, 2021):
 
-* [openscoring-client-executable-2.0.4.jar](https://github.com/openscoring/openscoring/releases/download/2.0.4/openscoring-client-executable-2.0.4.jar)
-* [openscoring-server-executable-2.0.4.jar](https://github.com/openscoring/openscoring/releases/download/2.0.4/openscoring-server-executable-2.0.4.jar)
-* [openscoring-webapp-2.0.4.war](https://search.maven.org/remotecontent?filepath=org/openscoring/openscoring-webapp/2.0.4/openscoring-webapp-2.0.4.war)
+* [openscoring-client-executable-2.0.5.jar](https://github.com/openscoring/openscoring/releases/download/2.0.5/openscoring-client-executable-2.0.5.jar)
+* [openscoring-server-executable-2.0.5.jar](https://github.com/openscoring/openscoring/releases/download/2.0.5/openscoring-server-executable-2.0.5.jar)
+* [openscoring-webapp-2.0.5.war](https://search.maven.org/remotecontent?filepath=org/openscoring/openscoring-webapp/2.0.5/openscoring-webapp-2.0.5.war)
 
 ### Source code snapshot
 
@@ -74,9 +74,9 @@ mvn clean install
 
 The build produces two uber-JAR files and a WAR file:
 
-* `openscoring-client/target/openscoring-client-executable-2.0-SNAPSHOT.jar`
-* `openscoring-server/target/openscoring-server-executable-2.0-SNAPSHOT.jar`
-* `openscoring-webapp/target/openscoring-webapp-2.0-SNAPSHOT.war`
+* `openscoring-client/target/openscoring-client-executable-2.1-SNAPSHOT.jar`
+* `openscoring-server/target/openscoring-server-executable-2.1-SNAPSHOT.jar`
+* `openscoring-webapp/target/openscoring-webapp-2.1-SNAPSHOT.war`
 
 # Usage #
 
