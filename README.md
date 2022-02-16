@@ -49,7 +49,7 @@ REST web service for scoring PMML models.
 
 # Prerequisites #
 
-* Java 1.8 or newer.
+* Java 11 or newer.
 
 # Installation #
 
