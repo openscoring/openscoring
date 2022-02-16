@@ -24,14 +24,11 @@ import java.net.InetSocketAddress;
 import com.beust.jcommander.JCommander;
 import com.beust.jcommander.Parameter;
 import com.beust.jcommander.ParameterException;
-import org.eclipse.jetty.annotations.AnnotationConfiguration;
 import org.eclipse.jetty.server.Handler;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.handler.ContextHandlerCollection;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
-import org.eclipse.jetty.webapp.Configuration;
-import org.eclipse.jetty.webapp.JettyWebXmlConfiguration;
 import org.eclipse.jetty.webapp.WebAppContext;
 import org.glassfish.jersey.servlet.ServletContainer;
 import org.openscoring.service.Openscoring;
@@ -143,9 +140,6 @@ public class Main {
 
 	private Server createServer(InetSocketAddress address) throws Exception {
 		Server server = new Server(address);
-
-		Configuration.ClassList classList = Configuration.ClassList.setServerDefault(server);
-		classList.addBefore(JettyWebXmlConfiguration.class.getName(), AnnotationConfiguration.class.getName());
 
 		ContextHandlerCollection handlerCollection = new ContextHandlerCollection();
 
