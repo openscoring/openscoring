@@ -18,12 +18,11 @@
  */
 package org.openscoring.client;
 
-import javax.ws.rs.client.Client;
-import javax.ws.rs.client.ClientBuilder;
-import javax.ws.rs.client.WebTarget;
-
 import com.beust.jcommander.Parameter;
-import com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider;
+import com.fasterxml.jackson.jakarta.rs.json.JacksonJsonProvider;
+import jakarta.ws.rs.client.Client;
+import jakarta.ws.rs.client.ClientBuilder;
+import jakarta.ws.rs.client.WebTarget;
 import org.glassfish.jersey.client.ClientConfig;
 import org.openscoring.common.SimpleResponse;
 import org.openscoring.common.providers.ObjectMapperProvider;

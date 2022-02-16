@@ -24,7 +24,7 @@ import java.util.List;
 
 import javax.xml.validation.Schema;
 
-import com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider;
+import com.fasterxml.jackson.jakarta.rs.json.JacksonJsonProvider;
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
 import jakarta.xml.bind.ValidationEvent;

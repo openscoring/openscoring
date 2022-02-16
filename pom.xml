@@ -100,14 +100,19 @@
 			<dependency>
 				<groupId>com.fasterxml.jackson.core</groupId>
 				<artifactId>jackson-annotations</artifactId>
-				<version>2.12.5</version>
+				<version>2.13.1</version>
+			</dependency>
+			<dependency>
+				<groupId>com.fasterxml.jackson.core</groupId>
+				<artifactId>jackson-databind</artifactId>
+				<version>2.13.1</version>
 			</dependency>
 
 			<!-- Inherited from org.glassfish.jersey:project dependency -->
 			<dependency>
-				<groupId>com.fasterxml.jackson.jaxrs</groupId>
-				<artifactId>jackson-jaxrs-json-provider</artifactId>
-				<version>2.12.2</version>
+				<groupId>com.fasterxml.jackson.jakarta.rs</groupId>
+				<artifactId>jackson-jakarta-rs-json-provider</artifactId>
+				<version>2.13.1</version>
 			</dependency>
 
 			<!-- Inherited from org.jpmml:pmml-evaluator dependency -->
@@ -124,9 +129,10 @@
 			</dependency>
 
 			<dependency>
-				<groupId>jakarta.xml.bind</groupId>
-				<artifactId>jakarta.xml.bind-api</artifactId>
-				<version>3.0.1</version>
+				<groupId>jakarta.servlet</groupId>
+				<artifactId>jakarta.servlet-api</artifactId>
+				<version>5.0.0</version>
+				<scope>provided</scope>
 				<exclusions>
 					<exclusion>
 						<groupId>*</groupId>
@@ -136,9 +142,15 @@
 			</dependency>
 
 			<dependency>
-				<groupId>javax.servlet</groupId>
-				<artifactId>javax.servlet-api</artifactId>
-				<version>3.1.0</version>
+				<groupId>jakarta.ws.rs</groupId>
+				<artifactId>jakarta.ws.rs-api</artifactId>
+				<version>3.0.0</version>
+			</dependency>
+
+			<dependency>
+				<groupId>jakarta.xml.bind</groupId>
+				<artifactId>jakarta.xml.bind-api</artifactId>
+				<version>3.0.1</version>
 			</dependency>
 
 			<dependency>
@@ -177,38 +189,32 @@
 			<dependency>
 				<groupId>org.glassfish.jersey.containers</groupId>
 				<artifactId>jersey-container-servlet</artifactId>
-				<version>2.35</version>
+				<version>3.0.4</version>
 			</dependency>
 			<dependency>
 				<groupId>org.glassfish.jersey.core</groupId>
 				<artifactId>jersey-client</artifactId>
-				<version>2.35</version>
+				<version>3.0.4</version>
 			</dependency>
 			<dependency>
 				<groupId>org.glassfish.jersey.core</groupId>
 				<artifactId>jersey-server</artifactId>
-				<version>2.35</version>
+				<version>3.0.4</version>
 			</dependency>
 			<dependency>
 				<groupId>org.glassfish.jersey.inject</groupId>
 				<artifactId>jersey-hk2</artifactId>
-				<version>2.35</version>
-				<exclusions>
-					<exclusion>
-						<groupId>javax.inject</groupId>
-						<artifactId>javax.inject</artifactId>
-					</exclusion>
-				</exclusions>
+				<version>3.0.4</version>
 			</dependency>
 			<dependency>
 				<groupId>org.glassfish.jersey.media</groupId>
 				<artifactId>jersey-media-json-jackson</artifactId>
-				<version>2.35</version>
+				<version>3.0.4</version>
 			</dependency>
 			<dependency>
 				<groupId>org.glassfish.jersey.media</groupId>
 				<artifactId>jersey-media-multipart</artifactId>
-				<version>2.35</version>
+				<version>3.0.4</version>
 			</dependency>
 
 			<dependency>
@@ -246,6 +252,12 @@
 				<groupId>org.jpmml</groupId>
 				<artifactId>pmml-model-jackson</artifactId>
 				<version>1.6.2</version>
+				<exclusions>
+					<exclusion>
+						<groupId>com.fasterxml.jackson.core</groupId>
+						<artifactId>jackson-databind</artifactId>
+					</exclusion>
+				</exclusions>
 			</dependency>
 			<dependency>
 				<groupId>org.jpmml</groupId>
@@ -279,13 +291,13 @@
 			<dependency>
 				<groupId>org.glassfish.jersey.test-framework</groupId>
 				<artifactId>jersey-test-framework-core</artifactId>
-				<version>2.35</version>
+				<version>3.0.4</version>
 				<scope>test</scope>
 			</dependency>
 			<dependency>
 				<groupId>org.glassfish.jersey.test-framework.providers</groupId>
 				<artifactId>jersey-test-framework-provider-jdk-http</artifactId>
-				<version>2.35</version>
+				<version>3.0.4</version>
 				<scope>test</scope>
 			</dependency>
 		</dependencies>

@@ -18,9 +18,8 @@
  */
 package org.openscoring.service.providers;
 
-import javax.ws.rs.core.SecurityContext;
-import javax.ws.rs.ext.ParamConverter;
-
+import jakarta.ws.rs.core.SecurityContext;
+import jakarta.ws.rs.ext.ParamConverter;
 import org.openscoring.service.ModelRef;
 
 public class ModelRefConverter implements ParamConverter<ModelRef> {

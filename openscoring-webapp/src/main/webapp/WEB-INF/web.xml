@@ -5,7 +5,7 @@
 		<servlet-name>Openscoring</servlet-name>
 		<servlet-class>org.glassfish.jersey.servlet.ServletContainer</servlet-class>
 		<init-param>
-			<param-name>javax.ws.rs.Application</param-name>
+			<param-name>jakarta.ws.rs.Application</param-name>
 			<param-value>org.openscoring.service.Openscoring</param-value>
 		</init-param>
 	</servlet>

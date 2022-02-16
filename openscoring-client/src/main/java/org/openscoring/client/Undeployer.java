@@ -18,11 +18,10 @@
  */
 package org.openscoring.client;
 
-import javax.ws.rs.client.Invocation;
-import javax.ws.rs.client.WebTarget;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-
+import jakarta.ws.rs.client.Invocation;
+import jakarta.ws.rs.client.WebTarget;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
 import org.openscoring.common.SimpleResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

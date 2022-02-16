@@ -18,7 +18,7 @@
  */
 package org.openscoring.client;
 
-import javax.ws.rs.client.WebTarget;
+import jakarta.ws.rs.client.WebTarget;
 
 public interface Operation<V> {
 

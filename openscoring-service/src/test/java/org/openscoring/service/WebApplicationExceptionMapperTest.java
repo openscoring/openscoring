@@ -21,11 +21,10 @@ package org.openscoring.service;
 import java.io.EOFException;
 import java.io.IOException;
 
-import javax.ws.rs.BadRequestException;
-import javax.ws.rs.NotFoundException;
-import javax.ws.rs.WebApplicationException;
-import javax.ws.rs.core.Response;
-
+import jakarta.ws.rs.BadRequestException;
+import jakarta.ws.rs.NotFoundException;
+import jakarta.ws.rs.WebApplicationException;
+import jakarta.ws.rs.core.Response;
 import jakarta.xml.bind.UnmarshalException;
 import org.junit.Test;
 import org.openscoring.common.SimpleResponse;

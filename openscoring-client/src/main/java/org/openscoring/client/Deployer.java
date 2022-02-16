@@ -26,14 +26,13 @@ import java.util.Arrays;
 import java.util.Locale;
 import java.util.zip.GZIPInputStream;
 
-import javax.ws.rs.client.Entity;
-import javax.ws.rs.client.Invocation;
-import javax.ws.rs.client.WebTarget;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.Variant;
-
 import com.beust.jcommander.Parameter;
+import jakarta.ws.rs.client.Entity;
+import jakarta.ws.rs.client.Invocation;
+import jakarta.ws.rs.client.WebTarget;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
+import jakarta.ws.rs.core.Variant;
 import org.openscoring.common.ModelResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
