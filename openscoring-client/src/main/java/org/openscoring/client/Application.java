@@ -18,6 +18,8 @@
  */
 package org.openscoring.client;
 
+import java.lang.reflect.Constructor;
+
 import com.beust.jcommander.JCommander;
 import com.beust.jcommander.Parameter;
 import com.beust.jcommander.ParameterException;
@@ -42,7 +44,9 @@ public class Application {
 
 	static
 	public void run(Class<? extends Application> clazz, String... args) throws Exception {
-		Application application = clazz.newInstance();
+		Constructor<? extends Application> constructor = clazz.getDeclaredConstructor();
+
+		Application application = constructor.newInstance();
 
 		JCommander commander = new JCommander(application);
 		commander.setProgramName(clazz.getName());

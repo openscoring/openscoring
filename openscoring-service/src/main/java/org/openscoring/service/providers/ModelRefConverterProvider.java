@@ -34,14 +34,14 @@ public class ModelRefConverterProvider implements ParamConverterProvider {
 	@Context
 	private SecurityContext securityContext = null;
 
-
+	@SuppressWarnings("unchecked")
 	@Override
 	public <T> ParamConverter<T> getConverter(Class<T> rawType, Type genericType, Annotation annotations[]){
 
 		if((ModelRef.class).equals(rawType)){
 			ParamConverter<ModelRef> paramConverter = new ModelRefConverter(getSecurityContext());
 
-			return (ParamConverter)paramConverter;
+			return (ParamConverter<T>)paramConverter;
 		}
 
 		return null;

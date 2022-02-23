@@ -19,6 +19,7 @@
 package org.openscoring.server;
 
 import java.io.File;
+import java.lang.reflect.Constructor;
 import java.net.InetSocketAddress;
 
 import com.beust.jcommander.JCommander;
@@ -88,7 +89,9 @@ public class Main {
 
 	static
 	public void execute(Class<? extends Main> clazz, String... args) throws Exception {
-		Main main = clazz.newInstance();
+		Constructor<? extends Main> constructor = clazz.getDeclaredConstructor();
+
+		Main main = constructor.newInstance();
 
 		JCommander commander = new JCommander(main);
 		commander.setProgramName(clazz.getName());
@@ -161,7 +164,9 @@ public class Main {
 
 		Class<? extends Openscoring> openscoringClazz = (applicationClazz).asSubclass(Openscoring.class);
 
-		Openscoring application = openscoringClazz.newInstance();
+		Constructor<? extends Openscoring> openscoringConstructor = openscoringClazz.getDeclaredConstructor();
+
+		Openscoring application = openscoringConstructor.newInstance();
 
 		ServletContainer jerseyServlet = new ServletContainer(application);
 

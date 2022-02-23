@@ -98,13 +98,14 @@ public class DirectoryDeployer extends Application {
 		}
 	}
 
+	@SuppressWarnings({"rawtypes", "unchecked"})
 	private void processKey(WatchKey key, Path root) throws Exception {
 
-		List<WatchEvent<?>> events = key.pollEvents();
-		for(WatchEvent<?> event : events){
-			Path child = root.resolve((Path)event.context());
+		List<WatchEvent<Path>> events = (List)key.pollEvents();
+		for(WatchEvent<Path> event : events){
+			Path child = root.resolve(event.context());
 
-			process((WatchEvent.Kind<Path>)event.kind(), child);
+			process(event.kind(), child);
 		}
 	}
 

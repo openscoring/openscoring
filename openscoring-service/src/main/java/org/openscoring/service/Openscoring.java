@@ -19,6 +19,7 @@
 package org.openscoring.service;
 
 import java.io.IOException;
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.util.List;
 
@@ -298,7 +299,9 @@ public class Openscoring extends ResourceConfig {
 
 				return clazz.cast(result);
 			} catch(NoSuchMethodException nsme){
-				return clazz.newInstance();
+				Constructor<? extends E> constructor = clazz.getDeclaredConstructor();
+
+				return constructor.newInstance();
 			}
 		} catch(ReflectiveOperationException roe){
 			throw new IllegalArgumentException(roe);

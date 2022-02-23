@@ -174,6 +174,7 @@ public class CsvUtil {
 		return tableRequest;
 	}
 
+	@SuppressWarnings({"rawtypes", "unchecked"})
 	static
 	public void writeTable(TableEvaluationResponse tableResponse, BufferedWriter writer, CsvPreference format) throws IOException {
 		CsvMapWriter formatter = new CsvMapWriter(writer, format);

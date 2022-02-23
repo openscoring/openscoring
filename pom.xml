@@ -265,6 +265,8 @@
 				<version>3.10.0</version>
 				<configuration>
 					<release>11</release>
+					<showDeprecation>true</showDeprecation>
+					<showWarnings>true</showWarnings>
 				</configuration>
 			</plugin>
 			<plugin>
