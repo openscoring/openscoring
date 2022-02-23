@@ -101,7 +101,7 @@ public class Model {
 	public static final String PROPERTY_ACCESSED_TIMESTAMP = "accessed.timestamp";
 
 	public static final String PROPERTY_FILE_SIZE = "file.size";
-	public static final String PROPERTY_FILE_MD5SUM = "file.md5sum";
+	public static final String PROPERTY_FILE_CHECKSUM = "file.checksum";
 
 	public static final String PROPERTY_MODEL_VERSION = "model.version";
 }

@@ -92,7 +92,7 @@ public class ModelProvider implements MessageBodyReader<Model>, MessageBodyWrite
 
 		CountingInputStream countingIs = new CountingInputStream(entityStream);
 
-		HashingInputStream hashingIs = new HashingInputStream(Hashing.md5(), countingIs);
+		HashingInputStream hashingIs = new HashingInputStream(Hashing.sha256(), countingIs);
 
 		EvaluatorBuilder evaluatorBuilder;
 
@@ -123,7 +123,7 @@ public class ModelProvider implements MessageBodyReader<Model>, MessageBodyWrite
 
 		Model model = new Model(evaluator);
 		model.putProperty(Model.PROPERTY_FILE_SIZE, countingIs.getCount());
-		model.putProperty(Model.PROPERTY_FILE_MD5SUM, (hashingIs.hash()).toString());
+		model.putProperty(Model.PROPERTY_FILE_CHECKSUM, (hashingIs.hash()).toString());
 
 		HasModel<?> hasModel = (HasModel<?>)evaluator;
 

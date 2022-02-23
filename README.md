@@ -246,7 +246,7 @@ Sample response:
 		"created.timestamp" : "2015-03-17T12:41:35.933+0000",
 		"accessed.timestamp" : "2015-03-21T09:35:58.582+0000",
 		"file.size" : 4306,
-		"file.md5sum" : "2d4698076ed807308c5ae40563b70345"
+		"file.checksum" : "e92855ed6575b75b10cc376f6a7df151d24b1793f1a034f53d9128c0aac9bb07"
 	},
 	"schema" : {
 		"inputFields" : [
