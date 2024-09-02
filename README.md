@@ -480,6 +480,8 @@ curl -X POST http://localhost:8080/openscoring/model/DecisionTreeIris?_method=DE
 # Documentation #
 
 * [Deploying Apache Spark ML pipeline models on Openscoring REST web service](https://openscoring.io/blog/2020/02/16/deploying_sparkml_pipeline_openscoring_rest/)
+* [Using Apache Spark ML pipeline models for real-time prediction: the Openscoring REST web service approach](https://openscoring.io/blog/2016/07/04/sparkml_realtime_prediction_rest_approach/)
+* [Applying ML models to database data: the REST web service approach"](https://openscoring.io/blog/2015/01/30/evaluating_database_data/)
 
 # Support #
 
@@ -494,6 +496,6 @@ If you would like to use Openscoring in a proprietary software project, then it 
 
 # Additional information #
 
-Openscoring is developed and maintained by Openscoring Ltd, Estonia.
+Openscoring is developed and maintained by Openscoring OÜ, Estonia.
 
 Interested in using [Java PMML API](https://github.com/jpmml) or [Openscoring REST API](https://github.com/openscoring) software in your company? Please contact [info@openscoring.io](mailto:info@openscoring.io)
