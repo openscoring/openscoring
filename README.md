@@ -1,4 +1,4 @@
-Openscoring [![Build Status](https://github.com/openscoring/openscoring/workflows/maven/badge.svg)](https://github.com/openscoring/openscoring/actions?query=workflow%3A%22maven%22)
+<img src="logo.png" height="25px" height="25px">&nbsp;Openscoring [![Build Status](https://github.com/openscoring/openscoring/workflows/maven/badge.svg)](https://github.com/openscoring/openscoring/actions?query=workflow%3A%22maven%22)
 ===========
 
 REST web service for scoring PMML models.
