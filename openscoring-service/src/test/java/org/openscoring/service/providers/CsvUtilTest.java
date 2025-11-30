@@ -22,11 +22,10 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.StringReader;
 
-import org.junit.Test;
-import org.openscoring.service.providers.CsvUtil;
+import org.junit.jupiter.api.Test;
 import org.supercsv.prefs.CsvPreference;
 
-import static org.junit.Assert.assertNotSame;
+import static org.junit.jupiter.api.Assertions.assertNotSame;
 
 public class CsvUtilTest {
 

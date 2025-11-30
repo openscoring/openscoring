@@ -44,7 +44,7 @@ import org.glassfish.jersey.media.multipart.MultiPartFeature;
 import org.glassfish.jersey.test.JerseyTest;
 import org.glassfish.jersey.test.jdkhttp.JdkHttpServerTestContainerFactory;
 import org.glassfish.jersey.test.spi.TestContainerFactory;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.openscoring.common.BatchEvaluationRequest;
 import org.openscoring.common.BatchEvaluationResponse;
 import org.openscoring.common.BatchModelResponse;
@@ -59,11 +59,11 @@ import org.openscoring.common.providers.ObjectMapperProvider;
 import org.openscoring.service.providers.CsvUtil;
 import org.supercsv.prefs.CsvPreference;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
 public class ModelResourceTest extends JerseyTest {
 

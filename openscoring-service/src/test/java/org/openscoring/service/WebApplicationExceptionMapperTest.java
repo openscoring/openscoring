@@ -26,10 +26,10 @@ import jakarta.ws.rs.NotFoundException;
 import jakarta.ws.rs.WebApplicationException;
 import jakarta.ws.rs.core.Response;
 import jakarta.xml.bind.UnmarshalException;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.openscoring.common.SimpleResponse;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class WebApplicationExceptionMapperTest {
 
