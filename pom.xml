@@ -57,7 +57,7 @@
 
 		<jpmml-model.version>1.7.6</jpmml-model.version>
 		<jpmml-evaluator.version>1.7.6</jpmml-evaluator.version>
-		<jcommander.version>1.72</jcommander.version>
+		<jcommander.version>1.82</jcommander.version>
 		<config.version>1.4.5</config.version>
 		<servlet-api.version>5.0.0</servlet-api.version>
 		<rs-api.version>3.0.0</rs-api.version>
