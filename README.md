@@ -1,4 +1,4 @@
-<img src="logo.png" height="25px" height="25px">&nbsp;Openscoring [![Build Status](https://github.com/openscoring/openscoring/workflows/maven/badge.svg)](https://github.com/openscoring/openscoring/actions?query=workflow%3A%22maven%22)
+Openscoring [![Build Status](https://github.com/openscoring/openscoring/workflows/maven/badge.svg)](https://github.com/openscoring/openscoring/actions?query=workflow%3A%22maven%22)
 ===========
 
 REST web service for scoring PMML models.
@@ -496,6 +496,6 @@ If you would like to use Openscoring in a proprietary software project, then it 
 
 # Additional information #
 
-Openscoring is developed and maintained by Openscoring OÜ, Estonia.
+Openscoring is developed and maintained by Openscoring Ltd, Estonia.
 
 Interested in using [Java PMML API](https://github.com/jpmml) or [Openscoring REST API](https://github.com/openscoring) software in your company? Please contact [info@openscoring.io](mailto:info@openscoring.io)
