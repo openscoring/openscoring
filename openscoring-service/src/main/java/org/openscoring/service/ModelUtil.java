@@ -40,6 +40,7 @@ import org.jpmml.evaluator.OutputField;
 import org.jpmml.evaluator.TargetField;
 import org.jpmml.evaluator.TypeUtil;
 import org.openscoring.common.Field;
+import org.openscoring.common.ModelResponse;
 
 public class ModelUtil {
 
@@ -94,6 +95,13 @@ public class ModelUtil {
 				org.dmg.pmml.Field<?> pmmlField = modelField.getField();
 
 				String fieldName = modelField.getName();
+
+				if(modelField instanceof TargetField){
+
+					if(fieldName == null){
+						fieldName = ModelResponse.DEFAULT_TARGET_NAME;
+					}
+				}
 
 				Field field = new Field(fieldName);
 				field.setName(modelField.getDisplayName());

@@ -44,7 +44,6 @@ import jakarta.ws.rs.ext.MessageBodyReader;
 import jakarta.ws.rs.ext.MessageBodyWriter;
 import jakarta.ws.rs.ext.Provider;
 import jakarta.xml.bind.JAXBException;
-import jakarta.xml.bind.Marshaller;
 import org.dmg.pmml.Header;
 import org.dmg.pmml.PMML;
 import org.jpmml.evaluator.Evaluator;
@@ -52,7 +51,7 @@ import org.jpmml.evaluator.EvaluatorBuilder;
 import org.jpmml.evaluator.HasModel;
 import org.jpmml.evaluator.HasPMML;
 import org.jpmml.evaluator.LoadingModelEvaluatorBuilder;
-import org.jpmml.model.JAXBUtil;
+import org.jpmml.model.JAXBSerializer;
 import org.openscoring.service.Model;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -148,11 +147,11 @@ public class ModelProvider implements MessageBodyReader<Model>, MessageBodyWrite
 		PMML pmml = hasPMML.getPMML();
 
 		try {
+			JAXBSerializer serializer = new JAXBSerializer();
+
 			Result result = new StreamResult(entityStream);
 
-			Marshaller marshaller = JAXBUtil.createMarshaller();
-
-			marshaller.marshal(pmml, result);
+			serializer.marshal(pmml, result);
 		} catch(JAXBException je){
 			throw new InternalServerErrorException(je);
 		}

@@ -478,6 +478,11 @@ public class ModelResource {
 
 		Map<String, ?> results = evaluator.evaluate(arguments);
 
+		// Jackson does not support the JSON serialization of <code>null</code> map keys
+		if(results.containsKey(null)){
+			results = replaceNullKey(results);
+		}
+
 		logger.debug("Evaluation response {} has result: {}", response.getId(), results);
 
 		response.setResults(EvaluatorUtil.decodeAll(results));
@@ -499,6 +504,25 @@ public class ModelResource {
 		}
 
 		return response;
+	}
+
+	static
+	private <V> Map<String, V> replaceNullKey(Map<String, V> map){
+		Map<String, V> result = new LinkedHashMap<>(map.size());
+
+		Collection<Map.Entry<String, V>> entries = map.entrySet();
+		for(Map.Entry<String, V> entry : entries){
+			String key = entry.getKey();
+			V value = entry.getValue();
+
+			if(key == null){
+				key = ModelResponse.DEFAULT_TARGET_NAME;
+			}
+
+			result.put(key, value);
+		}
+
+		return result;
 	}
 
 	private static final Logger logger = LoggerFactory.getLogger(ModelResource.class);

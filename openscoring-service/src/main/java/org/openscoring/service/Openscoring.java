@@ -43,11 +43,9 @@ import org.glassfish.jersey.server.filter.RolesAllowedDynamicFeature;
 import org.jpmml.evaluator.LoadingModelEvaluatorBuilder;
 import org.jpmml.evaluator.ModelEvaluatorFactory;
 import org.jpmml.evaluator.OutputFilters;
-import org.jpmml.evaluator.ResultMapper;
 import org.jpmml.evaluator.ValueFactoryFactory;
 import org.jpmml.model.JAXBUtil;
 import org.jpmml.model.visitors.VisitorBattery;
-import org.openscoring.common.ModelResponse;
 import org.openscoring.common.providers.ObjectMapperProvider;
 import org.openscoring.service.filters.ApplicationHeaderFilter;
 import org.openscoring.service.providers.ModelProvider;
@@ -193,23 +191,6 @@ public class Openscoring extends ResourceConfig {
 		modelEvaluatorBuilder.setValueFactoryFactory(newInstance(valueFactoryFactoryClazz));
 
 		modelEvaluatorBuilder.setOutputFilter(OutputFilters.KEEP_FINAL_RESULTS);
-
-		// Jackson does not support the JSON serialization of <code>null</code> map keys
-		ResultMapper resultMapper = new ResultMapper(){
-
-			@Override
-			public String apply(String name){
-
-				// A "phantom" default target field
-				if(name == null){
-					return ModelResponse.DEFAULT_TARGET_NAME;
-				}
-
-				return name;
-			}
-		};
-
-		modelEvaluatorBuilder.setResultMapper(resultMapper);
 
 		boolean validate = modelEvaluatorBuilderConfig.getBoolean("validate");
 
