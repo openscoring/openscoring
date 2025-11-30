@@ -54,6 +54,17 @@
 	<properties>
 		<service.name>Openscoring</service.name>
 		<service.version>${project.version}</service.version>
+
+		<jpmml-model.version>1.6.4</jpmml-model.version>
+		<jpmml-evaluator.version>1.6.4</jpmml-evaluator.version>
+		<jcommander.version>1.72</jcommander.version>
+		<config.version>1.4.2</config.version>
+		<servlet-api.version>5.0.0</servlet-api.version>
+		<rs-api.version>3.0.0</rs-api.version>
+		<super-csv.version>2.4.0</super-csv.version>
+		<slf4j.version>1.7.36</slf4j.version>
+		<jetty.version>11.0.12</jetty.version>
+		<jersey.version>3.0.8</jersey.version>
 	</properties>
 
 	<dependencyManagement>
@@ -85,9 +96,41 @@
 			</dependency>
 
 			<dependency>
+				<groupId>org.jpmml</groupId>
+				<artifactId>pmml-model</artifactId>
+				<version>${jpmml-model.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.jpmml</groupId>
+				<artifactId>pmml-model-jackson</artifactId>
+				<version>${jpmml-model.version}</version>
+			</dependency>
+
+			<dependency>
+				<groupId>org.jpmml</groupId>
+				<artifactId>pmml-evaluator</artifactId>
+				<version>${jpmml-evaluator.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.jpmml</groupId>
+				<artifactId>pmml-evaluator-metro</artifactId>
+				<version>${jpmml-evaluator.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.jpmml</groupId>
+				<artifactId>pmml-evaluator-moxy</artifactId>
+				<version>${jpmml-evaluator.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.jpmml</groupId>
+				<artifactId>pmml-evaluator-reporting</artifactId>
+				<version>${jpmml-evaluator.version}</version>
+			</dependency>
+
+			<dependency>
 				<groupId>com.beust</groupId>
 				<artifactId>jcommander</artifactId>
-				<version>1.72</version>
+				<version>${jcommander.version}</version>
 			</dependency>
 
 			<!-- Inherited from org.glassfish.jersey:project dependency -->
@@ -97,131 +140,92 @@
 				<version>2.13.3</version>
 			</dependency>
 
-			<!-- Inherited from org.jpmml:pmml-evaluator dependency -->
-			<dependency>
-				<groupId>com.google.guava</groupId>
-				<artifactId>guava</artifactId>
-				<version>31.1-jre</version>
-			</dependency>
-
 			<dependency>
 				<groupId>com.typesafe</groupId>
 				<artifactId>config</artifactId>
-				<version>1.4.2</version>
+				<version>${config.version}</version>
 			</dependency>
 
 			<dependency>
 				<groupId>jakarta.servlet</groupId>
 				<artifactId>jakarta.servlet-api</artifactId>
-				<version>5.0.0</version>
+				<version>${servlet-api.version}</version>
 				<scope>provided</scope>
 			</dependency>
 
 			<dependency>
 				<groupId>jakarta.ws.rs</groupId>
 				<artifactId>jakarta.ws.rs-api</artifactId>
-				<version>3.0.0</version>
+				<version>${rs-api.version}</version>
 			</dependency>
 
 			<dependency>
 				<groupId>net.sf.supercsv</groupId>
 				<artifactId>super-csv</artifactId>
-				<version>2.4.0</version>
+				<version>${super-csv.version}</version>
 			</dependency>
 
 			<dependency>
 				<groupId>org.eclipse.jetty</groupId>
 				<artifactId>jetty-annotations</artifactId>
-				<version>11.0.12</version>
+				<version>${jetty.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.eclipse.jetty</groupId>
 				<artifactId>jetty-server</artifactId>
-				<version>11.0.12</version>
+				<version>${jetty.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.eclipse.jetty</groupId>
 				<artifactId>jetty-servlet</artifactId>
-				<version>11.0.12</version>
+				<version>${jetty.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.eclipse.jetty</groupId>
 				<artifactId>jetty-webapp</artifactId>
-				<version>11.0.12</version>
+				<version>${jetty.version}</version>
 			</dependency>
 
 			<dependency>
 				<groupId>org.glassfish.jersey.containers</groupId>
 				<artifactId>jersey-container-servlet</artifactId>
-				<version>3.0.8</version>
+				<version>${jersey.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.glassfish.jersey.core</groupId>
 				<artifactId>jersey-client</artifactId>
-				<version>3.0.8</version>
+				<version>${jersey.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.glassfish.jersey.core</groupId>
 				<artifactId>jersey-server</artifactId>
-				<version>3.0.8</version>
+				<version>${jersey.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.glassfish.jersey.inject</groupId>
 				<artifactId>jersey-hk2</artifactId>
-				<version>3.0.8</version>
+				<version>${jersey.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.glassfish.jersey.media</groupId>
 				<artifactId>jersey-media-json-jackson</artifactId>
-				<version>3.0.8</version>
+				<version>${jersey.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.glassfish.jersey.media</groupId>
 				<artifactId>jersey-media-multipart</artifactId>
-				<version>3.0.8</version>
-			</dependency>
-
-			<dependency>
-				<groupId>org.jpmml</groupId>
-				<artifactId>pmml-evaluator</artifactId>
-				<version>1.6.4</version>
-			</dependency>
-			<dependency>
-				<groupId>org.jpmml</groupId>
-				<artifactId>pmml-evaluator-metro</artifactId>
-				<version>1.6.4</version>
-			</dependency>
-			<dependency>
-				<groupId>org.jpmml</groupId>
-				<artifactId>pmml-evaluator-moxy</artifactId>
-				<version>1.6.4</version>
-			</dependency>
-			<dependency>
-				<groupId>org.jpmml</groupId>
-				<artifactId>pmml-evaluator-reporting</artifactId>
-				<version>1.6.4</version>
-			</dependency>
-
-			<dependency>
-				<groupId>org.jpmml</groupId>
-				<artifactId>pmml-model</artifactId>
-				<version>1.6.4</version>
-			</dependency>
-			<dependency>
-				<groupId>org.jpmml</groupId>
-				<artifactId>pmml-model-jackson</artifactId>
-				<version>1.6.4</version>
+				<version>${jersey.version}</version>
 			</dependency>
 
 			<dependency>
 				<groupId>org.slf4j</groupId>
 				<artifactId>slf4j-api</artifactId>
-				<version>1.7.36</version>
+				<version>${slf4j.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.slf4j</groupId>
 				<artifactId>slf4j-jdk14</artifactId>
-				<version>1.7.36</version>
+				<version>${slf4j.version}</version>
 			</dependency>
 
 			<dependency>
@@ -234,13 +238,13 @@
 			<dependency>
 				<groupId>org.glassfish.jersey.test-framework</groupId>
 				<artifactId>jersey-test-framework-core</artifactId>
-				<version>3.0.8</version>
+				<version>${jersey.version}</version>
 				<scope>test</scope>
 			</dependency>
 			<dependency>
 				<groupId>org.glassfish.jersey.test-framework.providers</groupId>
 				<artifactId>jersey-test-framework-provider-jdk-http</artifactId>
-				<version>3.0.8</version>
+				<version>${jersey.version}</version>
 				<scope>test</scope>
 			</dependency>
 		</dependencies>
