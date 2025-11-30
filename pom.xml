@@ -35,7 +35,6 @@
 	<modules>
 		<module>openscoring-client</module>
 		<module>openscoring-common</module>
-		<module>openscoring-common-gwt</module>
 		<module>openscoring-server</module>
 		<module>openscoring-service</module>
 		<module>openscoring-webapp</module>
@@ -67,11 +66,6 @@
 			<dependency>
 				<groupId>org.openscoring</groupId>
 				<artifactId>openscoring-common</artifactId>
-				<version>2.2-SNAPSHOT</version>
-			</dependency>
-			<dependency>
-				<groupId>org.openscoring</groupId>
-				<artifactId>openscoring-common-gwt</artifactId>
 				<version>2.2-SNAPSHOT</version>
 			</dependency>
 			<dependency>
@@ -211,11 +205,6 @@
 			<dependency>
 				<groupId>org.jpmml</groupId>
 				<artifactId>pmml-model</artifactId>
-				<version>1.6.4</version>
-			</dependency>
-			<dependency>
-				<groupId>org.jpmml</groupId>
-				<artifactId>pmml-model-gwt</artifactId>
 				<version>1.6.4</version>
 			</dependency>
 			<dependency>
