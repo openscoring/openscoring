@@ -74,9 +74,9 @@ mvn clean install
 
 The build produces two uber-JAR files and a WAR file:
 
-* `openscoring-client/target/openscoring-client-executable-2.1-SNAPSHOT.jar`
-* `openscoring-server/target/openscoring-server-executable-2.1-SNAPSHOT.jar`
-* `openscoring-webapp/target/openscoring-webapp-2.1-SNAPSHOT.war`
+* `openscoring-client/target/openscoring-client-executable-2.2-SNAPSHOT.jar`
+* `openscoring-server/target/openscoring-server-executable-2.2-SNAPSHOT.jar`
+* `openscoring-webapp/target/openscoring-webapp-2.2-SNAPSHOT.war`
 
 # Usage #
 
