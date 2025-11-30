@@ -63,7 +63,7 @@
 		<rs-api.version>3.0.0</rs-api.version>
 		<super-csv.version>2.4.0</super-csv.version>
 		<slf4j.version>1.7.36</slf4j.version>
-		<jetty.version>11.0.12</jetty.version>
+		<jetty.version>11.0.26</jetty.version>
 		<jersey.version>3.0.18</jersey.version>
 	</properties>
 
