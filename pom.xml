@@ -60,11 +60,11 @@
 		<jcommander.version>1.82</jcommander.version>
 		<config.version>1.4.5</config.version>
 		<servlet-api.version>5.0.0</servlet-api.version>
-		<rs-api.version>3.0.0</rs-api.version>
+		<rs-api.version>3.1.0</rs-api.version>
 		<super-csv.version>2.4.0</super-csv.version>
 		<slf4j.version>2.0.17</slf4j.version>
 		<jetty.version>11.0.26</jetty.version>
-		<jersey.version>3.0.18</jersey.version>
+		<jersey.version>3.1.9</jersey.version>
 	</properties>
 
 	<dependencyManagement>
@@ -146,6 +146,7 @@
 				<version>${config.version}</version>
 			</dependency>
 
+			<!-- Depends on Jetty version family -->
 			<dependency>
 				<groupId>jakarta.servlet</groupId>
 				<artifactId>jakarta.servlet-api</artifactId>
@@ -153,6 +154,7 @@
 				<scope>provided</scope>
 			</dependency>
 
+			<!-- Depends on Jersey version family -->
 			<dependency>
 				<groupId>jakarta.ws.rs</groupId>
 				<artifactId>jakarta.ws.rs-api</artifactId>
@@ -228,6 +230,14 @@
 				<version>${slf4j.version}</version>
 			</dependency>
 
+			<!-- Inherited from org.glassfish.jersey.test-framework:jersey-test-framework-core dependency -->
+			<dependency>
+				<groupId>org.junit.jupiter</groupId>
+				<artifactId>junit-jupiter-api</artifactId>
+				<version>5.11.0</version>
+				<scope>test</scope>
+			</dependency>
+			
 			<dependency>
 				<groupId>org.glassfish.jersey.test-framework</groupId>
 				<artifactId>jersey-test-framework-core</artifactId>
