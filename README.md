@@ -63,7 +63,6 @@ The current version is **2.2.0** (1 December, 2025):
 
 * [openscoring-client-executable-2.2.0.jar](https://github.com/openscoring/openscoring/releases/download/2.2.0/openscoring-client-executable-2.2.0.jar)
 * [openscoring-server-executable-2.2.0.jar](https://github.com/openscoring/openscoring/releases/download/2.2.0/openscoring-server-executable-2.2.0.jar)
-* [openscoring-webapp-2.2.0.war](https://search.maven.org/remotecontent?filepath=org/openscoring/openscoring-webapp/2.2.0/openscoring-webapp-2.2.0.war)
 
 ### Source code snapshot
 
