@@ -236,17 +236,10 @@
 				<version>${slf4j.version}</version>
 			</dependency>
 
-			<!-- Inherited from org.glassfish.jersey.test-framework:jersey-test-framework-core dependency -->
-			<dependency>
-				<groupId>org.junit.jupiter</groupId>
-				<artifactId>junit-jupiter-api</artifactId>
-				<version>5.11.0</version>
-				<scope>test</scope>
-			</dependency>
 			<dependency>
 				<groupId>org.junit.jupiter</groupId>
 				<artifactId>junit-jupiter-engine</artifactId>
-				<version>5.11.0</version>
+				<version>${junit.version}</version>
 				<scope>test</scope>
 			</dependency>
 			
