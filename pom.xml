@@ -55,8 +55,8 @@
 		<service.name>Openscoring</service.name>
 		<service.version>${project.version}</service.version>
 
-		<jpmml-model.version>1.7.6</jpmml-model.version>
-		<jpmml-evaluator.version>1.7.6</jpmml-evaluator.version>
+		<jpmml-model.version>1.7.7</jpmml-model.version>
+		<jpmml-evaluator.version>1.7.7</jpmml-evaluator.version>
 		<jcommander.version>1.82</jcommander.version>
 		<config.version>1.4.5</config.version>
 		<servlet-api.version>5.0.0</servlet-api.version>

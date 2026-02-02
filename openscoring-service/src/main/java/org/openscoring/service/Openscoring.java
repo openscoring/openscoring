@@ -22,6 +22,7 @@ import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.util.List;
+import java.util.Objects;
 
 import javax.xml.validation.Schema;
 
@@ -44,6 +45,7 @@ import org.jpmml.evaluator.LoadingModelEvaluatorBuilder;
 import org.jpmml.evaluator.ModelEvaluatorFactory;
 import org.jpmml.evaluator.OutputFilters;
 import org.jpmml.evaluator.ValueFactoryFactory;
+import org.jpmml.evaluator.visitors.ModelEvaluatorVisitorBattery;
 import org.jpmml.model.JAXBUtil;
 import org.jpmml.model.visitors.VisitorBattery;
 import org.openscoring.common.providers.ObjectMapperProvider;
@@ -227,7 +229,15 @@ public class Openscoring extends ResourceConfig {
 			if((VisitorBattery.class).isAssignableFrom(clazz)){
 				Class<? extends VisitorBattery> visitorBatteryClazz = clazz.asSubclass(VisitorBattery.class);
 
-				VisitorBattery visitorBattery = newInstance(visitorBatteryClazz);
+				VisitorBattery visitorBattery;
+
+				if(Objects.equals(ModelEvaluatorVisitorBattery.class, visitorBatteryClazz)){
+					visitorBattery = new ModelEvaluatorVisitorBattery(false);
+				} else
+
+				{
+					visitorBattery = newInstance(visitorBatteryClazz);
+				}
 
 				visitors.addAll(visitorBattery);
 			} else
