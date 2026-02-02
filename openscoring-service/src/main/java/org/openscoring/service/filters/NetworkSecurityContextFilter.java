@@ -25,7 +25,6 @@ import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
-import com.google.common.collect.ImmutableSet;
 import com.typesafe.config.Config;
 import jakarta.annotation.Priority;
 import jakarta.inject.Inject;
@@ -145,7 +144,7 @@ public class NetworkSecurityContextFilter implements ContainerRequestFilter {
 			result.addAll(NetworkSecurityContextFilter.localAddresses);
 		}
 
-		return ImmutableSet.copyOf(result);
+		return Set.copyOf(result);
 	}
 
 	static
@@ -172,7 +171,7 @@ public class NetworkSecurityContextFilter implements ContainerRequestFilter {
 	static {
 
 		try {
-			localAddresses = ImmutableSet.copyOf(discoverLocalAddresses());
+			localAddresses = Set.copyOf(discoverLocalAddresses());
 		} catch(IOException ioe){
 			throw new ExceptionInInitializerError(ioe);
 		}
