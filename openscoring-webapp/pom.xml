@@ -8,7 +8,6 @@
 		<version>2.2-SNAPSHOT</version>
 	</parent>
 
-	<groupId>org.openscoring</groupId>
 	<artifactId>openscoring-webapp</artifactId>
 	<packaging>war</packaging>
 

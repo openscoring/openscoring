@@ -8,9 +8,7 @@
 		<version>2.2-SNAPSHOT</version>
 	</parent>
 
-	<groupId>org.openscoring</groupId>
 	<artifactId>openscoring-client</artifactId>
-	<packaging>jar</packaging>
 
 	<name>Openscoring Client</name>
 	<description>Command-line client application</description>

@@ -8,9 +8,7 @@
 		<version>2.2-SNAPSHOT</version>
 	</parent>
 
-	<groupId>org.openscoring</groupId>
 	<artifactId>openscoring-common</artifactId>
-	<packaging>jar</packaging>
 
 	<name>Openscoring Common</name>
 	<description>Data model</description>
