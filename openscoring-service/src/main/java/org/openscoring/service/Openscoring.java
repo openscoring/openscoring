@@ -214,6 +214,10 @@ public class Openscoring extends ResourceConfig {
 
 		modelEvaluatorBuilder.setLocatable(locatable);
 
+		boolean mutable = modelEvaluatorBuilderConfig.getBoolean("mutable");
+
+		modelEvaluatorBuilder.setMutable(mutable);
+
 		VisitorBattery visitors = new VisitorBattery();
 
 		List<String> visitorClassNames = modelEvaluatorBuilderConfig.getStringList("visitorClasses");
@@ -232,7 +236,7 @@ public class Openscoring extends ResourceConfig {
 				VisitorBattery visitorBattery;
 
 				if(Objects.equals(ModelEvaluatorVisitorBattery.class, visitorBatteryClazz)){
-					visitorBattery = new ModelEvaluatorVisitorBattery(false);
+					visitorBattery = new ModelEvaluatorVisitorBattery(mutable);
 				} else
 
 				{
